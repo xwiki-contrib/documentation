@@ -29,28 +29,34 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
-import org.xwiki.rendering.syntax.Syntax;
+import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.ImageBlock;
+import org.xwiki.rendering.block.XDOM;
+import org.xwiki.rendering.block.match.ClassBlockMatcher;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Verify that documentation pages are using the XWiki Syntax 2.1.
+ * Verify that documentation pages are not using the image syntax (i.e. they should use the image or gallery macros).
  *
  * @version $Id$
  * @since 1.0
  */
 @Component
 @Singleton
-@Named("syntax")
-public class SyntaxCheck implements DocumentationCheck
+@Named("image")
+public class ImageMacroCheck implements DocumentationCheck
 {
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-        if (!Syntax.XWIKI_2_1.equals(document.getSyntax())) {
-            violations.add(new DocumentationViolation("Syntax must be 'xwiki/2.1' for documentation pages.",
-                "", DocumentationViolationSeverity.ERROR));
+        XDOM xdom = document.getXDOM();
+        List<ImageBlock> imageBlocks = xdom.getBlocks(new ClassBlockMatcher(ImageBlock.class), Block.Axes.DESCENDANT);
+        for (ImageBlock imageBlock : imageBlocks) {
+            violations.add(new DocumentationViolation("Use the Image or Gallery macro instead.",
+                String.format("Image reference : %s", imageBlock.getReference().getReference()),
+                DocumentationViolationSeverity.ERROR));
         }
         return violations;
     }
