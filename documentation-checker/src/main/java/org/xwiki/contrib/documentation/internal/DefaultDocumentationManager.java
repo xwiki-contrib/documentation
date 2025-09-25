@@ -17,44 +17,36 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.documentation;
+package org.xwiki.contrib.documentation.internal;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.documentation.DocumentationManager;
+import org.xwiki.index.TaskManager;
+
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * A single documentation violation (message and context).
+ * Perform documentation analysis using the {@link TaskManager} API (i.e. asynchronously).
  *
  * @version $Id$
  * @since 1.0
  */
-public class DocumentationViolation
+@Component
+@Singleton
+public class DefaultDocumentationManager implements DocumentationManager
 {
-    private String violationMessage;
+    static final String DOCUMENTATION_TASK_ID = "documentation";
 
-    private String violationContext;
+    @Inject
+    private TaskManager taskManager;
 
-    /**
-     * @param violationMessage see {@link #getViolationMessage()}
-     * @param violationContext  see {@link #getViolationContext()}
-     */
-    public DocumentationViolation(String violationMessage, String violationContext)
+    @Override
+    public void triggerAnalysis(XWikiDocument document)
     {
-        this.violationContext = violationContext;
-        this.violationMessage = violationMessage;
-    }
-
-    /**
-     * @return the violation message
-     */
-    public String getViolationMessage()
-    {
-        return this.violationMessage;
-    }
-
-    /**
-     * @return the source of the violation and any additional information helping the reader understand where the
-     *         violation is located
-     */
-    public String getViolationContext()
-    {
-        return this.violationContext;
+        this.taskManager.addTask(document.getDocumentReference().getWikiReference().getName(), document.getId(),
+            document.getVersion(), DOCUMENTATION_TASK_ID);
     }
 }

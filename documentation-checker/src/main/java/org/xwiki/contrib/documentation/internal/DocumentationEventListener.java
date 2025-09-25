@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.xwiki.bridge.event.DocumentCreatedEvent;
 import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.index.TaskManager;
+import org.xwiki.contrib.documentation.DocumentationManager;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
@@ -44,13 +44,11 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Named("DocumentationEventListener")
 public class DocumentationEventListener extends AbstractEventListener
 {
-    static final String DOCUMENTATION_TASK_ID = "documentation";
-
     @Inject
     private Logger logger;
 
     @Inject
-    private TaskManager taskManager;
+    private DocumentationManager manager;
 
     /**
      * Default constructor.
@@ -66,8 +64,7 @@ public class DocumentationEventListener extends AbstractEventListener
         this.logger.debug("Event [{}] received from [{}] with data [{}].", event.getClass().getName(), source,
             data);
 
-        XWikiDocument doc = (XWikiDocument) source;
-        this.taskManager.addTask(doc.getDocumentReference().getWikiReference().getName(), doc.getId(), doc.getVersion(),
-            DOCUMENTATION_TASK_ID);
+        XWikiDocument document = (XWikiDocument) source;
+        this.manager.triggerAnalysis(document);
     }
 }

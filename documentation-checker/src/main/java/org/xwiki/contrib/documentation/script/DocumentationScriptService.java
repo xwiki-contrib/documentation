@@ -17,44 +17,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.documentation;
+package org.xwiki.contrib.documentation.script;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.documentation.DocumentationManager;
+import org.xwiki.script.service.ScriptService;
+
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * A single documentation violation (message and context).
+ * Scripting APIs for Documentation analysis.
  *
  * @version $Id$
  * @since 1.0
  */
-public class DocumentationViolation
+@Component
+@Singleton
+@Named("documentation")
+public class DocumentationScriptService implements ScriptService
 {
-    private String violationMessage;
-
-    private String violationContext;
-
-    /**
-     * @param violationMessage see {@link #getViolationMessage()}
-     * @param violationContext  see {@link #getViolationContext()}
-     */
-    public DocumentationViolation(String violationMessage, String violationContext)
-    {
-        this.violationContext = violationContext;
-        this.violationMessage = violationMessage;
-    }
+    @Inject
+    private DocumentationManager manager;
 
     /**
-     * @return the violation message
+     * @param document the document on which to perform the documentation analysis
      */
-    public String getViolationMessage()
+    public void triggerAnalysis(XWikiDocument document)
     {
-        return this.violationMessage;
-    }
-
-    /**
-     * @return the source of the violation and any additional information helping the reader understand where the
-     *         violation is located
-     */
-    public String getViolationContext()
-    {
-        return this.violationContext;
+        this.manager.triggerAnalysis(document);
     }
 }

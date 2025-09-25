@@ -19,42 +19,21 @@
  */
 package org.xwiki.contrib.documentation;
 
+import org.xwiki.component.annotation.Role;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+
 /**
- * A single documentation violation (message and context).
+ * APIs related to Documentation analysis.
  *
  * @version $Id$
  * @since 1.0
  */
-public class DocumentationViolation
+@Role
+public interface DocumentationManager
 {
-    private String violationMessage;
-
-    private String violationContext;
-
     /**
-     * @param violationMessage see {@link #getViolationMessage()}
-     * @param violationContext  see {@link #getViolationContext()}
+     * @param document the document on which to perform the documentation analysis
      */
-    public DocumentationViolation(String violationMessage, String violationContext)
-    {
-        this.violationContext = violationContext;
-        this.violationMessage = violationMessage;
-    }
-
-    /**
-     * @return the violation message
-     */
-    public String getViolationMessage()
-    {
-        return this.violationMessage;
-    }
-
-    /**
-     * @return the source of the violation and any additional information helping the reader understand where the
-     *         violation is located
-     */
-    public String getViolationContext()
-    {
-        return this.violationContext;
-    }
+    void triggerAnalysis(XWikiDocument document);
 }

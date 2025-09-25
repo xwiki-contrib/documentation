@@ -40,8 +40,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import static org.xwiki.contrib.documentation.internal.DocumentationEventListener.DOCUMENTATION_TASK_ID;
-
 /**
  * Perform documentation content validation.
  *
@@ -50,7 +48,7 @@ import static org.xwiki.contrib.documentation.internal.DocumentationEventListene
  */
 @Component
 @Singleton
-@Named(DOCUMENTATION_TASK_ID)
+@Named(DefaultDocumentationManager.DOCUMENTATION_TASK_ID)
 public class DocumentationCheckerConsumer implements TaskConsumer
 {
     private static final String SPACE = "Documentation";

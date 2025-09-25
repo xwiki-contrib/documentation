@@ -29,6 +29,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * Performs some specific documentation check on a given {@link XWikiDocument}.
  *
  * @version $Id$
+ * @since 1.0
  */
 @Role
 public interface DocumentationCheck
