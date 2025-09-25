@@ -23,35 +23,30 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.contrib</groupId>
-    <artifactId>parent-platform</artifactId>
-    <version>16.10.11</version>
+    <groupId>org.xwiki.contrib.documentation</groupId>
+    <artifactId>documentation</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.xwiki.contrib.documentation</groupId>
-  <artifactId>documentation</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Documentation Application - Parent POM</name>
-  <description>Parent POM for the Documentation Application modules</description>
-  <packaging>pom</packaging>
+  <artifactId>documentation-xwikiorg</artifactId>
+  <name>Documentation Application - Checks for XWiki.org</name>
+  <packaging>jar</packaging>
+  <description>Checks for violations in documentation pages using XWiki.org rules</description>
   <properties>
-    <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
-    <xwiki.issueManagement.jira.id>XDOC</xwiki.issueManagement.jira.id>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>XWiki.org Checks for Documentation Application</xwiki.extension.name>
+    <!-- The extension's category -->
+    <xwiki.extension.category>api</xwiki.extension.category>
   </properties>
-  <scm>
-    <connection>scm:git:git://github.com/xwiki-contrib/documentation.git</connection>
-    <developerConnection>scm:git:git@github.com:xwiki-contrib/documentation.git</developerConnection>
-    <url>https://github.com/xwiki-contrib/documentation/tree/master</url>
-  </scm>
-  <developers>
-    <developer>
-      <id>vmassol</id>
-      <name>Vincent Massol</name>
-    </developer>
-  </developers>
-  <modules>
-    <!-- Sorted Alphabetically -->
-    <module>documentation-checker</module>
-    <module>documentation-ui</module>
-    <module>documentation-xwikiorg</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-api</artifactId>
+      <version>${rendering.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.documentation</groupId>
+      <artifactId>documentation-checker</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
