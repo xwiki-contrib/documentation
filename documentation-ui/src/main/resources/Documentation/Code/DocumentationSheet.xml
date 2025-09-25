@@ -1,0 +1,114 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.6" reference="Documentation.Code.DocumentationSheet" locale="">
+  <web>Documentation.Code</web>
+  <name>DocumentationSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#set ($violations = $doc.getObjects('Documentation.Code.DocumentationViolationClass'))
+#set ($violationsSeverity = 0)
+#foreach ($violation in $violations)
+  #if($violation.getValue('severity') == 'Error')
+    #set ($violationsSeverity = 2)
+  #elseif ($violation.getValue('severity') == 'Warning' &amp;&amp; $violationsSeverity &lt; 2)
+    #set ($violationsSeverity = 1)
+  #end
+#end
+#if ($hasEdit &amp;&amp; $violationsSeverity == 2)
+  #define($errorContent)
+    $escapetool.xml($services.localization.render('documentation.ui.review.top.error'))
+    ##[[Review errors&gt;&gt;.||anchor="documentation.tab"]]
+  #end
+  {{error}}
+    $errorContent
+  {{/error}}
+#elseif($hasEdit &amp;&amp; $violationsSeverity == 1)
+  #define($warningContent)
+    $escapetool.xml($services.localization.render('documentation.ui.review.top.warning'))
+    ##[[Review warnings&gt;&gt;.||anchor="documentation.tab"]]
+  #end
+  {{warning}}
+    $warningContent
+  {{/warning}}
+#end
+
+#set ($hasFAQ = !$stringtool.isBlank($doc.getValue('faq')))
+#set ($hasRelated = !$stringtool.isBlank($doc.getValue('related')))
+## TODO: Decide if we want to display the TOC only under some conditions
+##if ($hasFAQ || $hasRelated)
+{{box cssClass="floatinginfobox" title="**Content**"}}
+{{toc/}}
+{{/box}}
+##end
+## Display the content
+#if ($doc.getValue('type') == 'howto')
+  = Steps =
+#elseif ($doc.getValue('type') == 'explanation')
+  = Explanation =
+#elseif ($doc.getValue('type') == 'tutorial')
+  = Tutorial =
+#elseif ($doc.getValue('type') == 'reference')
+  = Reference =
+#end
+$doc.display('content')
+## Display the FAQ section if it's not empty
+#if ($hasFAQ || $xcontext.action != 'view')
+  = FAQ =
+  #if ($xcontext.action != 'view')
+    Notes:
+    * Include troubleshooting questions, small and specific explanations, etc.
+    * Only for topics specific to the page and that should be not widely visible and findable from filtering from the top level of the documentation.
+    * Maximum of 1-2 sentences. Longer text should be put in a dedicated page.
+
+  #end
+  $doc.display('faq')
+#end
+## Display the More section if it's not empty
+## TODO: only display if the Ld is not empty
+= More =
+
+{{documents location="$services.model.serialize($doc.documentReference.parent, 'local')" columns="doc.title"/}}
+## Display the Related section if it's not empty
+#if ($hasRelated || $xcontext.action != 'view')
+  = Related =
+  #if ($xcontext.action != 'view')
+    Notes:
+    * Include links to pages that are on the same subject but that are not children pages (as they are automatically added in the More section)
+
+  #end
+  $doc.display('related')
+#end
+{{/velocity}}</content>
+</xwikidoc>

@@ -228,7 +228,7 @@
       </sheet>
     </class>
     <property>
-      <sheet>XWikiOrg.DocumentationClassSheet</sheet>
+      <sheet>Documentation.Code.DocumentationSheet</sheet>
     </property>
   </object>
 </xwikidoc>

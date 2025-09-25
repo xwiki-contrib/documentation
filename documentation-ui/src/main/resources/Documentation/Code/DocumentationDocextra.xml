@@ -164,43 +164,34 @@
     </property>
     <property>
       <content>{{velocity}}
-
 {{html clean="false"}}
-&lt;div class="row"&gt;
-&lt;div class="col-xs-12 col-sm-6"&gt;
 #set ($violations = $doc.getObjects('Documentation.Code.DocumentationViolationClass'))
-#if($violations.size() != 0)
-&lt;p&gt;
-$escapetool.xml($services.localization.render('documentation.review.violation-list'))
-&lt;ul class="documentation-validation-results"&gt;
-
-#foreach ($violation in $violations)
-&lt;li&gt;
-#set ($messageContent=$violation.getValue('message'))
-#if($!violation.getValue('severity') == 'Error')
-#inlineError($messageContent)
-#elseif($!violation.getValue('severity') == 'Warning')
-#inlineWarning($messageContent)
+#if (!$violations.isEmpty())
+  $escapetool.xml($services.localization.render('documentation.ui.review.violation-list'))
+  &lt;ul class="documentation-validation-results"&gt;
+    #foreach ($violation in $violations)
+    &lt;li&gt;
+      #set ($messageContent=$violation.getValue('message'))
+      #if ($!violation.getValue('severity') == 'Error')
+        #inlineError($messageContent)
+      #elseif ($!violation.getValue('severity') == 'Warning')
+        #inlineWarning($messageContent)
+      #else
+        $messageContent
+      #end
+      #set ($violationContext = $violation.getValue('context'))
+      #if($!violationContext != '')
+        &lt;span class="monospace"&gt;
+          $violation.getValue('context')
+        &lt;/span&gt;
+      #end
+    &lt;/li&gt;
+    #end
+  &lt;/ul&gt;
 #else
-$messageContent
+  #success("$escapetool.xml($services.localization.render('documentation.ui.review.violation-list.empty'))")
 #end
-#set ($violationContext = $violation.getValue('context'))
-#if($!violationContext != '')
-&lt;span class="monospace"&gt;
-$violation.getValue('context')
-&lt;/span&gt;
-#end
-&lt;/li&gt;
-#end
-&lt;/ul&gt;
-&lt;/p&gt;
-#end
-&lt;/div&gt;
-
-
-&lt;/div&gt;
 {{/html}}
-
 {{/velocity}}</content>
     </property>
     <property>
@@ -210,7 +201,7 @@ $violation.getValue('context')
       <name>documentation.tab</name>
     </property>
     <property>
-      <parameters>show=#if($doc.getObjects('Documentation.Code.DocumentationClass').size() != 0)true#{end}
+      <parameters>show=#if($hasEdit &amp;&amp; !$doc.getObjects('Documentation.Code.DocumentationClass').isEmpty())true#{end}
 title=Documentation
 name=docreview
 shortcut=v
