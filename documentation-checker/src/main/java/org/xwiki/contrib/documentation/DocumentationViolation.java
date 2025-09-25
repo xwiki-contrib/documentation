@@ -31,14 +31,19 @@ public class DocumentationViolation
 
     private String violationContext;
 
+    private DocumentationViolationSeverity violationSeverity;
+
     /**
      * @param violationMessage see {@link #getViolationMessage()}
-     * @param violationContext  see {@link #getViolationContext()}
+     * @param violationContext see {@link #getViolationContext()}
+     * @param violationSeverity see {@link #getViolationSeverity()}
      */
-    public DocumentationViolation(String violationMessage, String violationContext)
+    public DocumentationViolation(String violationMessage, String violationContext,
+        DocumentationViolationSeverity violationSeverity)
     {
         this.violationContext = violationContext;
         this.violationMessage = violationMessage;
+        this.violationSeverity = violationSeverity;
     }
 
     /**
@@ -56,5 +61,13 @@ public class DocumentationViolation
     public String getViolationContext()
     {
         return this.violationContext;
+    }
+
+    /**
+     * @return the severity of the violation
+     */
+    public DocumentationViolationSeverity getViolationSeverity()
+    {
+        return this.violationSeverity;
     }
 }

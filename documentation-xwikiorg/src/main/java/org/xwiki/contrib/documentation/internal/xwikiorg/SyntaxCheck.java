@@ -28,6 +28,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
+import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.rendering.syntax.Syntax;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -49,7 +50,7 @@ public class SyntaxCheck implements DocumentationCheck
         List<DocumentationViolation> violations = new ArrayList<>();
         if (!Syntax.XWIKI_2_1.equals(document.getSyntax())) {
             violations.addAll(List.of(new DocumentationViolation("Syntax must be 'xwiki/2.1' for documentation pages",
-                "")));
+                "", DocumentationViolationSeverity.ERROR)));
         }
         return violations;
     }

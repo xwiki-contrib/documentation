@@ -83,7 +83,7 @@ public class DocumentationCheckerConsumer implements TaskConsumer
                 BaseObject object = document.newXObject(VIOLATION_CLASS_REFERENCE, xcontext);
                 object.set("message", violation.getViolationMessage(), xcontext);
                 object.set("context", violation.getViolationContext(), xcontext);
-                //document.addXObject(object);
+                object.set("severity", violation.getViolationSeverity().toString(), xcontext);
             }
 
             // Step 4: Save the document (only if there have been changes)

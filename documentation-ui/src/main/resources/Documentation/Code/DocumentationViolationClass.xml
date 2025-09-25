@@ -74,5 +74,30 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </message>
+    <severity>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <freeText/>
+      <hint>Violation Severity (Error, Warning, etc)</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>severity</name>
+      <number>3</number>
+      <picker>1</picker>
+      <prettyName>Severity</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>Warning|Error</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </severity>
   </class>
 </xwikidoc>
