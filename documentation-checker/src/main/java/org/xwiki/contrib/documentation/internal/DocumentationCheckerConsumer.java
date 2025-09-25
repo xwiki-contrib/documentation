@@ -1,0 +1,84 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.xwiki.contrib.documentation.internal;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.contrib.documentation.DocumentationCheck;
+import org.xwiki.contrib.documentation.DocumentationCheckResult;
+import org.xwiki.index.IndexException;
+import org.xwiki.index.TaskConsumer;
+import org.xwiki.model.reference.DocumentReference;
+
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+
+import static org.xwiki.contrib.documentation.internal.DocumentationEventListener.DOCUMENTATION_TASK_ID;
+
+/**
+ * Perform documentation content validation.
+ *
+ * @version $Id$
+ * @since 1.0
+ */
+@Component
+@Singleton
+@Named(DOCUMENTATION_TASK_ID)
+public class DocumentationCheckerConsumer implements TaskConsumer
+{
+    @Inject
+    @Named("context")
+    private Provider<ComponentManager> componentManagerProvider;
+
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
+
+    @Override
+    public void consume(DocumentReference documentReference, String version) throws IndexException
+    {
+        ComponentManager cm = this.componentManagerProvider.get();
+        try {
+            // Step 1: Call the various checkers
+            XWikiContext xcontext = this.xcontextProvider.get();
+            XWikiDocument document = xcontext.getWiki().getDocument(documentReference, xcontext);
+            List<DocumentationCheck> checks = cm.getInstanceList(DocumentationCheck.class);
+            List<DocumentationCheckResult> results = new ArrayList<>();
+            for (DocumentationCheck check : checks) {
+                results.addAll(check.check(document));
+            }
+            // Step 2: Store the violation results in a DocumentationReviewClass xobject inside the passed document.
+
+
+        } catch (ComponentLookupException | XWikiException e) {
+            throw new IndexException(String.format(
+                "Failed to perform documentation content validation for [%s]", documentReference), e);
+        }
+    }
+}
