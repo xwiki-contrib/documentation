@@ -19,6 +19,8 @@
  */
 package org.xwiki.contrib.documentation.internal;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -28,6 +30,7 @@ import org.xwiki.bridge.event.DocumentCreatedEvent;
 import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationManager;
+import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
@@ -44,6 +47,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Named("DocumentationEventListener")
 public class DocumentationEventListener extends AbstractEventListener
 {
+    private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
+        new LocalDocumentReference(List.of("Documentation", "Code"), "DocumentationClass");
+
     @Inject
     private Logger logger;
 
@@ -65,6 +71,14 @@ public class DocumentationEventListener extends AbstractEventListener
             data);
 
         XWikiDocument document = (XWikiDocument) source;
-        this.manager.triggerAnalysis(document);
+
+        // 1) Only validate pages containing a DocumentationClass xobject
+        // 2) Protection for infinite recursion: don't trigger the analysis if the save was done by the Documentation
+        // task consumer. We identify this by the save message.
+        if (document.getXObject(DOCUMENTATION_CLASS_REFERENCE) != null
+            && !"Documentation analysis".equals(document.getComment()))
+        {
+            this.manager.triggerAnalysis(document);
+        }
     }
 }

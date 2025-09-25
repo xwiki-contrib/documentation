@@ -51,10 +51,8 @@ import com.xpn.xwiki.objects.BaseObject;
 @Named(DefaultDocumentationManager.DOCUMENTATION_TASK_ID)
 public class DocumentationCheckerConsumer implements TaskConsumer
 {
-    private static final String SPACE = "Documentation";
-
     private static final LocalDocumentReference VIOLATION_CLASS_REFERENCE =
-        new LocalDocumentReference(SPACE, "DocumentationViolationClass");
+        new LocalDocumentReference(List.of("Documentation", "Code"), "DocumentationViolationClass");
 
     @Inject
     @Named("context")
@@ -70,7 +68,7 @@ public class DocumentationCheckerConsumer implements TaskConsumer
         try {
             // Step 1: Call the various checkers
             XWikiContext xcontext = this.xcontextProvider.get();
-            XWikiDocument document = xcontext.getWiki().getDocument(documentReference, xcontext);
+            XWikiDocument document = xcontext.getWiki().getDocument(documentReference, xcontext).clone();
             List<DocumentationCheck> checkers = cm.getInstanceList(DocumentationCheck.class);
             List<DocumentationViolation> violations = new ArrayList<>();
             for (DocumentationCheck checker : checkers) {
@@ -85,6 +83,7 @@ public class DocumentationCheckerConsumer implements TaskConsumer
                 BaseObject object = document.newXObject(VIOLATION_CLASS_REFERENCE, xcontext);
                 object.set("message", violation.getViolationMessage(), xcontext);
                 object.set("context", violation.getViolationContext(), xcontext);
+                //document.addXObject(object);
             }
 
             // Step 4: Save the document (only if there have been changes)
