@@ -54,7 +54,7 @@ public class ImageMacroCheck implements DocumentationCheck
         XDOM xdom = document.getXDOM();
         List<ImageBlock> imageBlocks = xdom.getBlocks(new ClassBlockMatcher(ImageBlock.class), Block.Axes.DESCENDANT);
         for (ImageBlock imageBlock : imageBlocks) {
-            violations.add(new DocumentationViolation("Use the Image or Gallery macro instead.",
+            violations.add(new DocumentationViolation("Use the Image macro instead.",
                 String.format("Image reference : %s", imageBlock.getReference().getReference()),
                 DocumentationViolationSeverity.ERROR));
         }
