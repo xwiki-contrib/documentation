@@ -25,8 +25,19 @@ import org.xwiki.component.annotation.Role;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
+/**
+ * Performs some specific documentation check on a given {@link XWikiDocument}.
+ *
+ * @version $Id$
+ */
 @Role
 public interface DocumentationCheck
 {
-    List<DocumentationCheckResult> check(XWikiDocument document);
+    /**
+     * Check the given document for documentation violations.
+     *
+     * @param document the document to check
+     * @return the violations found or an empty list if none are found
+     */
+    List<DocumentationViolation> check(XWikiDocument document);
 }

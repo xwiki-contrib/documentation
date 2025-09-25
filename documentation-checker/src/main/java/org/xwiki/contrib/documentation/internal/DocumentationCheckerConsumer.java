@@ -28,17 +28,17 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.contrib.documentation.DocumentationCheck;
-import org.xwiki.contrib.documentation.DocumentationCheckResult;
+import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.index.IndexException;
 import org.xwiki.index.TaskConsumer;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.LocalDocumentReference;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 
 import static org.xwiki.contrib.documentation.internal.DocumentationEventListener.DOCUMENTATION_TASK_ID;
 
@@ -53,6 +53,11 @@ import static org.xwiki.contrib.documentation.internal.DocumentationEventListene
 @Named(DOCUMENTATION_TASK_ID)
 public class DocumentationCheckerConsumer implements TaskConsumer
 {
+    private static final String SPACE = "Documentation";
+
+    private static final LocalDocumentReference VIOLATION_CLASS_REFERENCE =
+        new LocalDocumentReference(SPACE, "DocumentationViolationClass");
+
     @Inject
     @Named("context")
     private Provider<ComponentManager> componentManagerProvider;
@@ -68,15 +73,27 @@ public class DocumentationCheckerConsumer implements TaskConsumer
             // Step 1: Call the various checkers
             XWikiContext xcontext = this.xcontextProvider.get();
             XWikiDocument document = xcontext.getWiki().getDocument(documentReference, xcontext);
-            List<DocumentationCheck> checks = cm.getInstanceList(DocumentationCheck.class);
-            List<DocumentationCheckResult> results = new ArrayList<>();
-            for (DocumentationCheck check : checks) {
-                results.addAll(check.check(document));
+            List<DocumentationCheck> checkers = cm.getInstanceList(DocumentationCheck.class);
+            List<DocumentationViolation> violations = new ArrayList<>();
+            for (DocumentationCheck checker : checkers) {
+                violations.addAll(checker.check(document));
             }
-            // Step 2: Store the violation results in a DocumentationReviewClass xobject inside the passed document.
 
+            // Step 2: Remove all existing violations.
+            boolean removed = document.removeXObjects(VIOLATION_CLASS_REFERENCE);
 
-        } catch (ComponentLookupException | XWikiException e) {
+            // Step 3: Store the violation results in DocumentationViolationClass xobjects inside the passed document.
+            for (DocumentationViolation violation : violations) {
+                BaseObject object = document.newXObject(VIOLATION_CLASS_REFERENCE, xcontext);
+                object.set("message", violation.getViolationMessage(), xcontext);
+                object.set("context", violation.getViolationContext(), xcontext);
+            }
+
+            // Step 4: Save the document (only if there have been changes)
+            if (removed || !violations.isEmpty()) {
+                xcontext.getWiki().saveDocument(document, "Documentation analysis", xcontext);
+            }
+        } catch (Exception e) {
             throw new IndexException(String.format(
                 "Failed to perform documentation content validation for [%s]", documentReference), e);
         }

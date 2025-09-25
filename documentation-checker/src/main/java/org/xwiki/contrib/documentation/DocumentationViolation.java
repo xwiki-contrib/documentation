@@ -19,25 +19,41 @@
  */
 package org.xwiki.contrib.documentation;
 
-public class DocumentationCheckResult
+/**
+ * A single documentation violation (message and context).
+ *
+ * @version $Id$
+ */
+public class DocumentationViolation
 {
-    private String violationText;
+    private String violationMessage;
 
-    private String violationSource;
+    private String violationContext;
 
-    public DocumentationCheckResult(String violationText, String violationSource)
+    /**
+     * @param violationMessage see {@link #getViolationMessage()}
+     * @param violationContext  see {@link #getViolationContext()}
+     */
+    public DocumentationViolation(String violationMessage, String violationContext)
     {
-        this.violationSource = violationSource;
-        this.violationText = violationText;
+        this.violationContext = violationContext;
+        this.violationMessage = violationMessage;
     }
 
-    public String getViolationText()
+    /**
+     * @return the violation message
+     */
+    public String getViolationMessage()
     {
-        return this.violationText;
+        return this.violationMessage;
     }
 
-    public String getViolationSource()
+    /**
+     * @return the source of the violation and any additional information helping the reader understand where the
+     *         violation is located
+     */
+    public String getViolationContext()
     {
-        return this.violationSource;
+        return this.violationContext;
     }
 }
