@@ -88,7 +88,7 @@ public class DocumentationCheckerConsumer implements TaskConsumer
 
             // Step 4: Save the document (only if there have been changes)
             if (removed || !violations.isEmpty()) {
-                xcontext.getWiki().saveDocument(document, "Documentation analysis", xcontext);
+                xcontext.getWiki().saveDocument(document, "Documentation analysis", true, xcontext);
             }
         } catch (Exception e) {
             throw new IndexException(String.format(
