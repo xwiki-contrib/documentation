@@ -1,6 +1,4 @@
-<?xml version="1.1" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,24 +16,40 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.contrib.documentation;
 
-<xwikidoc version="1.6" reference="Documentation.Data.NavigationForUsers" locale="">
-  <web>Documentation.Data</web>
-  <name>NavigationForUsers</name>
-  <language/>
-  <defaultLanguage/>
-  <translation>0</translation>
-  <creator>xwiki:XWiki.Admin</creator>
-  <parent>WebHome</parent>
-  <author>xwiki:XWiki.Admin</author>
-  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <version>1.1</version>
-  <title>Navigation For Users</title>
-  <comment/>
-  <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>true</hidden>
-  <content>* Link 1
-* Link 2</content>
-</xwikidoc>
+/**
+ * Exception issued by the Documentation extension components for an unexpected issue.
+ *
+ * @version $Id$
+ * @since 1.0
+ */
+public class DocumentationException extends Exception
+{
+    /**
+     * Serialization id.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Build a simple exception with a message.
+     *
+     * @param s message
+     */
+    public DocumentationException(String s)
+    {
+        super(s);
+    }
+
+    /**
+     * Build an exception with a message and a root cause.
+     *
+     * @param s message
+     * @param throwable root cause
+     */
+    public DocumentationException(String s, Throwable throwable)
+    {
+        super(s, throwable);
+    }
+}

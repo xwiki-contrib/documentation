@@ -40,5 +40,5 @@ public interface DocumentationCheck
      * @param document the document to check
      * @return the violations found or an empty list if none are found
      */
-    List<DocumentationViolation> check(XWikiDocument document);
+    List<DocumentationViolation> check(XWikiDocument document) throws DocumentationException;
 }
