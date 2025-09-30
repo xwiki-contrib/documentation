@@ -88,9 +88,10 @@ public class NavigationCheck implements DocumentationCheck
             // Check if the current page reference exists in the content
             String referenceString = this.serializer.serialize(document.getDocumentReference());
             if (!navigationDocument.getContent().contains(referenceString)) {
-                violations.add(new DocumentationViolation(String.format(
-                    "The current page must be listed in the navigation. Please edit [%s] to add it.",
-                        this.serializer.serialize(navigationReference)), "", DocumentationViolationSeverity.ERROR));
+                violations.add(new DocumentationViolation(String.format("The current page must be listed in the "
+                    + "navigation. Please edit [%s] to add it, and add a link to [%s]",
+                    this.serializer.serialize(navigationReference), referenceString), "",
+                    DocumentationViolationSeverity.ERROR));
             }
         }
 
