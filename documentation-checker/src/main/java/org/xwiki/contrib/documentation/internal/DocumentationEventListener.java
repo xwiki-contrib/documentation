@@ -30,6 +30,7 @@ import org.xwiki.bridge.event.DocumentCreatedEvent;
 import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationManager;
+import org.xwiki.index.IndexException;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
@@ -73,12 +74,17 @@ public class DocumentationEventListener extends AbstractEventListener
         XWikiDocument document = (XWikiDocument) source;
 
         // 1) Only validate pages containing a DocumentationClass xobject
-        // 2) Protection for infinite recursion: don't trigger the analysis if the save was done by the Documentation
+        // 2) Protection for infinite recursion: don't trigger the analysis when the save is done by the Documentation
         // task consumer. We identify this by the save message.
         if (document.getXObject(DOCUMENTATION_CLASS_REFERENCE) != null
             && !"Documentation analysis".equals(document.getComment()))
         {
-            this.manager.triggerAnalysis(document);
+            try {
+                this.manager.analyse(document);
+            } catch (IndexException e) {
+                this.logger.error("Failed to perform documentation checks on the document [{}].",
+                    document.getDocumentReference(), e);
+            }
         }
     }
 }

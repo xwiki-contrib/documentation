@@ -17,39 +17,21 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.documentation.script;
+package org.xwiki.contrib.documentation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.documentation.DocumentationManager;
-import org.xwiki.index.IndexException;
-import org.xwiki.script.service.ScriptService;
-
-import com.xpn.xwiki.doc.XWikiDocument;
+import org.xwiki.component.annotation.Role;
 
 /**
- * Scripting APIs for Documentation analysis.
+ * Configuration options for the documentation application.
  *
  * @version $Id$
  * @since 1.0
  */
-@Component
-@Singleton
-@Named("documentation")
-public class DocumentationScriptService implements ScriptService
+@Role
+public interface DocumentationConfiguration
 {
-    @Inject
-    private DocumentationManager manager;
-
     /**
-     * @param document the document on which to perform the documentation analysis
-     * @throws IndexException if an error occurs while indexing the document when it's executing synchronously
+     * @return true if the documentation checks should be performed asynchronously, false otherwise. Defaults to false.
      */
-    public void analyse(XWikiDocument document) throws IndexException
-    {
-        this.manager.analyse(document);
-    }
+    boolean isAsync();
 }

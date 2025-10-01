@@ -20,48 +20,33 @@
 package org.xwiki.contrib.documentation.internal;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.contrib.documentation.DocumentationConfiguration;
-import org.xwiki.contrib.documentation.DocumentationManager;
-import org.xwiki.index.IndexException;
-import org.xwiki.index.TaskConsumer;
-import org.xwiki.index.TaskManager;
-
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Perform documentation analysis using the {@link TaskManager} API (i.e. asynchronously).
+ * Default implementation of {@link DocumentationConfiguration} using a {@link ConfigurationSource}.
  *
  * @version $Id$
  * @since 1.0
  */
 @Component
 @Singleton
-public class DefaultDocumentationManager implements DocumentationManager
+public class DefaultDocumentationConfiguration implements DocumentationConfiguration
 {
-    static final String DOCUMENTATION_TASK_ID = "documentation";
+    /**
+     * Prefix for configuration keys for the Documentation application.
+     */
+    private static final String PREFIX = "documentation.";
 
     @Inject
-    private DocumentationConfiguration configuration;
-
-    @Inject
-    private TaskManager taskManager;
-
-    @Inject
-    @Named(DOCUMENTATION_TASK_ID)
-    private TaskConsumer consumer;
+    private ConfigurationSource configurationSource;
 
     @Override
-    public void analyse(XWikiDocument document) throws IndexException
+    public boolean isAsync()
     {
-        if (this.configuration.isAsync()) {
-            this.taskManager.addTask(document.getDocumentReference().getWikiReference().getName(), document.getId(),
-                document.getVersion(), DOCUMENTATION_TASK_ID);
-        } else {
-            this.consumer.consume(document.getDocumentReference(), document.getVersion());
-        }
+        return this.configurationSource.getProperty(PREFIX + "async", false);
     }
 }

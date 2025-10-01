@@ -20,6 +20,7 @@
 package org.xwiki.contrib.documentation;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.index.IndexException;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -34,6 +35,7 @@ public interface DocumentationManager
 {
     /**
      * @param document the document on which to perform the documentation analysis
+     * @throws IndexException if an error occurs while indexing the document when it's executing synchronously
      */
-    void triggerAnalysis(XWikiDocument document);
+    void analyse(XWikiDocument document) throws IndexException;
 }
