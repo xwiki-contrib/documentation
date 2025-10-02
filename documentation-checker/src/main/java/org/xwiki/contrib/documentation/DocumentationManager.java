@@ -35,6 +35,7 @@ public interface DocumentationManager
 {
     /**
      * @param document the document on which to perform the documentation analysis
+     *
      * @throws IndexException if an error occurs while indexing the document when it's executing synchronously
      */
     void analyse(XWikiDocument document) throws IndexException;

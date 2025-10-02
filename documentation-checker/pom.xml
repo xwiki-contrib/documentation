@@ -32,6 +32,7 @@
   <packaging>jar</packaging>
   <description>Checks for violations in documentation pages</description>
   <properties>
+    <xwiki.jacoco.instructionRatio>0.69</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Checker for Documentation Application</xwiki.extension.name>
     <!-- The extension's category -->
@@ -52,6 +53,14 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-oldcore</artifactId>
       <version>${platform.version}</version>
+    </dependency>
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-test-oldcore</artifactId>
+      <version>${platform.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

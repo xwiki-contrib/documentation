@@ -1,5 +1,3 @@
-org.xwiki.contrib.documentation.internal.DocumentationCheckerConsumer
 org.xwiki.contrib.documentation.internal.DocumentationEventListener
 org.xwiki.contrib.documentation.internal.DefaultDocumentationManager
-org.xwiki.contrib.documentation.internal.DefaultDocumentationConfiguration
 org.xwiki.contrib.documentation.script.DocumentationScriptService

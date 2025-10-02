@@ -75,15 +75,15 @@ public class DocumentationEventListener extends AbstractEventListener
 
         // 1) Only validate pages containing a DocumentationClass xobject
         // 2) Protection for infinite recursion: don't trigger the analysis when the save is done by the Documentation
-        // task consumer. We identify this by the save message.
+        // checker. We identify this by the save message.
         if (document.getXObject(DOCUMENTATION_CLASS_REFERENCE) != null
             && !"Documentation analysis".equals(document.getComment()))
         {
             try {
                 this.manager.analyse(document);
             } catch (IndexException e) {
-                this.logger.error("Failed to perform documentation checks on the document [{}].",
-                    document.getDocumentReference(), e);
+                this.logger.error("Failed to perform documentation checks on the document [{}] for revision [{}].",
+                    document.getDocumentReference(), document.getVersion(), e);
             }
         }
     }
