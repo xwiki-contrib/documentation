@@ -71,6 +71,10 @@
               <document>Documentation.Data.NavigationForDevelopers</document>
               <type>demo</type>
             </entry>
+            <entry>
+              <document>Documentation.WebHome</document>
+              <type>demo</type>
+            </entry>
           </entries>
         </configuration>
       </plugin>
