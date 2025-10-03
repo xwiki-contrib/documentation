@@ -109,7 +109,7 @@ public class DefaultDocumentationManager implements DocumentationManager
         // Remove all existing violations that don't exist anymore.
         for (BaseObject existingViolationObject : existingViolationObjects) {
             // If we don't find the violation in the new list, remove it.
-            if (!exists(existingViolationObject, violations)) {
+            if (existingViolationObject != null && !exists(existingViolationObject, violations)) {
                 document.removeXObject(existingViolationObject);
                 hasChanges = true;
             }
@@ -156,11 +156,17 @@ public class DefaultDocumentationManager implements DocumentationManager
 
     private boolean isEqual(BaseObject existingViolationObject, DocumentationViolation violation)
     {
-        String message = existingViolationObject.getStringValue(MESSAGE);
-        String context = existingViolationObject.getStringValue(CONTEXT);
-        String severity = existingViolationObject.getStringValue(SEVERITY);
-        return violation.getViolationMessage().equals(message)
-            && violation.getViolationContext().equals(context)
-            && violation.getViolationSeverity().toString().equals(severity);
+        boolean result;
+        if (existingViolationObject == null) {
+            result = false;
+        } else {
+            String message = existingViolationObject.getStringValue(MESSAGE);
+            String context = existingViolationObject.getStringValue(CONTEXT);
+            String severity = existingViolationObject.getStringValue(SEVERITY);
+            result = violation.getViolationMessage().equals(message)
+                && violation.getViolationContext().equals(context)
+                && violation.getViolationSeverity().toString().equals(severity);
+        }
+        return result;
     }
 }

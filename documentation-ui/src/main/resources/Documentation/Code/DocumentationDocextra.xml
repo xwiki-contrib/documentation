@@ -165,6 +165,13 @@
     <property>
       <content>{{velocity}}
 {{html clean="false"}}
+&lt;form id="documentationExtraDocForm" action="?validate" class="xformInline" method="post" name="documentationExtraDocForm"&gt;
+  &lt;div&gt;
+    &lt;span class="buttonwrapper"&gt;
+      &lt;input class="button" type="submit" value="Validate"/&gt;
+    &lt;/span&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
 #set ($violations = $doc.getObjects('Documentation.Code.DocumentationViolationClass'))
 #if (!$violations.isEmpty())
   $escapetool.xml($services.localization.render('documentation.ui.review.violation-list'))

@@ -122,12 +122,7 @@ class DefaultDocumentationManagerTest
             new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
 
         // Add an existing violation xobject.
-        BaseObject violationObject = this.document.newXObject(VIOLATION_CLASS_REFERENCE,
-            this.oldcore.getXWikiContext());
-        violationObject.set("message", "existing message", this.oldcore.getXWikiContext());
-        violationObject.set("context", "existing context", this.oldcore.getXWikiContext());
-        violationObject.set("severity", "existing error", this.oldcore.getXWikiContext());
-        this.oldcore.getSpyXWiki().saveDocument(this.document, this.oldcore.getXWikiContext());
+        addViolationObject("existing message", "existing context", "existing error");
 
         this.manager.analyse(this.document);
 
@@ -161,12 +156,7 @@ class DefaultDocumentationManagerTest
             new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
 
         // Add an existing violation xobject.
-        BaseObject violationObject = this.document.newXObject(VIOLATION_CLASS_REFERENCE,
-            this.oldcore.getXWikiContext());
-        violationObject.set("message", "message", this.oldcore.getXWikiContext());
-        violationObject.set("context", "context", this.oldcore.getXWikiContext());
-        violationObject.set("severity", "Error", this.oldcore.getXWikiContext());
-        this.oldcore.getSpyXWiki().saveDocument(this.document, this.oldcore.getXWikiContext());
+        addViolationObject("message", "context", "Error");
 
         this.manager.analyse(this.document);
 
@@ -184,5 +174,36 @@ class DefaultDocumentationManagerTest
 
         // Verify the xobject numbers
         assertEquals(0, objects.get(0).getNumber());
+    }
+
+    @Test
+    void analyzeWhenEmptyExistingXObject() throws Exception
+    {
+        DocumentationCheck check = this.componentManager.registerMockComponent(DocumentationCheck.class, "test");
+        when(check.check(this.document)).thenReturn(Collections.emptyList());
+
+        // Add 2 existing violation xobject but remove the 1sr one to simulate an xobject that has been removed.
+        BaseObject v1 =  addViolationObject("message1", "context1", "Error");
+        addViolationObject("message2", "context2", "Error");
+        this.document.removeXObject(v1);
+
+        this.manager.analyse(this.document);
+
+        // Verify all violations have been removed.
+        List<BaseObject> objects = this.document.getXObjects(VIOLATION_CLASS_REFERENCE);
+        assertEquals(2, objects.size());
+        assertNull(objects.get(0));
+        assertNull(objects.get(1));
+    }
+
+    private BaseObject addViolationObject(String messgae, String context, String severity) throws Exception
+    {
+        BaseObject violationObject = this.document.newXObject(VIOLATION_CLASS_REFERENCE,
+            this.oldcore.getXWikiContext());
+        violationObject.set("message", messgae, this.oldcore.getXWikiContext());
+        violationObject.set("context", context, this.oldcore.getXWikiContext());
+        violationObject.set("severity", severity, this.oldcore.getXWikiContext());
+        this.oldcore.getSpyXWiki().saveDocument(this.document, this.oldcore.getXWikiContext());
+        return violationObject;
     }
 }
