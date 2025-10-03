@@ -60,19 +60,15 @@
         <configuration>
           <entries>
             <entry>
-              <document>Documentation.Data.NavigationForUsers</document>
+              <document>DocApp.Data.NavigationForUsers</document>
               <type>demo</type>
             </entry>
             <entry>
-              <document>Documentation.Data.NavigationForAdministrators</document>
+              <document>DocApp.Data.NavigationForAdministrators</document>
               <type>demo</type>
             </entry>
             <entry>
-              <document>Documentation.Data.NavigationForDevelopers</document>
-              <type>demo</type>
-            </entry>
-            <entry>
-              <document>Documentation.WebHome</document>
+              <document>DocApp.Data.NavigationForDevelopers</document>
               <type>demo</type>
             </entry>
           </entries>

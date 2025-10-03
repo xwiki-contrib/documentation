@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.Translations" locale="">
-  <web>Documentation.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Code.Translations" locale="">
+  <web>DocApp.Code</web>
   <name>Translations</name>
   <language/>
   <defaultLanguage>en</defaultLanguage>
@@ -41,7 +41,7 @@ documentation.ui.review.top.error=Validation of the documentation quality has fo
 documentation.ui.review.top.warning=Validation of the documentation quality has found at least one warning on this page.
 documentation.ui.review.violation-list.empty=No quality violation was found!</content>
   <object>
-    <name>Documentation.Code.Translations</name>
+    <name>DocApp.Code.Translations</name>
     <number>0</number>
     <className>XWiki.TranslationDocumentClass</className>
     <guid>20272e7b-d1d3-41b1-a29f-bb4afe3e712d</guid>

@@ -52,7 +52,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class DefaultDocumentationManager implements DocumentationManager
 {
-    private static final List<String> SPACES = List.of("Documentation", "Code");
+    private static final List<String> SPACES = List.of("DocApp", "Code");
 
     private static final LocalDocumentReference VIOLATION_CLASS_REFERENCE =
         new LocalDocumentReference(SPACES, "DocumentationViolationClass");

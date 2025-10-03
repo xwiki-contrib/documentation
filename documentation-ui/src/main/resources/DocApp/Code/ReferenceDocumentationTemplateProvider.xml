@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.ExplanationDocumentationTemplateProvider" locale="">
-  <web>Documentation.Code</web>
-  <name>ExplanationDocumentationTemplateProvider</name>
+<xwikidoc version="1.6" reference="DocApp.Code.ReferenceDocumentationTemplateProvider" locale="">
+  <web>DocApp.Code</web>
+  <name>ReferenceDocumentationTemplateProvider</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,17 +31,17 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Explanation Documentation Template Provider</title>
+  <title>Reference Documentation Template Provider</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>Documentation.Code.ExplanationDocumentationTemplateProvider</name>
+    <name>DocApp.Code.ReferenceDocumentationTemplateProvider</name>
     <number>0</number>
     <className>XWiki.TemplateProviderClass</className>
-    <guid>13762665-41b5-4730-96f6-2fdec46c7f15</guid>
+    <guid>e7eb6912-9b7f-46fd-96d3-c0b8eb835bb0</guid>
     <class>
       <name>XWiki.TemplateProviderClass</name>
       <customClass/>
@@ -247,19 +247,19 @@
       <creationRestrictionsAreSuggestions>0</creationRestrictionsAreSuggestions>
     </property>
     <property>
-      <description>Create a documentation page of type Explanation</description>
+      <description>Create a documentation page of type Reference</description>
     </property>
     <property>
       <icon>file-text</icon>
     </property>
     <property>
-      <name>Explanation Documentation Page</name>
+      <name>Reference Documentation Page</name>
     </property>
     <property>
       <spaces/>
     </property>
     <property>
-      <template>Documentation.Code.ExplanationDocumentationTemplate.WebHome</template>
+      <template>DocApp.Code.ReferenceDocumentationTemplate.WebHome</template>
     </property>
     <property>
       <terminal>0</terminal>

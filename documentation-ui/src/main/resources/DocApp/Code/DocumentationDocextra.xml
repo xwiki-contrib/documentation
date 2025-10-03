@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.DocumentationDocextra" locale="">
-  <web>Documentation.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Code.DocumentationDocextra" locale="">
+  <web>DocApp.Code</web>
   <name>DocumentationDocextra</name>
   <language/>
   <defaultLanguage/>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>Documentation.Code.DocumentationDocextra</name>
+    <name>DocApp.Code.DocumentationDocextra</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>86384ef2-6e25-41cd-9973-74bc782ec372</guid>
@@ -172,7 +172,7 @@
     &lt;/span&gt;
   &lt;/div&gt;
 &lt;/form&gt;
-#set ($violations = $doc.getObjects('Documentation.Code.DocumentationViolationClass'))
+#set ($violations = $doc.getObjects('DocApp.Code.DocumentationViolationClass'))
 #if (!$violations.isEmpty())
   $escapetool.xml($services.localization.render('documentation.ui.review.violation-list'))
   &lt;ul class="documentation-validation-results"&gt;
@@ -208,12 +208,12 @@
       <name>documentation.tab</name>
     </property>
     <property>
-      <parameters>show=#if($hasEdit &amp;&amp; !$doc.getObjects('Documentation.Code.DocumentationClass').isEmpty())true#{end}
+      <parameters>show=#if($hasEdit &amp;&amp; !$doc.getObjects('DocApp.Code.DocumentationClass').isEmpty() &amp;&amp; 'DocApp' != $doc.getDocumentReference().extractFirstReference('SPACE').getName())true#{end}
 title=Documentation
 name=docreview
 shortcut=v
 order=10
-itemnumber=$doc.getObjects('Documentation.Code.DocumentationViolationClass').size()</parameters>
+itemnumber=$doc.getObjects('DocApp.Code.DocumentationViolationClass').size()</parameters>
     </property>
     <property>
       <scope>wiki</scope>

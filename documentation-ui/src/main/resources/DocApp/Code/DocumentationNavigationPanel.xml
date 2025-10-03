@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.DocumentationNavigationPanel" locale="">
-  <web>Documentation.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Code.DocumentationNavigationPanel" locale="">
+  <web>DocApp.Code</web>
   <name>DocumentationNavigationPanel</name>
   <language/>
   <defaultLanguage/>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>Documentation.Code.DocumentationNavigationPanel</name>
+    <name>DocApp.Code.DocumentationNavigationPanel</name>
     <number>0</number>
     <className>Panels.PanelClass</className>
     <guid>6286cb22-4a54-4739-8f23-c13465758176</guid>
@@ -175,7 +175,7 @@
     </property>
     <property>
       <content>{{velocity}}
-#set ($discard = $xwiki.jsx.use('Documentation.Code.DocumentationNavigationPanel'))
+#set ($discard = $xwiki.jsx.use('DocApp.Code.DocumentationNavigationPanel'))
 ## Decide what is the target audience by checking the XWikiDocumentationClass xobject of the current page
 #set ($target = $doc.getValue("target"))
 #if ("$!target" == '')
@@ -193,7 +193,7 @@
 #end
 #panelheader("XWiki Standard for ${stringtool.capitalize($target)}s")
 {{tree class="xtree diataxis-navigation" links="true" edges="false" icons="false"}}
-  {{display reference="Documentation.Data.NavigationFor${stringtool.capitalize($target)}s"/}}
+  {{display reference="DocApp.Data.NavigationFor${stringtool.capitalize($target)}s"/}}
 {{/tree}}
 #panelfooter()
 {{/velocity}}
@@ -210,7 +210,7 @@
     </property>
   </object>
   <object>
-    <name>Documentation.Code.DocumentationNavigationPanel</name>
+    <name>DocApp.Code.DocumentationNavigationPanel</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>d901188b-d6cf-4f5c-8768-d37a10f762df</guid>

@@ -20,25 +20,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.DocumentationViolationClass" locale="">
-  <web>Documentation.Code</web>
-  <name>DocumentationViolationClass</name>
+<xwikidoc version="1.6" reference="DocApp.Code.DocumentationReviewClass" locale="">
+  <web>DocApp.Code</web>
+  <name>DocumentationReviewClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>Documentation.WebHome</parent>
+  <parent>DocApp.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Documentation Violation Class</title>
+  <title>Documentation Review Class</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>Documentation.Code.DocumentationViolationClass</name>
+    <name>DocApp.Code.DocumentationReviewClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -46,58 +46,46 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <context>
+    <lastReviewedDate>
       <customDisplay/>
+      <dateFormat>dd/MM/yyyy HH:mm:ss</dateFormat>
       <disabled>0</disabled>
-      <hint/>
-      <name>context</name>
-      <number>2</number>
-      <picker>1</picker>
-      <prettyName>Violation Context</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </context>
-    <message>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <hint/>
-      <name>message</name>
+      <emptyIsToday>1</emptyIsToday>
+      <hint>Last date when the page was fully checked for quality (e.g. against a documentation guide)</hint>
+      <name>lastReviewedDate</name>
       <number>1</number>
       <picker>1</picker>
-      <prettyName>Violation Message</prettyName>
-      <size>30</size>
+      <prettyName>Last Reviewed Date</prettyName>
+      <size>20</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </message>
-    <severity>
+      <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+    </lastReviewedDate>
+    <lastReviewers>
       <cache>0</cache>
       <customDisplay/>
       <defaultValue/>
       <disabled>0</disabled>
-      <displayType>select</displayType>
+      <displayType>input</displayType>
       <freeText/>
-      <hint>Violation Severity (Error, Warning, etc)</hint>
+      <hint>Last reviewers who checked the page for quality (e.g. against a documentation guide)</hint>
       <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
-      <name>severity</name>
-      <number>3</number>
+      <multiSelect>1</multiSelect>
+      <name>lastReviewers</name>
+      <number>2</number>
       <picker>1</picker>
-      <prettyName>Severity</prettyName>
+      <prettyName>Last Reviewers</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
-      <separators>|, </separators>
-      <size>1</size>
+      <separators/>
+      <size>20</size>
       <sort/>
       <unmodifiable>0</unmodifiable>
+      <usesList>0</usesList>
       <validationMessage/>
       <validationRegExp/>
-      <values>Warning|Error</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </severity>
+      <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+    </lastReviewers>
   </class>
 </xwikidoc>

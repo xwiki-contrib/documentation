@@ -31,6 +31,8 @@ import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationManager;
 import org.xwiki.index.IndexException;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
@@ -48,14 +50,19 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Named("DocumentationEventListener")
 public class DocumentationEventListener extends AbstractEventListener
 {
+    private static final String SPACE = "DocApp";
+
     private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
-        new LocalDocumentReference(List.of("Documentation", "Code"), "DocumentationClass");
+        new LocalDocumentReference(List.of(SPACE, "Code"), "DocumentationClass");
 
     @Inject
     private Logger logger;
 
     @Inject
     private DocumentationManager manager;
+
+    @Inject
+    private EntityReferenceSerializer<String> serializer;
 
     /**
      * Default constructor.
@@ -75,9 +82,12 @@ public class DocumentationEventListener extends AbstractEventListener
 
         // 1) Only validate pages containing a DocumentationClass xobject
         // 2) Protection for infinite recursion: don't trigger the analysis when the save is done by the Documentation
-        // checker. We identify this by the save message.
+        //    checker. We identify this by the save message.
+        // 3) Exclude documentation templates from the analysis to not have violation objects added to them. We do that
+        //    by excluding all pages from the DocApp space.
         if (document.getXObject(DOCUMENTATION_CLASS_REFERENCE) != null
-            && !"Documentation analysis".equals(document.getComment()))
+            && !"Documentation analysis".equals(document.getComment())
+            && !SPACE.equals(document.getDocumentReference().extractFirstReference(EntityType.SPACE).getName()))
         {
             try {
                 this.manager.analyse(document);

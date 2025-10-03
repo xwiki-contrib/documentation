@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.ReferenceDocumentationTemplateProvider" locale="">
-  <web>Documentation.Code</web>
-  <name>ReferenceDocumentationTemplateProvider</name>
+<xwikidoc version="1.6" reference="DocApp.Code.HowtoDocumentationTemplateProvider" locale="">
+  <web>DocApp.Code</web>
+  <name>HowtoDocumentationTemplateProvider</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,17 +31,17 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Reference Documentation Template Provider</title>
+  <title>Howto Documentation Template Provider</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>Documentation.Code.ReferenceDocumentationTemplateProvider</name>
+    <name>DocApp.Code.HowtoDocumentationTemplateProvider</name>
     <number>0</number>
     <className>XWiki.TemplateProviderClass</className>
-    <guid>e7eb6912-9b7f-46fd-96d3-c0b8eb835bb0</guid>
+    <guid>8822f648-aaff-4cda-8d36-8efb1971ad96</guid>
     <class>
       <name>XWiki.TemplateProviderClass</name>
       <customClass/>
@@ -247,19 +247,19 @@
       <creationRestrictionsAreSuggestions>0</creationRestrictionsAreSuggestions>
     </property>
     <property>
-      <description>Create a documentation page of type Reference</description>
+      <description>Create a documentation page of type Howto</description>
     </property>
     <property>
       <icon>file-text</icon>
     </property>
     <property>
-      <name>Reference Documentation Page</name>
+      <name>Howto Documentation Page</name>
     </property>
     <property>
       <spaces/>
     </property>
     <property>
-      <template>Documentation.Code.ReferenceDocumentationTemplate.WebHome</template>
+      <template>DocApp.Code.HowtoDocumentationTemplate.WebHome</template>
     </property>
     <property>
       <terminal>0</terminal>

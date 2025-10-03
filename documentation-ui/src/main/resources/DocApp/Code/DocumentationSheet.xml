@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.DocumentationSheet" locale="">
-  <web>Documentation.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Code.DocumentationSheet" locale="">
+  <web>DocApp.Code</web>
   <name>DocumentationSheet</name>
   <language/>
   <defaultLanguage/>
@@ -40,7 +40,7 @@
 #if ($request.validate)
   $services.documentation.analyse($doc)
 #end
-#set ($violations = $doc.getObjects('Documentation.Code.DocumentationViolationClass'))
+#set ($violations = $doc.getObjects('DocApp.Code.DocumentationViolationClass'))
 #set ($violationsSeverity = 0)
 #foreach ($violation in $violations)
   #if($violation.getValue('severity') == 'Error')

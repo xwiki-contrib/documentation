@@ -20,14 +20,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.DocumentationClass" locale="">
-  <web>Documentation.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Code.DocumentationClass" locale="">
+  <web>DocApp.Code</web>
   <name>DocumentationClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>Documentation.WebHome</parent>
+  <parent>DocApp.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>Documentation.Code.DocumentationClass</name>
+    <name>DocApp.Code.DocumentationClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -139,7 +139,7 @@
     <target>
       <cache>0</cache>
       <customDisplay/>
-      <defaultValue/>
+      <defaultValue>User</defaultValue>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <freeText/>
@@ -188,7 +188,7 @@
     </type>
   </class>
   <object>
-    <name>Documentation.Code.DocumentationClass</name>
+    <name>DocApp.Code.DocumentationClass</name>
     <number>0</number>
     <className>XWiki.ClassSheetBinding</className>
     <guid>3e3d0a02-7c0e-42a5-b83b-3f4643216e3e</guid>
@@ -228,7 +228,7 @@
       </sheet>
     </class>
     <property>
-      <sheet>Documentation.Code.DocumentationSheet</sheet>
+      <sheet>DocApp.Code.DocumentationSheet</sheet>
     </property>
   </object>
 </xwikidoc>

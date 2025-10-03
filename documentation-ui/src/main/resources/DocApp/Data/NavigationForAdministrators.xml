@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Data.WebHome" locale="">
-  <web>Documentation.Data</web>
-  <name>WebHome</name>
+<xwikidoc version="1.6" reference="DocApp.Data.NavigationForAdministrators" locale="">
+  <web>DocApp.Data</web>
+  <name>NavigationForAdministrators</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,10 +31,11 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Documentation Data</title>
+  <title>Navigation For Administrators</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>Data for the Documentation application.</content>
+  <content>* Link 1
+* Link 2</content>
 </xwikidoc>

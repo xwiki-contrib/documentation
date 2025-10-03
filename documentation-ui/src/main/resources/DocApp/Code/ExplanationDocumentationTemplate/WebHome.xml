@@ -20,14 +20,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="Documentation.Code.TutorialDocumentationTemplate.WebHome" locale="">
-  <web>Documentation.Code.TutorialDocumentationTemplate</web>
+<xwikidoc version="1.6" reference="DocApp.Code.ExplanationDocumentationTemplate.WebHome" locale="">
+  <web>DocApp.Code.ExplanationDocumentationTemplate</web>
   <name>WebHome</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>Documentation.Code.WebHome</parent>
+  <parent>DocApp.Code.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
@@ -38,12 +38,12 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>Documentation.Code.TutorialDocumentationTemplate.WebHome</name>
+    <name>DocApp.Code.ExplanationDocumentationTemplate.WebHome</name>
     <number>0</number>
-    <className>Documentation.Code.DocumentationClass</className>
-    <guid>4f6b2956-6988-43fa-8b8c-78ebd3ed45f4</guid>
+    <className>DocApp.Code.DocumentationClass</className>
+    <guid>365b90df-7146-44b3-bce2-480d6b940d64</guid>
     <class>
-      <name>Documentation.Code.DocumentationClass</name>
+      <name>DocApp.Code.DocumentationClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -161,7 +161,7 @@
       <target/>
     </property>
     <property>
-      <type>tutorial</type>
+      <type>explanation</type>
     </property>
   </object>
 </xwikidoc>

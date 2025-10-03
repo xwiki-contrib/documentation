@@ -53,7 +53,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Named("navigation")
 public class NavigationCheck implements DocumentationCheck
 {
-    private static final String TOPLEVEL_SPACE = "Documentation";
+    private static final String TOPLEVEL_SPACE = "DocApp";
 
     private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
         new LocalDocumentReference(List.of(TOPLEVEL_SPACE, "Code"), "DocumentationClass");

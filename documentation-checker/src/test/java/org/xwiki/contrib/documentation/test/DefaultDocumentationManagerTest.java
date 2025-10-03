@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 class DefaultDocumentationManagerTest
 {
     private static final DocumentReference VIOLATION_CLASS_REFERENCE = new DocumentReference("Wiki", List.of(
-        "Documentation", "Code"), "DocumentationViolationClass");
+        "DocApp", "Code"), "DocumentationViolationClass");
 
     @InjectMockComponents
     private DefaultDocumentationManager manager;
