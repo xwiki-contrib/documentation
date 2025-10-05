@@ -21,6 +21,8 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -29,34 +31,31 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
-import org.xwiki.rendering.block.Block;
-import org.xwiki.rendering.block.ImageBlock;
-import org.xwiki.rendering.block.XDOM;
-import org.xwiki.rendering.block.match.ClassBlockMatcher;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Verify that documentation pages are not using the image syntax (i.e., they should use the image or gallery macros).
+ * Verify that if there are more than 1 image macro next to each other, they should be replaced by the Gallery macro.
  *
  * @version $Id$
  * @since 1.0
  */
 @Component
 @Singleton
-@Named("imageMacro")
-public class ImageMacroCheck implements DocumentationCheck
+@Named("imageGallery")
+public class ImageGalleryCheck implements DocumentationCheck
 {
+    private static final Pattern PATTERN =
+        Pattern.compile(".*(\\{\\{image.*}}[\\s\\n\\r]*\\{\\{image.*}}).*", Pattern.DOTALL);
+
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-        XDOM xdom = document.getXDOM();
-        List<ImageBlock> imageBlocks = xdom.getBlocks(new ClassBlockMatcher(ImageBlock.class), Block.Axes.DESCENDANT);
-        for (ImageBlock imageBlock : imageBlocks) {
-            violations.add(new DocumentationViolation("Use the Image macro instead.",
-                String.format("Image reference : %s", imageBlock.getReference().getReference()),
-                DocumentationViolationSeverity.ERROR));
+        Matcher matcher = PATTERN.matcher(document.getContent());
+        if (matcher.matches()) {
+            violations.add(new DocumentationViolation("Use the Gallery macro when several images are displayed next "
+                + "to each other.", matcher.group(1), DocumentationViolationSeverity.ERROR));
         }
         return violations;
     }
