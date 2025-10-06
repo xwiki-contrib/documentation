@@ -29,7 +29,7 @@
   </parent>
   <groupId>org.xwiki.contrib.documentation</groupId>
   <artifactId>documentation</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>Documentation Application - Parent POM</name>
   <description>Parent POM for the Documentation Application modules</description>
   <packaging>pom</packaging>
@@ -41,6 +41,7 @@
     <connection>scm:git:git://github.com/xwiki-contrib/documentation.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki-contrib/documentation.git</developerConnection>
     <url>https://github.com/xwiki-contrib/documentation/tree/master</url>
+    <tag>documentation-1.0</tag>
   </scm>
   <developers>
     <developer>
