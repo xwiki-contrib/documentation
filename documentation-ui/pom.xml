@@ -40,7 +40,7 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.contrib.documentation</groupId>
-      <artifactId>documentation-checker</artifactId>
+      <artifactId>documentation-api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

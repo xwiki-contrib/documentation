@@ -50,7 +50,7 @@
   </developers>
   <modules>
     <!-- Sorted Alphabetically -->
-    <module>documentation-checker</module>
+    <module>documentation-api</module>
     <module>documentation-ui</module>
     <module>documentation-xwikiorg</module>
   </modules>

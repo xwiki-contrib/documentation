@@ -27,14 +27,14 @@
     <artifactId>documentation</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>documentation-checker</artifactId>
-  <name>Documentation Application - Checker API</name>
+  <artifactId>documentation-api</artifactId>
+  <name>Documentation Application - API</name>
   <packaging>jar</packaging>
-  <description>Checks for violations in documentation pages</description>
+  <description>API to validate documentation pages</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.68</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Checker for Documentation Application</xwiki.extension.name>
+    <xwiki.extension.name>Documentation Application API</xwiki.extension.name>
     <!-- The extension's category -->
     <xwiki.extension.category>api</xwiki.extension.category>
   </properties>
