@@ -188,7 +188,7 @@
       #end
       #set ($violationContext = $violation.getValue('context'))
       #if($!violationContext != '')
-        &lt;span class="monospace"&gt;
+        &lt;span class="monospace" style="white-space: pre-wrap"&gt;
           $violation.getValue('context')
         &lt;/span&gt;
       #end
