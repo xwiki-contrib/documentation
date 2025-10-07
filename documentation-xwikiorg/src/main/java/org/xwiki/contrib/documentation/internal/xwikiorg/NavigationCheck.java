@@ -43,7 +43,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Verify that documentation pages are listed in the documentation navigation panels.
+ * Verify that documentation pages are listed in the documentation navigation panels (i.e., in
+ * {@code DocApp.Data.NavigationForUsers}, {@code DocApp.Data.NavigationForAdministrators} and
+ * {@code DocApp.Data.NavigationForDevelopers}).
  *
  * @version $Id$
  * @since 1.0
@@ -89,7 +91,7 @@ public class NavigationCheck implements DocumentationCheck
             String referenceString = this.serializer.serialize(document.getDocumentReference());
             if (!navigationDocument.getContent().contains(referenceString)) {
                 violations.add(new DocumentationViolation(String.format("The current page must be listed in the "
-                    + "navigation. Please edit [%s] to add it, and add a link to [%s]",
+                        + "navigation. Please edit [%s] to add it, and add a link to [%s]",
                     this.serializer.serialize(navigationReference), referenceString), "",
                     DocumentationViolationSeverity.ERROR));
             }
