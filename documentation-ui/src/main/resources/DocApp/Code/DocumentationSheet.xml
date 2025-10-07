@@ -57,7 +57,8 @@
   {{error}}
     $errorContent
   {{/error}}
-#elseif($hasEdit &amp;&amp; $violationsSeverity == 1)
+
+#elseif ($hasEdit &amp;&amp; $violationsSeverity == 1)
   #define($warningContent)
     $escapetool.xml($services.localization.render('documentation.ui.review.top.warning'))
     ##[[Review warnings&gt;&gt;.||anchor="documentation.tab"]]
@@ -65,8 +66,8 @@
   {{warning}}
     $warningContent
   {{/warning}}
-#end
 
+#end
 #set ($hasFAQ = !$stringtool.isBlank($doc.getValue('faq')))
 #set ($hasRelated = !$stringtool.isBlank($doc.getValue('related')))
 ## TODO: Decide if we want to display the TOC only under some conditions
@@ -74,7 +75,13 @@
 {{box cssClass="floatinginfobox" title="**Content**"}}
 {{toc/}}
 {{/box}}
+
 ##end
+## In edit mode, let the user choose the doc type + target
+#if ($xcontext.action != 'view')
+  = Type and Target =
+  $doc.display('type') $doc.display('target')
+#end
 ## Display the content
 #if ($doc.getValue('type') == 'howto')
   = Steps =
