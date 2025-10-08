@@ -174,7 +174,7 @@
 &lt;/form&gt;
 #set ($violations = $doc.getObjects('DocApp.Code.DocumentationViolationClass'))
 #if (!$violations.isEmpty())
-  $escapetool.xml($services.localization.render('documentation.ui.review.violation-list'))
+  $escapetool.xml($services.localization.render('docapp.ui.review.violation-list'))
   &lt;ul class="documentation-validation-results"&gt;
     #foreach ($violation in $violations)
     &lt;li&gt;
@@ -196,7 +196,7 @@
     #end
   &lt;/ul&gt;
 #else
-  #success("$escapetool.xml($services.localization.render('documentation.ui.review.violation-list.empty'))")
+  #success("$escapetool.xml($services.localization.render('docapp.ui.review.violation-list.empty'))")
 #end
 {{/html}}
 {{/velocity}}</content>

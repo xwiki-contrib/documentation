@@ -51,7 +51,7 @@
 #end
 #if ($hasEdit &amp;&amp; $violationsSeverity == 2)
   #define($errorContent)
-    $escapetool.xml($services.localization.render('documentation.ui.review.top.error'))
+    $escapetool.xml($services.localization.render('docapp.ui.review.top.error'))
     ##[[Review errors&gt;&gt;.||anchor="documentation.tab"]]
   #end
   {{error}}
@@ -60,7 +60,7 @@
 
 #elseif ($hasEdit &amp;&amp; $violationsSeverity == 1)
   #define($warningContent)
-    $escapetool.xml($services.localization.render('documentation.ui.review.top.warning'))
+    $escapetool.xml($services.localization.render('docapp.ui.review.top.warning'))
     ##[[Review warnings&gt;&gt;.||anchor="documentation.tab"]]
   #end
   {{warning}}

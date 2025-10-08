@@ -36,10 +36,10 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content>documentation.ui.review.violation-list=List of violations
-documentation.ui.review.top.error=Validation of the documentation quality has found at least one error on this page.
-documentation.ui.review.top.warning=Validation of the documentation quality has found at least one warning on this page.
-documentation.ui.review.violation-list.empty=No quality violation was found!</content>
+  <content>docapp.ui.review.violation-list=List of violations
+docapp.ui.review.top.error=Validation of the documentation quality has found at least one error on this page.
+docapp.ui.review.top.warning=Validation of the documentation quality has found at least one warning on this page.
+docapp.ui.review.violation-list.empty=No quality violation was found!</content>
   <object>
     <name>DocApp.Code.Translations</name>
     <number>0</number>
