@@ -77,47 +77,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </faq>
-    <lastReviewedDate>
-      <customDisplay/>
-      <dateFormat>dd/MM/yyyy</dateFormat>
-      <disabled>0</disabled>
-      <emptyIsToday>1</emptyIsToday>
-      <hint>For the QA team: last date when the page was fully checked against the doc guide</hint>
-      <name>lastReviewedDate</name>
-      <number>4</number>
-      <picker>1</picker>
-      <prettyName>Last Reviewed Date</prettyName>
-      <size>20</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
-    </lastReviewedDate>
-    <lastReviewers>
-      <cache>0</cache>
-      <customDisplay/>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayType>input</displayType>
-      <freeText/>
-      <hint>For QA team: last reviewers who checked the page for full application of the doc guide</hint>
-      <largeStorage>0</largeStorage>
-      <multiSelect>1</multiSelect>
-      <name>lastReviewers</name>
-      <number>5</number>
-      <picker>1</picker>
-      <prettyName>Last Reviewers</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>20</size>
-      <sort/>
-      <unmodifiable>0</unmodifiable>
-      <usesList>0</usesList>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
-    </lastReviewers>
     <related>
       <contenttype>---</contenttype>
       <customDisplay/>
