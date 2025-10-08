@@ -21,7 +21,7 @@
 -->
 
 <xwikidoc version="1.6" reference="DocApp.WebHome" locale="">
-  <web>Documentation</web>
+  <web>DocApp</web>
   <name>WebHome</name>
   <language/>
   <defaultLanguage/>
@@ -36,5 +36,28 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>Home of the Documentation Application.</content>
+  <content>= Documentation Pages =
+
+{{liveData
+  id="documentationPages"
+  properties="doc.title,type,target"
+  source="liveTable"
+  sourceParameters="className=DocApp.Code.DocumentationClass&amp;translationPrefix=docapp."/}}
+
+= Documentation Reviews =
+
+{{liveData
+  id="documentationReviews"
+  properties="doc.title,lastReviewedDate,lastReviewers"
+  source="liveTable"
+  sourceParameters="className=DocApp.Code.DocumentationReviewClass&amp;translationPrefix=docapp."/}}
+
+= Documentation Violations =
+
+{{liveData
+  id="allDeveloperExplanationsPages"
+  properties="doc.title,message,context,severity"
+  source="liveTable"
+  sourceParameters="className=DocApp.Code.DocumentationViolationClass&amp;translationPrefix=docapp."/}}
+</content>
 </xwikidoc>

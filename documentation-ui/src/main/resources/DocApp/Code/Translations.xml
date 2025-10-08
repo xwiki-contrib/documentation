@@ -39,7 +39,9 @@
   <content>docapp.ui.review.violation-list=List of violations
 docapp.ui.review.top.error=Validation of the documentation quality has found at least one error on this page.
 docapp.ui.review.top.warning=Validation of the documentation quality has found at least one warning on this page.
-docapp.ui.review.violation-list.empty=No quality violation was found!</content>
+docapp.ui.review.violation-list.empty=No quality violation was found!
+docapp.doc.title=Page Title
+docapp.emptyvalue=(Empty)</content>
   <object>
     <name>DocApp.Code.Translations</name>
     <number>0</number>
