@@ -194,7 +194,7 @@
 ## Extract the product from the doc reference
 #set ($spaceList = $doc.getDocumentReference().getSpaceReferences())
 #set ($product = "XS")
-#if ($spaceList.size() &gt; 2)
+#if ($spaceList.size() &gt; 1)
   #set ($extractedProduct = $spaceList.get(1).name)
   #if ($extractedProduct == 'XS' || $extractedProduct == 'Extensions')
     #set ($product = $extractedProduct)
