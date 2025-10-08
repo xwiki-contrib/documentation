@@ -191,9 +191,19 @@
     #set ($target = "user")
   #end
 #end
-#panelheader("XWiki Standard for ${stringtool.capitalize($target)}s")
+## Extract the product from the doc reference
+#set ($spaceList = $doc.getDocumentReference().getSpaceReferences())
+#set ($product = "XS")
+#if ($spaceList.size() &gt; 2)
+  #set ($extractedProduct = $spaceList.get(1).name)
+  #if ($extractedProduct == 'XS' || $extractedProduct == 'Extensions')
+    #set ($product = $extractedProduct)
+  #end
+#end
+#set ($productNames = {'XS' : 'XWiki Standard', 'Extensions' : 'Extensions'})
+#panelheader("$productNames[$product] for ${stringtool.capitalize($target)}s")
 {{tree class="xtree diataxis-navigation" links="true" edges="false" icons="false"}}
-  {{display reference="DocApp.Data.NavigationFor${stringtool.capitalize($target)}s"/}}
+  {{display reference="DocApp.Data.Navigation${stringtool.capitalize($product)}For${stringtool.capitalize($target)}s"/}}
 {{/tree}}
 #panelfooter()
 {{/velocity}}

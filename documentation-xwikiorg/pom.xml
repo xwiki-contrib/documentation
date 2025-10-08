@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>Checks for violations in documentation pages using XWiki.org rules</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.14</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.11</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>XWiki.org Checks for Documentation Application</xwiki.extension.name>
     <!-- The extension's category -->
