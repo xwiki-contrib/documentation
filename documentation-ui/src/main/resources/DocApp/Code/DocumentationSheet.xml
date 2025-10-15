@@ -78,7 +78,7 @@
 
 ##end
 ## In edit mode, let the user choose the doc type + target
-#if ($xcontext.action != 'view')
+#if ($xcontext.action == 'edit')
   = Type and Target =
   $doc.display('type') $doc.display('target')
 #end
@@ -94,9 +94,9 @@
 #end
 $doc.display('content')
 ## Display the FAQ section if it's not empty
-#if ($hasFAQ || $xcontext.action != 'view')
+#if ($hasFAQ || $xcontext.action == 'edit')
   = FAQ =
-  #if ($xcontext.action != 'view')
+  #if ($xcontext.action == 'edit')
     Notes:
     * Include troubleshooting questions, small and specific explanations, etc.
     * Only for topics specific to the page and that should be not widely visible and findable from filtering from the top level of the documentation.
@@ -111,9 +111,9 @@ $doc.display('content')
 
 {{documents location="$services.model.serialize($doc.documentReference.parent, 'local')" columns="doc.title"/}}
 ## Display the Related section if it's not empty
-#if ($hasRelated || $xcontext.action != 'view')
+#if ($hasRelated || $xcontext.action == 'edit')
   = Related =
-  #if ($xcontext.action != 'view')
+  #if ($xcontext.action == 'edit')
     Notes:
     * Include links to pages that are on the same subject but that are not children pages (as they are automatically added in the More section)
 

@@ -37,19 +37,32 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#if ($xcontext.action != 'view')
+#if ($xcontext.action == 'edit')
 = Type =
+Leave undefined to display a LiveData containing all documentation page types.
+
 $doc.display('type')
 
 = Target =
+Leave undefined to display a LiveData containing all docummentation page targets.
+
 $doc.display('target')
 
 #end
 = Summary =
 $doc.display('summary')
 
-#if ($xcontext.action != 'view')
+#if ($xcontext.action == 'edit')
   = Highlights =
+  Use a list syntax to represent the different highlighted documentation page, with the first list item level being the title and the second level, the description. For example in XWiki Syntax 2.0+:
+
+  {{code language="none"}}
+  * Title 1
+  ** Description 1
+  * Title 2
+  ** Description 2
+  {{/code}}
+
   $doc.display('highlights')
 
 #else
@@ -57,41 +70,41 @@ $doc.display('summary')
   #if ("$!highlights" != '')
     $xwiki.ssx.use('DocApp.Code.LandingPageSheet')
     = Highlights =
-    $doc.display('highlights')
-
+    (% class="cardlist" %)(((
+      $doc.display('highlights')
+    )))
   #end
 #end
-= What are you looking for? =
+#if ($xcontext.action != 'edit')
+  = What are you looking for? =
 
-#set ($type = $doc.getValue('type'))
-#set ($target = $doc.getValue('target'))
-#set ($filters = "location=$services.model.serialize($doc.documentReference.parent).")
-#set ($propertyDescriptors = '{"id": "doc.location", "visible": false}')
-#if ("$!type" != '')
-  #set ($filters = "${filters}&amp;type=$type")
-  #set ($propertyDescriptors = "${propertyDescriptors},{""id"": ""type"", ""visible"": false}")
-#end
-#if ("$!target" != '')
-  #set ($filters = "${filters}&amp;target=$target")
-  #set ($propertyDescriptors = "${propertyDescriptors},{""id"": ""target"", ""visible"": false}")
-#end
-##{{code language="none"}}
-{{liveData
-  id="landingpage"
-  properties="doc.title,doc.location,type,target"
-  source="liveTable"
-  sourceParameters="className=DocApp.Code.DocumentationClass&amp;translationPrefix=docapp."
-  filters="$filters"
-}}
-{
-  "meta": {
-    "propertyDescriptors": [$propertyDescriptors]
+  #set ($type = $doc.getValue('type'))
+  #set ($target = $doc.getValue('target'))
+  #set ($filters = "location=$services.model.serialize($doc.documentReference.parent).")
+  #set ($propertyDescriptors = '{"id": "doc.location", "visible": false}')
+  #if ("$!type" != '')
+    #set ($filters = "${filters}&amp;type=$type")
+    #set ($propertyDescriptors = "${propertyDescriptors},{""id"": ""type"", ""visible"": false}")
+  #end
+  #if ("$!target" != '')
+    #set ($filters = "${filters}&amp;target=$target")
+    #set ($propertyDescriptors = "${propertyDescriptors},{""id"": ""target"", ""visible"": false}")
+  #end
+  {{liveData
+    id="landingpage"
+    properties="doc.title,doc.location,type,target"
+    source="liveTable"
+    sourceParameters="className=DocApp.Code.DocumentationClass&amp;translationPrefix=docapp."
+    filters="$filters"
+  }}
+  {
+    "meta": {
+      "propertyDescriptors": [$propertyDescriptors]
+    }
   }
-}
-{{/liveData}}
-##{{/code}}
-{{/velocity}}
-</content>
+  {{/liveData}}
+#end
+{{/velocity}}</content>
   <object>
     <name>DocApp.Code.LandingPageSheet</name>
     <number>0</number>
@@ -198,7 +211,7 @@ $doc.display('summary')
       <cache>long</cache>
     </property>
     <property>
-      <code>ul.cardlist {
+      <code>.cardlist&gt;ul {
      gap: 16px;
      padding: 0;
      margin:0;
@@ -210,7 +223,7 @@ $doc.display('summary')
 }
 
 @media screen and (min-width: 401px) and (max-width: 720px) {
-  ul.cardlist {
+.cardlist&gt;ul {
        gap: 8px;
        grid-template-columns: repeat(2, 1fr);
        grid-template-rows: repeat(3, 1fr);
@@ -219,7 +232,7 @@ $doc.display('summary')
   }
 }
 @media screen and (max-width: 401px) {
-  ul.cardlist {
+.cardlist&gt;ul {
        gap: 8px;
        grid-template-columns: repeat(1, 1fr);
        grid-template-rows: repeat(6, 1fr);
@@ -231,7 +244,7 @@ $doc.display('summary')
  ul {
      list-style: none;
 }
- ul.cardlist&gt;li {
+.cardlist&gt;ul&gt;li {
      display: flex;
      flex-flow: column;
      padding: 16px;
@@ -248,19 +261,20 @@ $doc.display('summary')
      box-shadow: 0 0 12px rgba(0, 0, 0, 0.08), 0 0 2px rgba(0, 0, 0, 0.1);
      gap: 4px
 }
-ul.cardlist&gt;li a{
+.cardlist&gt;ul&gt;li a{
   text-decoration: none;
 }
-ul.cardlist&gt;li a:hover {
+.cardlist&gt;ul&gt;li a:hover {
   text-decoration: underline;
 }
- ul.cardlist&gt;li li {
+.cardlist&gt;ul&gt;li li {
      font-weight: normal;
 }
- ul.cardlist ul, ul.cardlist ul li {
+.cardlist&gt;ul ul, .cardlist&gt;ul ul li {
      padding: 0;
      margin:0;
 }
+
 
 </code>
     </property>
