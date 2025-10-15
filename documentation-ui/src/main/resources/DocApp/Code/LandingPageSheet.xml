@@ -199,24 +199,70 @@ $doc.display('summary')
     </property>
     <property>
       <code>ul.cardlist {
-  display: flex;
-  gap: 16px
+     gap: 16px;
+     padding: 0;
+     margin:0;
+     display: grid;
+     grid-template-columns: repeat(3, 1fr);
+     grid-template-rows: repeat(2, 1fr);
+     grid-column-gap: 16px;
+     grid-row-gap: 16px;
 }
-ul {
-  list-style: none;
+
+@media screen and (min-width: 401px) and (max-width: 720px) {
+  ul.cardlist {
+       gap: 8px;
+       grid-template-columns: repeat(2, 1fr);
+       grid-template-rows: repeat(3, 1fr);
+       grid-column-gap: 8px;
+       grid-row-gap: 8px;
+  }
 }
-ul.cardlist&gt;li {
-  display: flex;
-  flex-flow: column;
-  box-shadow: 0 0 8px rgba(0,0,0,.5);
-  padding: 16px;
-  border-radius: 7px;
-  list-style: none;
-  margin: 0;
+@media screen and (max-width: 401px) {
+  ul.cardlist {
+       gap: 8px;
+       grid-template-columns: repeat(1, 1fr);
+       grid-template-rows: repeat(6, 1fr);
+       grid-column-gap: 8px;
+       grid-row-gap: 8px;
+  }
 }
-ul.cardlist ul, ul.cardlist ul li {
-  padding: 0; margin:0;
-}</code>
+
+ ul {
+     list-style: none;
+}
+ ul.cardlist&gt;li {
+     display: flex;
+     flex-flow: column;
+     padding: 16px;
+     word-break: break-word;
+     hyphens: auto;
+     background-color: var(--panel-bg);
+     border-left: 4px solid var(--brand-primary);
+     border-radius: 4px;
+     list-style: none;
+     margin: 0;
+     flex-basis: 100%;
+     color: var(--text-muted);
+     font-weight: var(--font-weight-semibold);
+     box-shadow: 0 0 12px rgba(0, 0, 0, 0.08), 0 0 2px rgba(0, 0, 0, 0.1);
+     gap: 4px
+}
+ul.cardlist&gt;li a{
+  text-decoration: none;
+}
+ul.cardlist&gt;li a:hover {
+  text-decoration: underline;
+}
+ ul.cardlist&gt;li li {
+     font-weight: normal;
+}
+ ul.cardlist ul, ul.cardlist ul li {
+     padding: 0;
+     margin:0;
+}
+
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
