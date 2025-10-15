@@ -177,31 +177,34 @@
       <content>{{velocity}}
 #set ($discard = $xwiki.jsx.use('DocApp.Code.DocumentationNavigationPanel'))
 ## Decide what is the target audience by checking the XWikiDocumentationClass xobject of the current page
-#set ($target = $doc.getValue("target"))
+#set ($target = $doc.getValue('target'))
 #if ("$!target" == '')
   ## Look for /User/, /Admin/ or /Dev/ in the URL. We need this to address Landing Pages which don't have XWikiDocumentationClass xobjects
   #set ($docURL = $doc.getURL())
-  #if ($docURL.contains("/User/"))
-    #set ($target = "user")
-  #elseif ($docURL.contains("/Admin/"))
-    #set ($target = "administrator")
-  #elseif ($docURL.contains("/Dev/"))
-    #set ($target = "developer")
+  #if ($docURL.contains('/User/'))
+    #set ($target = 'user')
+  #elseif ($docURL.contains('/Admin/'))
+    #set ($target = 'administrator')
+  #elseif ($docURL.contains('/Dev/'))
+    #set ($target = 'developer')
   #else
-    #set ($target = "user")
+    #set ($target = 'user')
   #end
 #end
 ## Extract the product from the doc reference
 #set ($spaceList = $doc.getDocumentReference().getSpaceReferences())
-#set ($product = "XS")
-#if ($spaceList.size() &gt; 1)
+## Default product is XS
+#set ($product = 'XS')
+#if ($spaceList.size() &gt; 2)
   #set ($extractedProduct = $spaceList.get(1).name)
-  #if ($extractedProduct == 'XS' || $extractedProduct == 'Extensions')
-    #set ($product = $extractedProduct)
-  #end
+  #set ($product = $extractedProduct)
 #end
-#set ($productNames = {'XS' : 'XWiki Standard', 'Extensions' : 'Extensions'})
-#panelheader("$productNames[$product] for ${stringtool.capitalize($target)}s")
+#set ($productNames = {'XS' : 'XWiki Standard'})
+#set ($productName = $product)
+#if ("$!productNames[$product]" != '')
+  #set ($productName = $productNames[$product])
+#end
+#panelheader("$productName for ${stringtool.capitalize($target)}s")
 {{tree class="xtree diataxis-navigation" links="true" edges="false" icons="false"}}
   {{display reference="DocApp.Data.Navigation${stringtool.capitalize($product)}For${stringtool.capitalize($target)}s"/}}
 {{/tree}}
