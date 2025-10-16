@@ -38,15 +38,20 @@
   <hidden>true</hidden>
   <content>{{velocity}}
 #if ($xcontext.action == 'edit')
+= Target =
+Leave undefined to display a LiveData containing all docummentation page targets.
+
+$doc.display('target')
+
 = Type =
 Leave undefined to display a LiveData containing all documentation page types.
 
 $doc.display('type')
 
-= Target =
-Leave undefined to display a LiveData containing all docummentation page targets.
+= Children Pages =
+Should the LiveData table list children pages?
 
-$doc.display('target')
+$doc.display('listChildren')
 
 #end
 = Summary =
@@ -80,7 +85,12 @@ $doc.display('summary')
 
   #set ($type = $doc.getValue('type'))
   #set ($target = $doc.getValue('target'))
-  #set ($filters = "location=$services.model.serialize($doc.documentReference.parent).")
+  #set ($listChildren = $doc.getValue('listChildren'))
+  #if ($listChildren == '1')
+    #set ($filters = "location=$services.model.serialize($doc.documentReference.parent).")
+  #else
+    #set ($filters = '')
+  #end
   #set ($propertyDescriptors = '{"id": "doc.location", "visible": false}')
   #if ("$!type" != '')
     #set ($filters = "${filters}&amp;type=$type")

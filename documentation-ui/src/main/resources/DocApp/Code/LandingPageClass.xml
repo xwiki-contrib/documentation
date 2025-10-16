@@ -64,6 +64,21 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </highlights>
+    <listChildren>
+      <customDisplay/>
+      <defaultValue>1</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <hint/>
+      <name>listChildren</name>
+      <number>5</number>
+      <prettyName>List Children Pages</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </listChildren>
     <summary>
       <contenttype>---</contenttype>
       <customDisplay/>
@@ -93,7 +108,7 @@
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>target</name>
-      <number>3</number>
+      <number>1</number>
       <picker>1</picker>
       <prettyName>Target</prettyName>
       <relationalStorage>0</relationalStorage>
