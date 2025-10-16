@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.LandingPageTemplate.WebHome" locale="">
-  <web>DocApp.Code.LandingPageTemplate</web>
-  <name>WebHome</name>
+<xwikidoc version="1.6" reference="DocApp.Code.LandingPageTemplate" locale="">
+  <web>DocApp.Code</web>
+  <name>LandingPageTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>DocApp.Code.LandingPageTemplate.WebHome</name>
+    <name>DocApp.Code.LandingPageTemplate</name>
     <number>0</number>
     <className>DocApp.Code.LandingPageClass</className>
     <guid>84940b9d-a292-436e-b3f2-70955c51874d</guid>
@@ -69,6 +69,21 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </highlights>
+      <listChildren>
+        <customDisplay/>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <hint/>
+        <name>listChildren</name>
+        <number>5</number>
+        <prettyName>List Children Pages</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </listChildren>
       <summary>
         <contenttype>---</contenttype>
         <customDisplay/>
@@ -98,7 +113,7 @@
         <largeStorage>0</largeStorage>
         <multiSelect>0</multiSelect>
         <name>target</name>
-        <number>3</number>
+        <number>1</number>
         <picker>1</picker>
         <prettyName>Target</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -140,6 +155,9 @@
     </class>
     <property>
       <highlights/>
+    </property>
+    <property>
+      <listChildren/>
     </property>
     <property>
       <summary/>

@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.ExplanationDocumentationTemplate.WebHome" locale="">
-  <web>DocApp.Code.ExplanationDocumentationTemplate</web>
-  <name>WebHome</name>
+<xwikidoc version="1.6" reference="DocApp.Code.TutorialDocumentationTemplate" locale="">
+  <web>DocApp.Code</web>
+  <name>TutorialDocumentationTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -38,10 +38,10 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>DocApp.Code.ExplanationDocumentationTemplate.WebHome</name>
+    <name>DocApp.Code.TutorialDocumentationTemplate</name>
     <number>0</number>
     <className>DocApp.Code.DocumentationClass</className>
-    <guid>365b90df-7146-44b3-bce2-480d6b940d64</guid>
+    <guid>4f6b2956-6988-43fa-8b8c-78ebd3ed45f4</guid>
     <class>
       <name>DocApp.Code.DocumentationClass</name>
       <customClass/>
@@ -103,7 +103,7 @@
       <target>
         <cache>0</cache>
         <customDisplay/>
-        <defaultValue/>
+        <defaultValue>User</defaultValue>
         <disabled>0</disabled>
         <displayType>select</displayType>
         <freeText/>
@@ -155,13 +155,19 @@
       <faq/>
     </property>
     <property>
+      <lastReviewedDate/>
+    </property>
+    <property>
+      <lastReviewers/>
+    </property>
+    <property>
       <related/>
     </property>
     <property>
       <target/>
     </property>
     <property>
-      <type>explanation</type>
+      <type>tutorial</type>
     </property>
   </object>
 </xwikidoc>

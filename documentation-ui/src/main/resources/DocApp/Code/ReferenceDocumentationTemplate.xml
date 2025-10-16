@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.ReferenceDocumentationTemplate.WebHome" locale="">
-  <web>DocApp.Code.ReferenceDocumentationTemplate</web>
-  <name>WebHome</name>
+<xwikidoc version="1.6" reference="DocApp.Code.ReferenceDocumentationTemplate" locale="">
+  <web>DocApp.Code</web>
+  <name>ReferenceDocumentationTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -40,7 +40,7 @@
 |cell11|cell12
 |cell21|cell22</content>
   <object>
-    <name>DocApp.Code.ReferenceDocumentationTemplate.WebHome</name>
+    <name>DocApp.Code.ReferenceDocumentationTemplate</name>
     <number>0</number>
     <className>DocApp.Code.DocumentationClass</className>
     <guid>b78b9c53-5898-4b9f-a94c-8b6725ef0625</guid>
@@ -105,7 +105,7 @@
       <target>
         <cache>0</cache>
         <customDisplay/>
-        <defaultValue/>
+        <defaultValue>User</defaultValue>
         <disabled>0</disabled>
         <displayType>select</displayType>
         <freeText/>
@@ -155,6 +155,12 @@
     </class>
     <property>
       <faq/>
+    </property>
+    <property>
+      <lastReviewedDate/>
+    </property>
+    <property>
+      <lastReviewers/>
     </property>
     <property>
       <related/>
