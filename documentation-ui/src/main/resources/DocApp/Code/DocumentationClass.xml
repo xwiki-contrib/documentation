@@ -98,7 +98,7 @@
     <target>
       <cache>0</cache>
       <customDisplay/>
-      <defaultValue>User</defaultValue>
+      <defaultValue>user</defaultValue>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <freeText/>
