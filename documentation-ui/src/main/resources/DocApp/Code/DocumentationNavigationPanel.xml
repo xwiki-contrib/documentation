@@ -174,36 +174,13 @@
       <category>Navigation</category>
     </property>
     <property>
-      <content>{{velocity}}
+      <content>{{include reference = 'DocApp.Code.DocumentationMacros' /}}
+
+{{velocity}}
 #set ($discard = $xwiki.jsx.use('DocApp.Code.DocumentationNavigationPanel'))
-## Decide what is the target audience by checking the XWikiDocumentationClass xobject of the current page
-#set ($target = $doc.getValue('target'))
-#if ("$!target" == '')
-  ## Look for /User/, /Admin/ or /Dev/ in the URL. We need this to address Landing Pages which don't have XWikiDocumentationClass xobjects
-  #set ($docURL = $doc.getURL())
-  #if ($docURL.contains('/User/'))
-    #set ($target = 'user')
-  #elseif ($docURL.contains('/Admin/'))
-    #set ($target = 'administrator')
-  #elseif ($docURL.contains('/Dev/'))
-    #set ($target = 'developer')
-  #else
-    #set ($target = 'user')
-  #end
-#end
-## Extract the product from the doc reference
-#set ($spaceList = $doc.getDocumentReference().getSpaceReferences())
-## Default product is XS
-#set ($product = 'XS')
-#if ($spaceList.size() &gt; 2)
-  #set ($extractedProduct = $spaceList.get(1).name)
-  #set ($product = $extractedProduct)
-#end
-#set ($productNames = {'XS' : 'XWiki Standard'})
-#set ($productName = $product)
-#if ("$!productNames[$product]" != '')
-  #set ($productName = $productNames[$product])
-#end
+#getTarget($target)
+#getProduct($product)
+#getProductName($product $productName)
 #panelheader("$productName for ${stringtool.capitalize($target)}s")
 {{tree class="xtree diataxis-navigation" links="true" edges="false" icons="false"}}
   {{display reference="DocApp.Data.Navigation${stringtool.capitalize($product)}For${stringtool.capitalize($target)}s"/}}

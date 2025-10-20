@@ -27,7 +27,6 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
@@ -36,7 +35,9 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
+  <content>{{include reference = 'DocApp.Code.DocumentationMacros' /}}
+
+{{velocity}}
 #if ($xcontext.action == 'edit')
 = Target =
 Leave undefined to display a LiveData containing all docummentation page targets.
@@ -87,9 +88,10 @@ $doc.display('summary')
   #set ($target = $doc.getValue('target'))
   #set ($listChildren = $doc.getValue('listChildren'))
   #if ($listChildren == '1')
-    #set ($filters = "location=$services.model.serialize($doc.documentReference.parent).")
+    #set ($sourceParameters = "&amp;location=$services.model.serialize($doc.documentReference.parent).")
   #else
-    #set ($filters = '')
+    #getProduct($product)
+    #set ($sourceParameters = "&amp;location=${product}.")
   #end
   #set ($propertyDescriptors = '{"id": "doc.location", "visible": false}')
   #if ("$!type" != '')
@@ -104,8 +106,8 @@ $doc.display('summary')
     id="landingpage"
     properties="doc.title,doc.location,type,target"
     source="liveTable"
-    sourceParameters="className=DocApp.Code.DocumentationClass&amp;resultPage=DocApp.Code.LandingPageLiveTableResults&amp;translationPrefix=docapp."
-    filters="$filters"
+    sourceParameters="className=DocApp.Code.DocumentationClass&amp;resultPage=DocApp.Code.LandingPageLiveTableResults&amp;translationPrefix=docapp.${sourceParameters}"
+    filters="$!filters"
   }}
   {
     "meta": {
