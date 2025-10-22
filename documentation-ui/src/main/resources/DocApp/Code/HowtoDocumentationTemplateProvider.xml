@@ -259,7 +259,7 @@
       <spaces/>
     </property>
     <property>
-      <template>DocApp.Code.HowtoDocumentationTemplate</template>
+      <template>DocApp.Data.HowtoDocumentationTemplate</template>
     </property>
     <property>
       <terminal>0</terminal>

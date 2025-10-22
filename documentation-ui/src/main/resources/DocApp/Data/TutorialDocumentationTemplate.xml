@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.TutorialDocumentationTemplate" locale="">
-  <web>DocApp.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Data.TutorialDocumentationTemplate" locale="">
+  <web>DocApp.Data</web>
   <name>TutorialDocumentationTemplate</name>
   <language/>
   <defaultLanguage/>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>DocApp.Code.TutorialDocumentationTemplate</name>
+    <name>DocApp.Data.TutorialDocumentationTemplate</name>
     <number>0</number>
     <className>DocApp.Code.DocumentationClass</className>
     <guid>4f6b2956-6988-43fa-8b8c-78ebd3ed45f4</guid>
@@ -103,7 +103,7 @@
       <target>
         <cache>0</cache>
         <customDisplay/>
-        <defaultValue>User</defaultValue>
+        <defaultValue>user</defaultValue>
         <disabled>0</disabled>
         <displayType>select</displayType>
         <freeText/>

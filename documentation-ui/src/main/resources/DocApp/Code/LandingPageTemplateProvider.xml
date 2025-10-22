@@ -259,7 +259,7 @@
       <spaces/>
     </property>
     <property>
-      <template>DocApp.Code.LandingPageTemplate</template>
+      <template>DocApp.Data.LandingPageTemplate</template>
     </property>
     <property>
       <terminal>0</terminal>

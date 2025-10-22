@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.LandingPageTemplate" locale="">
-  <web>DocApp.Code</web>
-  <name>LandingPageTemplate</name>
+<xwikidoc version="1.6" reference="DocApp.Data.ReferenceDocumentationTemplate" locale="">
+  <web>DocApp.Data</web>
+  <name>ReferenceDocumentationTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -36,14 +36,16 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content/>
+  <content>|=Column 1|=Column 2
+|cell11|cell12
+|cell21|cell22</content>
   <object>
-    <name>DocApp.Code.LandingPageTemplate</name>
+    <name>DocApp.Data.ReferenceDocumentationTemplate</name>
     <number>0</number>
-    <className>DocApp.Code.LandingPageClass</className>
-    <guid>84940b9d-a292-436e-b3f2-70955c51874d</guid>
+    <className>DocApp.Code.DocumentationClass</className>
+    <guid>b78b9c53-5898-4b9f-a94c-8b6725ef0625</guid>
     <class>
-      <name>DocApp.Code.LandingPageClass</name>
+      <name>DocApp.Code.DocumentationClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -51,16 +53,29 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <highlights>
+      <content>
+        <customDisplay>{{include reference="AppWithinMinutes.Content"/}}</customDisplay>
+        <disabled>0</disabled>
+        <hint/>
+        <name>content</name>
+        <number>1</number>
+        <prettyName>Content</prettyName>
+        <script/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </content>
+      <faq>
         <contenttype>---</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>---</editor>
-        <hint>Use a list for the titles and nested list items for the descriptions</hint>
-        <name>highlights</name>
-        <number>4</number>
+        <hint>Small troubleshooting, explanations of 1 or 2 sentences. Bigger ones should be placed in their own pages.</hint>
+        <name>faq</name>
+        <number>6</number>
         <picker>1</picker>
-        <prettyName>Highlights</prettyName>
+        <prettyName>FAQ</prettyName>
         <restricted>0</restricted>
         <rows>5</rows>
         <size>40</size>
@@ -68,32 +83,17 @@
         <validationMessage/>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </highlights>
-      <listChildren>
-        <customDisplay/>
-        <defaultValue>1</defaultValue>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <hint/>
-        <name>listChildren</name>
-        <number>5</number>
-        <prettyName>List Children Pages</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </listChildren>
-      <summary>
+      </faq>
+      <related>
         <contenttype>---</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>---</editor>
-        <hint/>
-        <name>summary</name>
-        <number>3</number>
+        <hint>List of related pages that could be interesting for the reader BUT that are not children pages (which will be displayed in the More section)</hint>
+        <name>related</name>
+        <number>7</number>
         <picker>1</picker>
-        <prettyName>Summary</prettyName>
+        <prettyName>Related</prettyName>
         <restricted>0</restricted>
         <rows>5</rows>
         <size>40</size>
@@ -101,19 +101,19 @@
         <validationMessage/>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </summary>
+      </related>
       <target>
         <cache>0</cache>
         <customDisplay/>
-        <defaultValue/>
+        <defaultValue>user</defaultValue>
         <disabled>0</disabled>
         <displayType>select</displayType>
         <freeText/>
-        <hint>Leave empty for a landing page displaying all targets</hint>
+        <hint>To whom the document is targeted for</hint>
         <largeStorage>0</largeStorage>
         <multiSelect>0</multiSelect>
         <name>target</name>
-        <number>1</number>
+        <number>3</number>
         <picker>1</picker>
         <prettyName>Target</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -134,7 +134,7 @@
         <disabled>0</disabled>
         <displayType>select</displayType>
         <freeText/>
-        <hint>Leave empty for a landing page displaying all types</hint>
+        <hint>Diataxis document type</hint>
         <largeStorage>0</largeStorage>
         <multiSelect>0</multiSelect>
         <name>type</name>
@@ -154,19 +154,22 @@
       </type>
     </class>
     <property>
-      <highlights/>
+      <faq/>
     </property>
     <property>
-      <listChildren/>
+      <lastReviewedDate/>
     </property>
     <property>
-      <summary/>
+      <lastReviewers/>
+    </property>
+    <property>
+      <related/>
     </property>
     <property>
       <target/>
     </property>
     <property>
-      <type/>
+      <type>reference</type>
     </property>
   </object>
 </xwikidoc>

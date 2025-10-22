@@ -53,5 +53,35 @@
         <version>${commons.version}</version>
       </extension>
     </extensions>
+    <plugins>
+      <plugin>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
+        <configuration>
+          <entries>
+            <entry>
+              <document>DocApp.Data.ExplanationDocumentationTemplate.xml</document>
+              <type>demo</type>
+            </entry>
+            <entry>
+              <document>DocApp.Data.HowtoDocumentationTemplate</document>
+              <type>demo</type>
+            </entry>
+            <entry>
+              <document>DocApp.Data.ReferenceDocumentationTemplate</document>
+              <type>demo</type>
+            </entry>
+            <entry>
+              <document>DocApp.Data.TutorialDocumentationTemplate</document>
+              <type>demo</type>
+            </entry>
+            <entry>
+              <document>DocApp.Data.LandingPageTemplate</document>
+              <type>demo</type>
+            </entry>
+          </entries>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>
