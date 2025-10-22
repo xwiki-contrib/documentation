@@ -60,7 +60,7 @@
         <configuration>
           <entries>
             <entry>
-              <document>DocApp.Data.ExplanationDocumentationTemplate.xml</document>
+              <document>DocApp.Data.ExplanationDocumentationTemplate</document>
               <type>demo</type>
             </entry>
             <entry>
