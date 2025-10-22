@@ -184,7 +184,6 @@
   #getProductName($product $productName)
   #set ($discard = $xwiki.jsx.use('DocApp.Code.DocumentationNavigationPanel'))
   #panelheader("$productName for ${stringtool.capitalize($target)}s")
-  #set ($rootNames = {'user' : 'User', 'administrator' : 'Admin', 'developer' : 'Dev'})
   ## Escape special characters in macro parameter values.
   #set ($openToDoc = $doc.documentReference.toString().replaceAll('([~"])', '~$1'))
   ## TODO: Code below to be removed once https://jira.xwiki.org/browse/XWIKI-23621 is implemented and the parent POM
