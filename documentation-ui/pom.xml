@@ -53,28 +53,5 @@
         <version>${commons.version}</version>
       </extension>
     </extensions>
-    <plugins>
-      <plugin>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <configuration>
-          <entries>
-            <entry>
-              <document>DocApp.Data.NavigationForUsers</document>
-              <type>demo</type>
-            </entry>
-            <entry>
-              <document>DocApp.Data.NavigationForAdministrators</document>
-              <type>demo</type>
-            </entry>
-            <entry>
-              <document>DocApp.Data.NavigationForDevelopers</document>
-              <type>demo</type>
-            </entry>
-          </entries>
-        </configuration>
-      </plugin>
-    </plugins>
   </build>
-
 </project>

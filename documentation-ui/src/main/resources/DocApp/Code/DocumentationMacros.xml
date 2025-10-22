@@ -63,12 +63,24 @@
   #set ($spaceList = $doc.getDocumentReference().getSpaceReferences())
   ## Default product is XS
   #set ($product = 'XS')
-  #if ($spaceList.size() &gt; 2)
+  #if ($spaceList.size() &gt; 1)
     #set ($extractedProduct = $spaceList.get(1).name)
     #set ($product = $extractedProduct)
   #end
   #set ($return = $NULL)
   #setVariable("$return" $product)
+#end
+
+#macro(getTargetSpaceReference $return)
+  ## Extract the target from the doc reference which should be of the type: XXX.&lt;product&gt;.&lt;target&gt;
+  #set ($spaceList = $doc.getDocumentReference().getSpaceReferences())
+  #if ($spaceList.size() &gt; 2)
+    #set ($targetReference = $spaceList.get(2))
+  #else
+    #set ($targetReference = $NULL)
+  #end
+  #set ($return = $NULL)
+  #setVariable("$return" $targetReference)
 #end
 
 #macro(getProductName $product $return)
