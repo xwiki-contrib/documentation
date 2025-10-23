@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Data.ReferenceDocumentationTemplate" locale="">
+<xwikidoc version="1.6" reference="DocApp.Data.ExplanationDocumentationTemplate" locale="">
   <web>DocApp.Data</web>
-  <name>ReferenceDocumentationTemplate</name>
+  <name>ExplanationDocumentationTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -36,14 +36,12 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>|=Column 1|=Column 2
-|cell11|cell12
-|cell21|cell22</content>
+  <content/>
   <object>
-    <name>DocApp.Data.ReferenceDocumentationTemplate</name>
+    <name>DocApp.Data.ExplanationDocumentationTemplate</name>
     <number>0</number>
     <className>DocApp.Code.DocumentationClass</className>
-    <guid>b78b9c53-5898-4b9f-a94c-8b6725ef0625</guid>
+    <guid>365b90df-7146-44b3-bce2-480d6b940d64</guid>
     <class>
       <name>DocApp.Code.DocumentationClass</name>
       <customClass/>
@@ -163,7 +161,40 @@
       <target/>
     </property>
     <property>
-      <type>reference</type>
+      <type>explanation</type>
+    </property>
+  </object>
+  <object>
+    <name>DocApp.Data.ExplanationDocumentationTemplate</name>
+    <number>0</number>
+    <className>DocApp.Code.DocumentationExtensionClass</className>
+    <guid>a3ec319c-761b-421e-be54-e01594702545</guid>
+    <class>
+      <name>DocApp.Code.DocumentationExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <id>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint>Full extension id (group:artifactid)</hint>
+        <name>id</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Extension Id</prettyName>
+        <size>100</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </id>
+    </class>
+    <property>
+      <id/>
     </property>
   </object>
 </xwikidoc>

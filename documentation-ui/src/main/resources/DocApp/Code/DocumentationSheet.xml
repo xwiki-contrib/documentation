@@ -77,6 +77,11 @@
 {{/box}}
 
 ##end
+{{/velocity}}
+
+{{uiextensions extensionPoint="org.xwiki.contrib.documentation.sheet"/}}
+
+{{velocity}}
 ## In edit mode, let the user choose the doc type + target
 #if ($xcontext.action == 'edit')
   = Type and Target =
