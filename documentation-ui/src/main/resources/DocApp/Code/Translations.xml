@@ -41,6 +41,9 @@ docapp.ui.review.top.error=Validation of the documentation quality has found at 
 docapp.ui.review.top.warning=Validation of the documentation quality has found at least one warning on this page.
 docapp.ui.review.violation-list.empty=No quality violation was found!
 docapp.doc.title=Page Title
+docapp.doc.location=Location
+docapp.target=Target
+docapp.type=Type
 docapp.emptyvalue=(Empty)
 docapp.applicationsPanelEntryLabel=Documentation
 </content>
