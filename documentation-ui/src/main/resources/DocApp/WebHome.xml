@@ -42,7 +42,7 @@
   id="documentationPages"
   properties="doc.title,type,target"
   source="liveTable"
-  sourceParameters="className=DocApp.Code.DocumentationClass&amp;translationPrefix=docapp."/}}
+  sourceParameters="className=DocApp.Code.DocumentationClass&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;translationPrefix=docapp."/}}
 
 = Documentation Reviews =
 
@@ -50,7 +50,7 @@
   id="documentationReviews"
   properties="doc.title,lastReviewedDate,lastReviewers"
   source="liveTable"
-  sourceParameters="className=DocApp.Code.DocumentationReviewClass&amp;translationPrefix=docapp."/}}
+  sourceParameters="className=DocApp.Code.DocumentationReviewClass&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;translationPrefix=docapp."/}}
 
 = Documentation Violations =
 
@@ -58,6 +58,6 @@
   id="allDeveloperExplanationsPages"
   properties="doc.title,message,context,severity"
   source="liveTable"
-  sourceParameters="className=DocApp.Code.DocumentationViolationClass&amp;translationPrefix=docapp."/}}
+  sourceParameters="className=DocApp.Code.DocumentationViolationClass&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;translationPrefix=docapp."/}}
 </content>
 </xwikidoc>

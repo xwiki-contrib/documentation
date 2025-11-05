@@ -107,7 +107,7 @@ $doc.display('summary')
     id="landingpage"
     properties="doc.title,doc.location,type,target"
     source="liveTable"
-    sourceParameters="className=DocApp.Code.DocumentationClass&amp;resultPage=DocApp.Code.LandingPageLiveTableResults&amp;translationPrefix=docapp.${sourceParameters}"
+    sourceParameters="className=DocApp.Code.DocumentationClass&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;translationPrefix=docapp.${sourceParameters}"
     filters="$!filters"
   }}
   {
