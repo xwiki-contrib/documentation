@@ -41,7 +41,7 @@
 {{velocity}}
 #if ($xcontext.action == 'edit')
 = Target =
-Leave undefined to display a LiveData containing all docummentation page targets.
+Leave undefined to display a LiveData containing all documentation page targets.
 
 $doc.display('target')
 
