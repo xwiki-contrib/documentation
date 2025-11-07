@@ -61,7 +61,7 @@ $doc.display('summary')
 
 #if ($xcontext.action == 'edit')
   = Highlights =
-  Use a list syntax to represent the different highlighted documentation page, with the first list item level being the title and the second level, the description. For example in XWiki Syntax 2.0+:
+  Use a list syntax to represent the different highlighted documentation page, with the first list item level being the title and the second level, the description. For example, in XWiki Syntax 2.0+:
 
   {{code language="none"}}
   * Title 1
