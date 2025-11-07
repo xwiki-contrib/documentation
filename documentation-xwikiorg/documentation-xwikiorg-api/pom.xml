@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>Checks for violations in documentation pages using XWiki.org rules</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.11</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.55</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>XWiki.org Checks for Documentation Application</xwiki.extension.name>
     <!-- The extension's category -->
@@ -53,9 +53,22 @@
     </dependency>
     <!-- Test Dependencies -->
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-component</artifactId>
-      <version>${commons.version}</version>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-test-oldcore</artifactId>
+      <version>${platform.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-syntax-xwiki21</artifactId>
+      <version>${rendering.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-parser</artifactId>
+      <version>${platform.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
