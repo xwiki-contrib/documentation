@@ -44,11 +44,11 @@
   #if ("$!target" == '')
     ## Look for /User/, /Admin/ or /Dev/ in the URL. We need this to address Landing Pages which don't have an DocumentationClass xobject.
     #set ($docURL = $doc.getURL())
-    #if ($docURL.contains('/User/'))
+    #if ($stringtool.containsIgnoreCase($docURL, '/user/'))
       #set ($target = 'user')
-    #elseif ($docURL.contains('/Admin/'))
+    #elseif ($stringtool.containsIgnoreCase($docURL, '/admin/'))
       #set ($target = 'administrator')
-    #elseif ($docURL.contains('/Dev/'))
+    #elseif ($stringtool.containsIgnoreCase($docURL, '/dev/'))
       #set ($target = 'developer')
     #else
       #set ($target = 'user')
@@ -62,7 +62,7 @@
   ## Extract the product from the doc reference
   #set ($spaceList = $doc.getDocumentReference().getSpaceReferences())
   ## Default product is XS
-  #set ($product = 'XS')
+  #set ($product = 'xs')
   #if ($spaceList.size() &gt; 1)
     #set ($extractedProduct = $spaceList.get(1).name)
     #set ($product = $extractedProduct)
@@ -84,9 +84,9 @@
 #end
 
 #macro(getProductName $product $return)
-  #set ($productNames = {'XS' : 'XWiki Standard'})
+  #set ($productNames = {'xs' : 'XWiki Standard'})
   #set ($productName = $product)
-  #if ("$!productNames[$product]" != '')
+  #if ("$!productNames[$product.toLowerCase()]" != '')
     #set ($productName = $productNames[$product])
   #end
   #set ($return = $NULL)
