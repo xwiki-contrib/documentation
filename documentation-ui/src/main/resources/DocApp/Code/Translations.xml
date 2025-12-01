@@ -46,7 +46,9 @@ docapp.target=Target
 docapp.type=Type
 docapp.emptyvalue=(Empty)
 docapp.applicationsPanelEntryLabel=Documentation
-</content>
+docapp.search.questionHint=Search documentation
+docapp.search.submit=Search
+docapp.search.text=To find specific documentation content, you can either search or filter the table columns below.</content>
   <object>
     <name>DocApp.Code.Translations</name>
     <number>0</number>

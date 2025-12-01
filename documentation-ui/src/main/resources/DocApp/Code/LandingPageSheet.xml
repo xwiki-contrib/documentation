@@ -41,7 +41,7 @@
 {{velocity}}
 #if ($xcontext.action == 'edit')
 = Target =
-Leave undefined to display a LiveData containing all documentation page targets.
+Leave undefined to display a LiveData containing all docummentation page targets.
 
 $doc.display('target')
 
@@ -61,7 +61,7 @@ $doc.display('summary')
 
 #if ($xcontext.action == 'edit')
   = Highlights =
-  Use a list syntax to represent the different highlighted documentation page, with the first list item level being the title and the second level, the description. For example, in XWiki Syntax 2.0+:
+  Use a list syntax to represent the different highlighted documentation pages, with the first list item level being the title and the second level, the description. For example, in XWiki Syntax 2.0+:
 
   {{code language="none"}}
   * Title 1
@@ -84,10 +84,25 @@ $doc.display('summary')
 #end
 #if ($xcontext.action != 'edit')
   = What are you looking for? =
+  #set ($listChildren = $doc.getValue('listChildren'))
+  #if ($listChildren == '1')
+    $services.localization.render('docapp.search.text')
 
+    {{html}}
+      &lt;form action="$xwiki.getURL('DocApp.Code.DocumentationSearch')" class="xformInline"&gt;
+        &lt;div&gt;
+          &lt;input type="hidden" name="space" value="${doc.space}" /&gt;
+          &lt;input type="text" name="text" value="$services.localization.render('docapp.search.questionHint')" size="32" class="withTip" /&gt;
+          &lt;span class="buttonwrapper"&gt;
+            &lt;input class="button" type="submit" value="$services.localization.render('docapp.search.submit')" /&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+    {{/html}}
+
+  #end
   #set ($type = $doc.getValue('type'))
   #set ($target = $doc.getValue('target'))
-  #set ($listChildren = $doc.getValue('listChildren'))
   #if ($listChildren == '1')
     #set ($sourceParameters = "&amp;location=$services.model.serialize($doc.documentReference.parent).")
   #else
