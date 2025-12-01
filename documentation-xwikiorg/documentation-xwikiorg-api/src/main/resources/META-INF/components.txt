@@ -1,4 +1,5 @@
 org.xwiki.contrib.documentation.internal.xwikiorg.SyntaxCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.ImageMacroCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.ImageMacroAltCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.ImageGalleryCheck
 
