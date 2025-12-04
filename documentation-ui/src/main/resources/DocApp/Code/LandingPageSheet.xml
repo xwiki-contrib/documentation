@@ -104,10 +104,11 @@ $doc.display('summary')
   #set ($type = $doc.getValue('type'))
   #set ($target = $doc.getValue('target'))
   #if ($listChildren == '1')
-    #set ($sourceParameters = "&amp;location=$services.model.serialize($doc.documentReference.parent).")
+    #set( $parent = $services.model.serialize($doc.documentReference.parent))
+    #set ($sourceParameters = "location=${parent}.")
   #else
     #getProduct($product)
-    #set ($sourceParameters = "&amp;location=${product}.")
+    #set ($sourceParameters = "location=${product}.")
   #end
   #set ($propertyDescriptors = '{"id": "doc.location", "visible": false}')
   #if ("$!type" != '')
@@ -118,12 +119,15 @@ $doc.display('summary')
     #set ($filters = "${filters}&amp;target=$target")
     #set ($propertyDescriptors = "${propertyDescriptors},{""id"": ""target"", ""visible"": false}")
   #end
+  #set ($sourceParameters = "className=DocApp.Code.DocumentationClass&amp;${sourceParameters}")
+  #set ($sourceParameters = "&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;${sourceParameters}")
+  #set ($sourceParameters = "&amp;translationPrefix=docapp.&amp;${sourceParameters}")
   {{liveData
-    id="landingpage"
-    properties="doc.title,doc.location,type,target"
-    source="liveTable"
-    sourceParameters="className=DocApp.Code.DocumentationClass&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;translationPrefix=docapp.${sourceParameters}"
-    filters="$!filters"
+    id = "landingpage"
+    properties = "doc.title,doc.location,type,target"
+    source = "liveTable"
+    sourceParameters = "$services.rendering.escape($sourceParameters, 'xwiki/2.1')"
+    filters = "$services.rendering.escape($!filters, 'xwiki/2.1')"
   }}
   {
     "meta": {

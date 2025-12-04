@@ -114,7 +114,9 @@ $doc.display('content')
 ## TODO: only display if the Ld is not empty
 = More =
 
-{{documents location="$services.model.serialize($doc.documentReference.parent, 'local')" columns="doc.title"/}}
+#set ($location = $services.model.serialize($doc.documentReference.parent, 'local'))
+#set ($escapedLocation = $services.rendering.escape($location, 'xwiki/2.1'))
+{{documents location="$escapedLocation" columns="doc.title"/}}
 ## Display the Related section if it's not empty
 #if ($hasRelated || $xcontext.action == 'edit')
   = Related =
