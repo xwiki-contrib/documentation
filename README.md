@@ -1,6 +1,6 @@
 # Documentation Application
 
-Application to help write good documentation for XWiki.org.
+Application to help write good documentation for any software product, and especially for XWiki.org.
 
 * Project Lead: [Vincent Massol](https://www.xwiki.org/xwiki/bin/view/XWiki/VincentMassol)
 * [Documentation & Downloads](https://extensions.xwiki.org/xwiki/bin/view/Extension/Documentation)
