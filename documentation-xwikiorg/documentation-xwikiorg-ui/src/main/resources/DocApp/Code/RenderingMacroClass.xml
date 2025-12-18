@@ -55,7 +55,7 @@
       <name>description</name>
       <number>1</number>
       <picker>1</picker>
-      <prettyName>Description</prettyName>
+      <prettyName>Macro Description</prettyName>
       <restricted>0</restricted>
       <rows>5</rows>
       <size>40</size>
@@ -73,7 +73,7 @@
       <name>examples</name>
       <number>3</number>
       <picker>1</picker>
-      <prettyName>Examples</prettyName>
+      <prettyName>Macro Examples</prettyName>
       <restricted>0</restricted>
       <rows>5</rows>
       <size>40</size>
@@ -91,7 +91,7 @@
       <name>parameters</name>
       <number>2</number>
       <picker>1</picker>
-      <prettyName>Parameters</prettyName>
+      <prettyName>Macro Parameters</prettyName>
       <restricted>0</restricted>
       <rows>5</rows>
       <size>40</size>
