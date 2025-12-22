@@ -175,10 +175,10 @@
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.xwiki.contrib.documentation.sheet.top</extensionPointId>
+      <extensionPointId>org.xwiki.contrib.documentation.sheet</extensionPointId>
     </property>
     <property>
-      <name>org.xwiki.contrib.documentation.xwikiorg.sheet.top</name>
+      <name>org.xwiki.contrib.documentation.xwikiorg.sheet</name>
     </property>
     <property>
       <parameters/>
