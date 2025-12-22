@@ -167,7 +167,10 @@
 #set ($extensionObject = $doc.getObject('DocApp.Code.DocumentationExtensionClass'))
 #if ($xcontext.action == 'edit')
   #if ($extensionObject)
-  = Extension Id =
+  = Technical Id =
+  Format:
+  * For XWiki extensions: {{{xwiki:&lt;extension group id&gt;:&lt;extension artifact id&gt;}}}. Example: {{{xwiki:org.xwiki.platform:xwiki-platform-icon-macro}}}
+  * For NPM packages: {{{npm:&lt;package id&gt;}}}. Example: {{{@xwiki/cristal-dsapi}}}
   $doc.display('id', $extensionObject)
 
   #end

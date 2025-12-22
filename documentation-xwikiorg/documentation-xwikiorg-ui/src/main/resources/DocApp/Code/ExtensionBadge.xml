@@ -166,9 +166,22 @@
       <content>{{velocity}}
 #set ($extensionObject = $doc.getObject('DocApp.Code.DocumentationExtensionClass'))
 #if ($extensionObject)
-  #set ($id = $extensionObject.getValue('id').replace(':', '%3A'))
-  #if ("$!id" != '')
-    (% class='documentation-badge' %)[[Extension&gt;&gt;extensions:Main.WebHome||queryString="id=$id"]](%%)
+  #set ($ids = $extensionObject.getValue('id'))
+  #foreach ($id in $ids)
+    #if ($id.startsWith('npm:'))
+      #set ($normalizedId = $stringtool.substringAfter($id, 'npm:').replace(':', '%3A'))
+      (% class='documentation-badge' %)[[NPM&gt;&gt;url:https://www.npmjs.com/package/$normalizedId]](%%)
+
+    #elseif ($id.startsWith('xwiki:'))
+      #set ($normalizedId = $stringtool.substringAfter($id, 'xwiki:').replace(':', '%3A'))
+      (% class='documentation-badge' %)[[Extension&gt;&gt;extensions:Main.WebHome||queryString="id=$normalizedId"]](%%)
+
+    #else
+      ## Consider it's an xwiki extension id
+      #set ($normalizedId = $id.replace(':', '%3A'))
+      (% class='documentation-badge' %)[[Extension&gt;&gt;extensions:Main.WebHome||queryString="id=$normalizedId"]](%%)
+
+    #end
   #end
 #end
 {{/velocity}}

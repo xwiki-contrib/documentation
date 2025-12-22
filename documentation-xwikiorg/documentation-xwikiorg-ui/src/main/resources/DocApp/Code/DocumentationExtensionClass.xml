@@ -47,18 +47,32 @@
     <nameField/>
     <validationScript/>
     <id>
+      <cache>0</cache>
+      <classname/>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
-      <hint>Full extension id (group:artifactid)</hint>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>Use the "xwiki:" prefix for an XWiki Extension id, and the "npm:" prefix for a NPM package id.</hint>
+      <idField/>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>id</name>
-      <number>1</number>
+      <number>2</number>
       <picker>1</picker>
-      <prettyName>Extension Id</prettyName>
-      <size>100</size>
+      <prettyName>Technical Identifier</prettyName>
+      <relationalStorage>1</relationalStorage>
+      <separator/>
+      <separators/>
+      <size>1</size>
+      <sort>id</sort>
+      <sql/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </id>
   </class>
   <object>
