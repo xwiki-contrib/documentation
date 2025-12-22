@@ -79,7 +79,7 @@
 ##end
 {{/velocity}}
 
-{{uiextensions extensionPoint="org.xwiki.contrib.documentation.sheet"/}}
+{{uiextensions extensionPoint="org.xwiki.contrib.documentation.sheet.top"/}}
 
 {{velocity}}
 ## In edit mode, let the user choose the doc type + target
@@ -97,7 +97,20 @@
 #elseif ($doc.getValue('type') == 'reference')
   = Reference =
 #end
-$doc.display('content')
+## If there are UIXs, use them (so that they can display structured data), otherwise display the content as is.
+#set ($uixs = $services.uix.getExtensions('org.xwiki.contrib.documentation.sheet.content', {'sortByParameter' : 'order'}))
+#if (!$uixs.isEmpty())
+  #foreach($uix in $uixs)
+    #if ($services.security.authorization.hasAccess('admin', $uix.authorReference, $services.wiki.currentWikiDescriptor.reference))
+      #set ($content = $services.rendering.render($uix.execute(), 'html/5.0'))
+      {{html clean="false"}}
+      $content
+      {{/html}}
+    #end
+  #end
+#else
+  $doc.display('content')
+#end
 ## Display the FAQ section if it's not empty
 #if ($hasFAQ || $xcontext.action == 'edit')
   = FAQ =

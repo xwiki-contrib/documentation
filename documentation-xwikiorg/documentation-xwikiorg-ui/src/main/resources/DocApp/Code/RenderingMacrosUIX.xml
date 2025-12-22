@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.DocumentationExtensionUIX" locale="">
+<xwikidoc version="1.6" reference="DocApp.Code.RenderingMacrosUIX" locale="">
   <web>DocApp.Code</web>
-  <name>DocumentationExtensionUIX</name>
+  <name>RenderingMacrosUIX</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,17 +31,17 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>UIX for Documentation Extensions</title>
+  <title>UIX for Documenting Rendering Macros</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>DocApp.Code.DocumentationExtensionUIX</name>
+    <name>DocApp.Code.RenderingMacrosUIX</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>b3cc43fc-017e-4028-a099-5d42e6aa70a3</guid>
+    <guid>168b08bc-8225-45b1-a7a1-ed8323905633</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -164,21 +164,30 @@
     </property>
     <property>
       <content>{{velocity}}
-#set ($extensionObject = $doc.getObject('DocApp.Code.DocumentationExtensionClass'))
-#if ($xcontext.action == 'edit')
-  #if ($extensionObject)
-  = Extension Id =
-  $doc.display('id', $extensionObject)
+#set ($macroObject = $doc.getObject('DocApp.Code.RenderingMacroClass'))
+#if ($macroObject)
+  == Description ==
 
-  #end
+  $doc.display('description', $macroObject)
+
+  == Parameters ==
+
+  $doc.display('parameters', $macroObject)
+
+  == Examples ==
+
+  $doc.display('examples', $macroObject)
+#else
+  $doc.display('content')
 #end
-{{/velocity}}</content>
+{{/velocity}}
+</content>
     </property>
     <property>
-      <extensionPointId>org.xwiki.contrib.documentation.sheet.top</extensionPointId>
+      <extensionPointId>org.xwiki.contrib.documentation.sheet.content</extensionPointId>
     </property>
     <property>
-      <name>org.xwiki.contrib.documentation.xwikiorg.sheet.top</name>
+      <name>org.xwiki.contrib.documentation.xwikiorg.sheet.content</name>
     </property>
     <property>
       <parameters/>
