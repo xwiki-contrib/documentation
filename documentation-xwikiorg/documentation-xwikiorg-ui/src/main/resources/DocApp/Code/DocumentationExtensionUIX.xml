@@ -170,7 +170,7 @@
   = Technical Id =
   Format:
   * For XWiki extensions: {{{xwiki:&lt;extension group id&gt;:&lt;extension artifact id&gt;}}}. Example: {{{xwiki:org.xwiki.platform:xwiki-platform-icon-macro}}}
-  * For NPM packages: {{{npm:&lt;package id&gt;}}}. Example: {{{@xwiki/cristal-dsapi}}}
+  * For NPM packages: {{{npm:&lt;package id&gt;}}}. Example: {{{npm:@xwiki/cristal-dsapi}}}
   $doc.display('id', $extensionObject)
 
   #end
