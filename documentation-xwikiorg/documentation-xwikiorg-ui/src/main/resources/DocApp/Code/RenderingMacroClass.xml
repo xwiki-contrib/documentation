@@ -71,7 +71,7 @@
       <editor>---</editor>
       <hint>Macro Examples</hint>
       <name>examples</name>
-      <number>3</number>
+      <number>4</number>
       <picker>1</picker>
       <prettyName>Macro Examples</prettyName>
       <restricted>0</restricted>
@@ -89,7 +89,7 @@
       <editor>---</editor>
       <hint>Macro parameters</hint>
       <name>parameters</name>
-      <number>2</number>
+      <number>3</number>
       <picker>1</picker>
       <prettyName>Macro Parameters</prettyName>
       <restricted>0</restricted>
@@ -100,5 +100,23 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </parameters>
+    <usage>
+      <contenttype>---</contenttype>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <hint/>
+      <name>usage</name>
+      <number>2</number>
+      <picker>1</picker>
+      <prettyName>Macro Usage</prettyName>
+      <restricted>0</restricted>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </usage>
   </class>
 </xwikidoc>

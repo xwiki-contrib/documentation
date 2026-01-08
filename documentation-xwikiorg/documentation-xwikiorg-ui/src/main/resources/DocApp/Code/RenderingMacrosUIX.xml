@@ -170,6 +170,10 @@
 
   $doc.display('description', $macroObject)
 
+  == Usage ==
+
+  $doc.display('usage', $macroObject)
+
   == Parameters ==
 
   $doc.display('parameters', $macroObject)
