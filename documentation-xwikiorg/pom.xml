@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.contrib.documentation</groupId>
     <artifactId>documentation</artifactId>
-    <version>1.8</version>
+    <version>1.9-SNAPSHOT</version>
   </parent>
   <artifactId>documentation-xwikiorg</artifactId>
   <name>Documentation Application - XWiki.org - Parent POM</name>
