@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.RenderingMacrosUIX" locale="">
+<xwikidoc version="1.6" reference="DocApp.Code.UIXPUIX" locale="">
   <web>DocApp.Code</web>
-  <name>RenderingMacrosUIX</name>
+  <name>UIXPUIX</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,17 +31,17 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>UIX for Documenting Rendering Macros</title>
+  <title>UIX for Documenting UIXPs</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>DocApp.Code.RenderingMacrosUIX</name>
+    <name>DocApp.Code.UIXPUIX</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>168b08bc-8225-45b1-a7a1-ed8323905633</guid>
+    <guid>3722c629-be35-4d7f-9a1a-98bbd7668cc4</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -164,32 +164,98 @@
     </property>
     <property>
       <content>{{velocity}}
-#set ($macroObject = $doc.getObject('DocApp.Code.RenderingMacroClass'))
-#if ($macroObject)
-  == Description ==
+#set($uix = $doc.getObject('DocApp.Code.UIXPClass'))
+#if($uix)
+  $doc.use('DocApp.Code.UIXPClass')
+  #if ($xcontext.action == 'view')
+    == Description ==
 
-  $doc.display('description', $macroObject)
+    $doc.display('description')
 
-  == Usage ==
+    == Usage ==
 
-  $doc.display('usage', $macroObject)
+    $doc.display('usage')
 
-  == Parameters ==
+    == Definition ==
 
-  $doc.display('parameters', $macroObject)
+    #set ($contributorid = $doc.getValue('contributorid'))
+    #set ($version = $doc.getValue('version'))
+    This Extension Point is contributed by [[this extension&gt;&gt;extensions:Main.WebHome||queryString="id=${contributorid}:${version}"]] and was added in version $version of that extension.
 
-  == Examples ==
+    ; **Category**
+    : $doc.display('category')
+    ; **Extension Id**
+    : $doc.display('id')
+    ; **Content to be provided**
+    #set ($content = $doc.getValue('content'))
+    #if ("$!content" != '')
+      : $doc.display('content')
+    #else
+      : No content is expected to be provided by the user of this Extension Point.
+    #end
+    ; **Parameters to be provided**
+    #set ($parameters = $doc.getValue('parameters'))
+    #if ("$!parameters" != '')
+      : $doc.display('parameters')
+    #else
+      : No parameters is expected to be provided by the user of this Extension Point.
+    #end
+    #set ($example = $doc.getValue('example'))
+    #if ("$!example" != '')
 
-  $doc.display('examples', $macroObject)
+      == Example ==
+
+      $doc.display('example')
+    #end
+  #else
+    == Extension Point Id ==
+
+    $doc.display('id')
+
+    == Content Description ==
+
+    $doc.display('content')
+
+    == Parameters Description ==
+
+    $doc.display('parameters')
+
+    == General Description of the Extension Point ==
+
+    $doc.display('description')
+
+    == Extension contributing this Extension Point ==
+
+    $doc.display('contributor')
+
+    == Id of the extension contributing this Extension Point ==
+
+    $doc.display('contributorid')
+
+    == How this Extension Point is used ==
+
+    $doc.display('usage')
+
+    == Example of using this Extension Point ==
+
+    $doc.display('example')
+
+    == Introduced in version ==
+
+    $doc.display('version')
+
+    == Category ==
+
+    $doc.display('category')
+  #end
 #end
-{{/velocity}}
-</content>
+{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.xwiki.contrib.documentation.sheet.content</extensionPointId>
     </property>
     <property>
-      <name>org.xwiki.contrib.documentation.xwikiorg.sheet.content</name>
+      <name>org.xwiki.contrib.documentation.xwikiorg.sheet.content.uixp</name>
     </property>
     <property>
       <parameters/>

@@ -98,17 +98,20 @@
   = Reference =
 #end
 ## If there are UIXs, use them (so that they can display structured data), otherwise display the content as is.
+#set ($uixExecuted = false)
 #set ($uixs = $services.uix.getExtensions('org.xwiki.contrib.documentation.sheet.content', {'sortByParameter' : 'order'}))
-#if (!$uixs.isEmpty())
-  #foreach($uix in $uixs)
-    #if ($services.security.authorization.hasAccess('admin', $uix.authorReference, $services.wiki.currentWikiDescriptor.reference))
-      #set ($content = $services.rendering.render($uix.execute(), 'html/5.0'))
+#foreach($uix in $uixs)
+  #if ($services.security.authorization.hasAccess('admin', $uix.authorReference, $services.wiki.currentWikiDescriptor.reference))
+    #set ($content = $services.rendering.render($uix.execute(), 'html/5.0').trim())
+    #if ("$!content" != '')
       {{html clean="false"}}
       $content
       {{/html}}
+      #set ($uixExecuted = true)
     #end
   #end
-#else
+#end
+#if (!$uixExecuted)
   $doc.display('content')
 #end
 ## Display the FAQ section if it's not empty
