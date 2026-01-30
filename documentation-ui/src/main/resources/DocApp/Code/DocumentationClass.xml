@@ -77,6 +77,24 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </faq>
+    <highlights>
+      <contenttype>---</contenttype>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <hint>Use a list for the titles and nested list items for the descriptions</hint>
+      <name>highlights</name>
+      <number>6</number>
+      <picker>1</picker>
+      <prettyName>Highlights</prettyName>
+      <restricted>0</restricted>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </highlights>
     <related>
       <contenttype>---</contenttype>
       <customDisplay/>

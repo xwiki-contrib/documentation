@@ -128,11 +128,50 @@
 #end
 ## Display the More section if it's not empty
 ## TODO: only display if the Ld is not empty
-= More =
+#if ($xcontext.action == 'edit')
+  = Highlights =
+  Use a list syntax to represent the different highlighted documentation pages, with the first list item level being the title and the second level, the description. For example, in XWiki Syntax 2.0+:
 
-#set ($location = $services.model.serialize($doc.documentReference.parent, 'local'))
-#set ($escapedLocation = $services.rendering.escape($location, 'xwiki/2.1'))
-{{documents location="$escapedLocation" columns="doc.title"/}}
+  {{code language="none"}}
+  * Title 1
+  ** Description 1
+  * Title 2
+  ** Description 2
+  {{/code}}
+
+  $doc.display('highlights')
+#end
+#if ($xcontext.action != 'edit')
+  = More =
+  #set ($highlights = $doc.getValue('highlights'))
+  #if ("$!highlights" != '')
+    $services.localization.render('docapp.more.textWithHighlights')
+  #else
+    $services.localization.render('docapp.more.textWithoutHighlights')
+  #end
+
+  {{html}}
+    &lt;form action="$xwiki.getURL('DocApp.Code.DocumentationSearch')" class="xformInline"&gt;
+      &lt;div&gt;
+        &lt;input type="hidden" name="space" value="${doc.space}" /&gt;
+        &lt;input type="text" name="text" value="$services.localization.render('docapp.search.questionHint')" size="32" class="withTip" /&gt;
+        &lt;span class="buttonwrapper"&gt;
+          &lt;input class="button" type="submit" value="$services.localization.render('docapp.search.submit')" /&gt;
+        &lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  {{/html}}
+
+  #if ("$!highlights" != '')
+    $xwiki.ssx.use('DocApp.Code.DocumentationSheet')
+    (% class="cardlist" %)(((
+      $doc.display('highlights')
+    )))
+  #end
+  #set ($location = $services.model.serialize($doc.documentReference.parent, 'local'))
+  #set ($escapedLocation = $services.rendering.escape($location, 'xwiki/2.1'))
+  {{documents location="$escapedLocation" columns="doc.title"/}}
+#end
 ## Display the Related section if it's not empty
 #if ($hasRelated || $xcontext.action == 'edit')
   = Related =
@@ -144,4 +183,188 @@
   $doc.display('related')
 #end
 {{/velocity}}</content>
+  <object>
+    <name>DocApp.Code.DocumentationSheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>557ee99d-61b2-4b0d-a24f-185df6284aa7</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.cardlist&gt;ul {
+     gap: 16px;
+     padding: 0;
+     display: grid;
+     margin-top: 16px;
+     margin-bottom: 16px;
+     grid-template-columns: repeat(3, 1fr);
+     grid-template-rows: 1fr;
+     grid-column-gap: 16px;
+     grid-row-gap: 16px;
+}
+
+@media screen and (min-width: 401px) and (max-width: 720px) {
+.cardlist&gt;ul {
+       gap: 8px;
+       grid-template-columns: repeat(2, 1fr);
+       grid-template-rows: repeat(3, 1fr);
+       grid-column-gap: 8px;
+       grid-row-gap: 8px;
+  }
+}
+@media screen and (max-width: 401px) {
+.cardlist&gt;ul {
+       gap: 8px;
+       grid-template-columns: repeat(1, 1fr);
+       grid-template-rows: repeat(6, 1fr);
+       grid-column-gap: 8px;
+       grid-row-gap: 8px;
+  }
+}
+.cardlist&gt;ul&gt;li {
+     display: flex;
+     flex-flow: column;
+     padding: 16px;
+     word-break: break-word;
+     hyphens: auto;
+     background-color: var(--panel-bg);
+     border-left: 4px solid var(--brand-primary);
+     border-radius: 4px;
+     list-style: none;
+     margin: 0;
+     flex-basis: 100%;
+     color: var(--text-muted);
+     font-weight: var(--font-weight-semibold);
+     box-shadow: 0 0 12px rgba(0, 0, 0, 0.08), 0 0 2px rgba(0, 0, 0, 0.1);
+     gap: 4px
+}
+.cardlist&gt;ul&gt;li a{
+  text-decoration: none;
+}
+.cardlist&gt;ul&gt;li a:hover {
+  text-decoration: underline;
+}
+.cardlist&gt;ul&gt;li li {
+     font-weight: normal;
+}
+.cardlist&gt;ul ul, .cardlist&gt;ul ul li {
+     padding: 0;
+     margin:0;
+     list-style: none;
+}
+
+
+</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Card Layout</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
 </xwikidoc>

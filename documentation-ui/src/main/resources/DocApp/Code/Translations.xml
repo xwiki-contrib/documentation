@@ -48,7 +48,10 @@ docapp.emptyvalue=(Empty)
 docapp.applicationsPanelEntryLabel=Documentation
 docapp.search.questionHint=Search documentation
 docapp.search.submit=Search
-docapp.search.text=To find specific documentation content, you can either search or filter the table columns below.</content>
+docapp.search.text=To find specific documentation content, you can either search or filter the table columns below.
+docapp.more.textWithHighlights=To find more about the current topic, you can search, select an highlighted topic, or use the table below and filter the columns to narrow your choices.
+docapp.more.textWithoutHighlights=To find more about the current topic, you can search or use the table below and filter the columns to narrow your choices.
+</content>
   <object>
     <name>DocApp.Code.Translations</name>
     <number>0</number>
