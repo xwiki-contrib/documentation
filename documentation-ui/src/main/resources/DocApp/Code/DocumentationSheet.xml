@@ -76,6 +76,12 @@
 {{toc/}}
 {{/box}}
 
+#if ($xcontext.action == 'edit')
+  = Title =
+  {{html clean="false"}}
+  &lt;input type="text" name="title" value="$!escapetool.xml($doc.title)" size="50" /&gt;
+  {{/html}}
+#end
 ##end
 {{/velocity}}
 
