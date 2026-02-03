@@ -40,6 +40,12 @@
 
 {{velocity}}
 #if ($xcontext.action == 'edit')
+  = Title =
+  {{html clean="false"}}
+  &lt;input type="text" name="title" value="$!escapetool.xml($doc.title)" size="50" /&gt;
+  {{/html}}
+#end
+#if ($xcontext.action == 'edit')
 = Target =
 Leave undefined to display a LiveData containing all docummentation page targets.
 
@@ -92,7 +98,7 @@ $doc.display('summary')
       &lt;form action="$xwiki.getURL('DocApp.Code.DocumentationSearch')" class="xformInline"&gt;
         &lt;div&gt;
           &lt;input type="hidden" name="space" value="${doc.space}" /&gt;
-          &lt;input type="text" name="text" placeholder="$services.localization.render('docapp.search.questionHint')" size="32" /&gt;
+          &lt;input type="text" name="text" value="$services.localization.render('docapp.search.questionHint')" size="32" class="withTip" /&gt;
           &lt;span class="buttonwrapper"&gt;
             &lt;input class="button" type="submit" value="$services.localization.render('docapp.search.submit')" /&gt;
           &lt;/span&gt;
