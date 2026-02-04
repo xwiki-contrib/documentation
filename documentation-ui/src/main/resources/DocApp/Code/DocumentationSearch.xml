@@ -45,7 +45,6 @@
     'filterQuery': [
       'type:DOCUMENT',
       "wiki:$xcontext.database",
-      "space_prefix:${request.space}",
       'class:DocApp.Code.DocumentationClass'
     ]
   })
