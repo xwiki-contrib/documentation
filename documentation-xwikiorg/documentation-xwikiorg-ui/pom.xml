@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.contrib.documentation</groupId>
     <artifactId>documentation-xwikiorg</artifactId>
-    <version>1.9</version>
+    <version>1.10-SNAPSHOT</version>
   </parent>
   <artifactId>documentation-xwikiorg-ui</artifactId>
   <name>Documentation Application - XWiki.org - UI</name>

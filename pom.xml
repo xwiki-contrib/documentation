@@ -29,7 +29,7 @@
   </parent>
   <groupId>org.xwiki.contrib.documentation</groupId>
   <artifactId>documentation</artifactId>
-  <version>1.9</version>
+  <version>1.10-SNAPSHOT</version>
   <name>Documentation Application - Parent POM</name>
   <description>Parent POM for the Documentation Application modules</description>
   <packaging>pom</packaging>
