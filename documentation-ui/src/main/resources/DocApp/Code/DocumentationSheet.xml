@@ -160,7 +160,7 @@
     &lt;form action="$xwiki.getURL('DocApp.Code.DocumentationSearch')" class="xformInline"&gt;
       &lt;div&gt;
         &lt;input type="hidden" name="f_space_prefix" value="${doc.space}" /&gt;
-        &lt;input type="text" name="text" value="$services.localization.render('docapp.search.questionHint')" size="32" class="withTip" /&gt;
+        &lt;input type="text" name="text" placeholder="$services.localization.render('docapp.search.questionHint')" size="32" /&gt;
         &lt;span class="buttonwrapper"&gt;
           &lt;input class="button" type="submit" value="$services.localization.render('docapp.search.submit')" /&gt;
         &lt;/span&gt;
