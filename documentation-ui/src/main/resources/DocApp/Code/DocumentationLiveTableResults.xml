@@ -39,8 +39,14 @@
   <content>{{include reference="XWiki.LiveTableResultsMacros" /}}
 
 {{velocity wiki="false"}}
+## Exclude the DocApp Code and Data spaces so that entries from there are not listed in LiveDatas.
 #set ($extra = 'AND doc.space &lt;&gt; :docapp_code_space AND doc.space &lt;&gt; :docapp_data_space')
 #set ($params = {'docapp_code_space' : 'DocApp.Code', 'docapp_data_space' : 'DocApp.Data'})
+## Also exclude the current page, if asked.
+#if ("$!request.current" != '')
+  #set ($extra = "$extra AND doc.fullName &lt;&gt; :docapp_currentdoc")
+  #set ($discard = $params.put('docapp_currentdoc', "$!request.current"))
+#end
 ## Use filterLocation since addLivetableLocationFilter is buggy when called several times (it'll add the
 ## same HQL binding name every time it's called! See https://jira.xwiki.org/browse/XWIKI-17463).
 ## Also note that we don't call addLocationFilter since we use a Map for $params.

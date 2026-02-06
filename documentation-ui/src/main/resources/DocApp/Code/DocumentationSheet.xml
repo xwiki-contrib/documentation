@@ -132,8 +132,6 @@
   #end
   $doc.display('faq')
 #end
-## Display the More section if it's not empty
-## TODO: only display if the Ld is not empty
 #if ($xcontext.action == 'edit')
   = Highlights =
   Use a list syntax to represent the different highlighted documentation pages, with the first list item level being the title and the second level, the description. For example, in XWiki Syntax 2.0+:
@@ -148,35 +146,59 @@
   $doc.display('highlights')
 #end
 #if ($xcontext.action != 'edit')
-  = More =
-  #set ($highlights = $doc.getValue('highlights'))
-  #if ("$!highlights" != '')
-    $services.localization.render('docapp.more.textWithHighlights')
-  #else
-    $services.localization.render('docapp.more.textWithoutHighlights')
-  #end
-
-  {{html}}
-    &lt;form action="$xwiki.getURL('DocApp.Code.DocumentationSearch')" class="xformInline"&gt;
-      &lt;div&gt;
-        &lt;input type="hidden" name="f_space_prefix" value="${doc.space}" /&gt;
-        &lt;input type="text" name="text" placeholder="$services.localization.render('docapp.search.questionHint')" size="32" /&gt;
-        &lt;span class="buttonwrapper"&gt;
-          &lt;input class="button" type="submit" value="$services.localization.render('docapp.search.submit')" /&gt;
-        &lt;/span&gt;
-      &lt;/div&gt;
-    &lt;/form&gt;
-  {{/html}}
-
-  #if ("$!highlights" != '')
-    $xwiki.ssx.use('DocApp.Code.DocumentationSheet')
-    (% class="cardlist" %)(((
-      $doc.display('highlights')
-    )))
-  #end
+  ## Display the More section if the LD contains more than the current page (i.e. more than 1 entry).
+  ## This is achieved by:
+  ## - Using the LD script service to compute how many results are returned
+  ## - Using a custom LD results page that filters out the current page. We pass a "current" query string parameter to identify the current page.
   #set ($location = $services.model.serialize($doc.documentReference.parent, 'local'))
-  #set ($escapedLocation = $services.rendering.escape($location, 'xwiki/2.1'))
-  {{documents location="$escapedLocation" columns="doc.title"/}}
+  #set ($sourceParameters = {
+    'className' : 'DocApp.Code.DocumentationClass',
+    'resultPage' : 'DocApp.Code.DocumentationLiveTableResults',
+    'translationPrefix' : 'platform.index.',
+    'location' : "$location",
+    'current' : "$doc.fullName"
+  })
+  ## Not working for some reason:
+  ##     'sourceParameters' : "$services.rendering.escape($escapetool.url($sourceParameters), 'xwiki/2.1')"
+  #set ($properties = {
+    'id' : 'more',
+    'properties' : 'doc.title',
+    'source' : 'liveTable',
+    'sourceParameters' : "$escapetool.url($sourceParameters)"
+  })
+  #set ($count = $services.liveData.query($properties).count)
+  #if ($count &gt; 0)
+    = More =
+    #set ($highlights = $doc.getValue('highlights'))
+    #if ("$!highlights" != '')
+      $services.localization.render('docapp.more.textWithHighlights')
+    #else
+      $services.localization.render('docapp.more.textWithoutHighlights')
+    #end
+
+    {{html}}
+      &lt;form action="$xwiki.getURL('DocApp.Code.DocumentationSearch')" class="xformInline"&gt;
+        &lt;div&gt;
+          &lt;input type="hidden" name="f_space_prefix" value="${doc.space}" /&gt;
+          &lt;input type="text" name="text" value="$services.localization.render('docapp.search.questionHint')" size="32" class="withTip" /&gt;
+          &lt;span class="buttonwrapper"&gt;
+            &lt;input class="button" type="submit" value="$services.localization.render('docapp.search.submit')" /&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+    {{/html}}
+
+    #if ("$!highlights" != '')
+      $xwiki.ssx.use('DocApp.Code.DocumentationSheet')
+      (% class="cardlist" %)(((
+        $doc.display('highlights')
+      )))
+    #end
+
+    {{html}}
+      $services.liveData.render($properties)
+    {{/html}}
+  #end
 #end
 ## Display the Related section if it's not empty
 #if ($hasRelated || $xcontext.action == 'edit')
