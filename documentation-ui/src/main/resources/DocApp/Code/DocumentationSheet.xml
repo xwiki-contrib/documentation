@@ -189,7 +189,7 @@
     {{/html}}
 
     #if ("$!highlights" != '')
-      $xwiki.ssx.use('DocApp.Code.DocumentationSheet')
+      #set ($discard = $xwiki.ssx.use('DocApp.Code.DocumentationSheet'))
       (% class="cardlist" %)(((
         $doc.display('highlights')
       )))
