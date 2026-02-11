@@ -460,7 +460,7 @@ New feature...
     </property>
     <property>
       <code>{{velocity}}
-#set ($discard = $xwiki.ssx.use('DocApp.Code.VersionMacro'))
+#set ($discard = $xwiki.ssx.use($wikimacro.doc.documentReference))
 #set ($versions = [])
 #set ($plainVersions = [])
 #set ($product = $wikimacro.parameters.product)
