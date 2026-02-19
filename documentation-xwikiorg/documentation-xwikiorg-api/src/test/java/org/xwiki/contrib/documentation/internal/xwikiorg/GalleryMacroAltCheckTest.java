@@ -80,5 +80,23 @@ class GalleryMacroAltCheckTest
             violations.get(1).getViolationContext());
         assertEquals(DocumentationViolationSeverity.WARNING, violations.get(1).getViolationSeverity());
     }
+
+    @Test
+    void checkWheGalleryMacroImageIsHavingAltText() throws Exception
+    {
+        String input = """          
+            {{gallery}}
+            [[image:alice.png||alt="test"]]
+            {{/gallery}}
+            """;
+        XWikiDocument document = new XWikiDocument(new DocumentReference("wiki", "space", "page"));
+        document.setSyntax(Syntax.XWIKI_2_1);
+        document.setContent(input);
+        this.oldcore.getSpyXWiki().saveDocument(document, this.oldcore.getXWikiContext());
+
+        List<DocumentationViolation> violations = this.check.check(document);
+
+        assertEquals(0, violations.size());
+    }
 }
 
