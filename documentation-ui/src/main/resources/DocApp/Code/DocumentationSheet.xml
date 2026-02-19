@@ -162,7 +162,7 @@
   ##     'sourceParameters' : "$services.rendering.escape($escapetool.url($sourceParameters), 'xwiki/2.1')"
   #set ($properties = {
     'id' : 'more',
-    'properties' : 'doc.title',
+    'properties' : 'doc.title,type',
     'source' : 'liveTable',
     'sourceParameters' : "$escapetool.url($sourceParameters)"
   })
