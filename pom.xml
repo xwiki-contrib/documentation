@@ -34,8 +34,8 @@
   <description>Parent POM for the Documentation Application modules</description>
   <packaging>pom</packaging>
   <properties>
-    <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
-    <xwiki.issueManagement.jira.id>XDOC</xwiki.issueManagement.jira.id>
+    <xwiki.issueManagement.system>openproject</xwiki.issueManagement.system>
+    <xwiki.issueManagement.url>https://op.xwiki.org/projects/documentation-application</xwiki.issueManagement.url>
   </properties>
   <scm>
     <connection>scm:git:git://github.com/xwiki-contrib/documentation.git</connection>
