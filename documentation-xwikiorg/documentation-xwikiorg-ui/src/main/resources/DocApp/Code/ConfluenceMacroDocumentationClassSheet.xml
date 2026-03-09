@@ -38,30 +38,30 @@
   <hidden>true</hidden>
   <content>{{velocity}}
   #macro (renderMaybeLink $page $anchor $url $content)
-    #if ($url == "-" || $url == "?")
-      #set ($url = "")
+    #if ($url == '-' || $url == '?')
+      #set ($url = '')
     #end
-    #if ("$!page" != "")
+    #if ("$!page" != '')
       [[##
-    #elseif ("$!url" != "" &amp;&amp; $url.startsWith("http"))
+    #elseif ("$!url" != '' &amp;&amp; $url.startsWith('http'))
       {{html clean=false}}&lt;a href="$escapetool.xml($url)"&gt;{{/html}}##
     #end##
     $content##
-    #if ("$!page" != "")
+    #if ("$!page" != '')
       &gt;&gt;$page##
-      #if ("$!anchor" != "")
+      #if ("$!anchor" != '')
         ||anchor="$anchor"##
       #end##
       ]]##
-    #elseif ("$!url" != "" &amp;&amp; $url.startsWith("http"))
+    #elseif ("$!url" != '' &amp;&amp; $url.startsWith("http"))
       {{html clean=false}}&lt;/a&gt;{{/html}}##
     #end##
   #end
   #set ($className = 'DocApp.Code.ConfluenceMacroDocumentationClass')
   #set ($macroObj = $doc.getObject($className))
   #set ($confluenceId = $macroObj.confluenceId)
-  #if ("$!confluenceId" != "")
-    #set($res = $services.query.xwql("select doc.fullName from Document doc, doc.object(DocApp.Code.ConfluenceMacroDocumentationClass) obj where obj.confluenceId = :confluenceId").bindValue('confluenceId', $confluenceId).execute())
+  #if ("$!confluenceId" != '')
+    #set($res = $services.query.xwql('from doc.object(DocApp.Code.ConfluenceMacroDocumentationClass) obj where obj.confluenceId = :confluenceId').bindValue('confluenceId', $confluenceId).execute())
     #if ($res.size() &gt; 1)
       {{warning}}
       It seems that this macro is also documented elsewhere:
@@ -76,7 +76,7 @@
   #end
   #if ($macroObj != $NULL)
     #set($class = $macroObj.xWikiClass)
-    #if ($xcontext.action == "edit")
+    #if ($xcontext.action == 'edit')
       #foreach($property in $class.properties)
         ; $property.prettyName
         : $doc.display($property.getName())
@@ -94,41 +94,41 @@
       #end
 
       Confluence macro ##
-      #set ($confluenceURL = $macroObj.getValue("confluenceURL"))
-      #renderMaybeLink("" "" $confluenceURL, "{{code language='none'}}$confluenceId{{/code}}")
+      #set ($confluenceURL = $macroObj.getValue('confluenceURL'))
+      #renderMaybeLink('' '' $confluenceURL, "{{code language='none'}}$confluenceId{{/code}}")
       #set ($handling = $macroObj.getValue('handling'))
       #set ($xwikiId = $macroObj.getValue('xwikiId'))
       #set ($xwikiURL = $macroObj.getValue('xwikiURL'))
       #set ($xwikiPage = $macroObj.getValue('xwikiPage'))
       #set ($xwikiPageAnchor = $macroObj.getValue('xwikiPageAnchor'))
-      #if ($handling == "conversion")
-        #if ("$!xwikiId" == "")
-          #set ($xwikiIdContent = "some syntax") ##
+      #if ($handling == 'conversion')
+        #if ("$!xwikiId" == '')
+          #set ($xwikiIdContent = 'some syntax') ##
         #else
           #set ($xwikiIdContent = "macro {{code language='none'}}$xwikiId{{/code}}") ##
         #end
         is converted to ##
         #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $xwikiIdContent) ##
-      #elseif ($handling == "bridge")
+      #elseif ($handling == 'bridge')
         is covered by the ##
         #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, "{{code language}}$xwikiId{{/code}} bridge macro")##
-      #elseif ($handling == "direct")
+      #elseif ($handling == 'direct')
         is imported ##
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, "as-is")##
+        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, 'as-is')##
       #else
         uses ##
         #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $handling) conversion ##
       #end##
       #set ($requiredForUsage = $macroObj.getValue('requiredForUsage'))
-      #if ($requiredForUsage == "XWiki Standard")
+      #if ($requiredForUsage == 'XWiki Standard')
         which a standard installation of XWiki provides##
-      #elseif ("$!requiredForUsage" != "" &amp;&amp; !$requiredForUsage.startsWith('http'))
+      #elseif ("$!requiredForUsage" != '' &amp;&amp; !$requiredForUsage.startsWith('http'))
         which requires $requiredForUsage##
       #else
         #set ($requiredForUsageId = $macroObj.getValue('requiredForUsageId'))
         #set ($requiredForUsageContent = $requiredForUsageId)
-        #if ("$!requiredForUsageContent" == "")
-          #set ($requiredForUsageContent = "this")
+        #if ("$!requiredForUsageContent" == '')
+          #set ($requiredForUsageContent = 'this')
         #end
         which requires ##
         #set ($requiredForUsagePage = $macroObj.getValue('requiredForUsagePage'))
@@ -139,44 +139,44 @@
       #set ($requiredForImportPage = $macroObj.getValue('requiredForImportPage'))
       #set ($requiredForImportPageAnchor = $macroObj.getValue('requiredForImportPageAnchor'))
       #set ($requiredForImportId = $macroObj.getValue('requiredForImportId'))
-      #if ("$!requiredForImportId" == "")
-          #if ("$!requiredForImport" != "")
+      #if ("$!requiredForImportId" == '')
+          #if ("$!requiredForImport" != '')
             Importing this macro requires $requiredForImport. ##
           #end
-      #elseif ($requiredForImportId == "org.xwiki.contrib.confluence:confluence-xml" || $requiredForImportId == "com.xwiki.confluence:confluence-migration-package-ui")
+      #elseif ($requiredForImportId == 'org.xwiki.contrib.confluence:confluence-xml' || $requiredForImportId == 'com.xwiki.confluence:confluence-migration-package-ui')
           Importing this macro doesn't requires anything specific apart from the standard migration tools. ##
       #else
           Importing this macro requires ##
           #renderMaybeLink($requiredForImportPage, $requiredForImportPageAnchor, $requiredForImport, "package {{code language='none'}}$requiredForImportId{{/code}}"). ##
       #end
-      #set ($equivXWikiFeatureURL = $macroObj.getValue("equivXWikiFeatureURL"))
-      #set ($equivXWikiFeaturePageAnchor = $macroObj.getValue("equivXWikiFeaturePageAnchor"))
+      #set ($equivXWikiFeatureURL = $macroObj.getValue('equivXWikiFeatureURL'))
+      #set ($equivXWikiFeaturePageAnchor = $macroObj.getValue('equivXWikiFeaturePageAnchor'))
       #if ("$!equivXWikiFeaturePageAnchor" != '')
         #set ($equivXWikiFeaturePageAnchor = $equivXWikiFeaturePageAnchor + '||anchor="anchor"')'
       #end
-      #set ($equivXWikiFeaturePage = $macroObj.getValue("equivXWikiFeaturePage"))
-      #set ($correspondingXWikiFeature = $macroObj.getValue("correspondingXWikiFeature"))
-      #if ("$!equivXWikiFeatureURL" != "" || "$!correspondingXWikiFeature" != "")
+      #set ($equivXWikiFeaturePage = $macroObj.getValue('equivXWikiFeaturePage'))
+      #set ($correspondingXWikiFeature = $macroObj.getValue('correspondingXWikiFeature'))
+      #if ("$!equivXWikiFeatureURL" != '' || "$!correspondingXWikiFeature" != '')
 
         == What to use in XWiki
 
         $!correspondingXWikiFeature
-        #if ("$!equivXWikiFeaturePage" != "")
+        #if ("$!equivXWikiFeaturePage" != '')
 
-          #if ("$!equivXWikiFeaturePageAnchor" == "")
+          #if ("$!equivXWikiFeaturePageAnchor" == '')
             See [[$equivXWikiFeaturePage]]
           #else
             See [[$equivXWikiFeaturePage||anchor="$equivXWikiFeaturePageAnchor"]]
           #end
-        #elseif ("$!equivXWikiFeatureURL" != "" &amp;&amp; $equivXWikiFeatureURL != "?")
+        #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?')
 
           See $equivXWikiFeatureURL
         #end
       #end
-      #set ($handlingDetails = $macroObj.getValue("handlingDetails"))
-      #if ("$!handlingDetails" != "")
+      #set ($handlingDetails = $macroObj.getValue('handlingDetails'))
+      #if ("$!handlingDetails" != '')
 
-        == Import details
+        == Import details ==
 
         $handlingDetails
       #end
