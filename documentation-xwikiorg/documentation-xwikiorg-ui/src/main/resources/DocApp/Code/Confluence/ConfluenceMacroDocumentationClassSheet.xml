@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.ConfluenceMacroDocumentationClassSheet" locale="">
-  <web>DocApp.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Code.Confluence.ConfluenceMacroDocumentationClassSheet" locale="">
+  <web>DocApp.Code.Confluence</web>
   <name>ConfluenceMacroDocumentationClassSheet</name>
   <language/>
   <defaultLanguage/>
@@ -57,11 +57,11 @@
       {{html clean=false}}&lt;/a&gt;{{/html}}##
     #end##
   #end
-  #set ($className = 'DocApp.Code.ConfluenceMacroDocumentationClass')
+  #set ($className = 'DocApp.Code.Confluence.ConfluenceMacroDocumentationClass')
   #set ($macroObj = $doc.getObject($className))
   #set ($confluenceId = $macroObj.confluenceId)
   #if ("$!confluenceId" != '')
-    #set($res = $services.query.xwql('from doc.object(DocApp.Code.ConfluenceMacroDocumentationClass) obj where obj.confluenceId = :confluenceId').bindValue('confluenceId', $confluenceId).execute())
+    #set($res = $services.query.xwql('from doc.object(DocApp.Code.Confluence.ConfluenceMacroDocumentationClass) obj where obj.confluenceId = :confluenceId').bindValue('confluenceId', $confluenceId).execute())
     #if ($res.size() &gt; 1)
       {{warning}}
       It seems that this macro is also documented elsewhere:

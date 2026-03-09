@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.ConfluenceMacroDocumentationClass" locale="">
-  <web>DocApp.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Code.Confluence.ConfluenceMacroDocumentationClass" locale="">
+  <web>DocApp.Code.Confluence</web>
   <name>ConfluenceMacroDocumentationClass</name>
   <language/>
   <defaultLanguage/>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>DocApp.Code.ConfluenceMacroDocumentationClass</name>
+    <name>DocApp.Code.Confluence.ConfluenceMacroDocumentationClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -428,7 +428,7 @@
     </xwikiURL>
   </class>
   <object>
-    <name>DocApp.Code.ConfluenceMacroDocumentationClass</name>
+    <name>DocApp.Code.Confluence.ConfluenceMacroDocumentationClass</name>
     <number>0</number>
     <className>XWiki.ClassSheetBinding</className>
     <guid>86aaa138-24f4-4010-ab7a-6eeb44493132</guid>
@@ -468,11 +468,11 @@
       </sheet>
     </class>
     <property>
-      <sheet>DocApp.Code.ConfluenceMacroDocumentationClassSheet</sheet>
+      <sheet>DocApp.Code.Confluence.ConfluenceMacroDocumentationClassSheet</sheet>
     </property>
   </object>
   <object>
-    <name>DocApp.Code.ConfluenceMacroDocumentationClass</name>
+    <name>DocApp.Code.Confluence.ConfluenceMacroDocumentationClass</name>
     <number>0</number>
     <className>XWiki.DocumentSheetBinding</className>
     <guid>cdcc2107-b189-4742-a8f4-aca6abac8dcb</guid>

@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.ConfluencePluginDocumentationClassSheet" locale="">
-  <web>DocApp.Code</web>
+<xwikidoc version="1.6" reference="DocApp.Code.Confluence.ConfluencePluginDocumentationClassSheet" locale="">
+  <web>DocApp.Code.Confluence</web>
   <name>ConfluencePluginDocumentationClassSheet</name>
   <language/>
   <defaultLanguage/>
@@ -37,7 +37,7 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#set ($obj = $doc.getObject('DocApp.Code.ConfluencePluginDocumentationClass'))
+#set ($obj = $doc.getObject('DocApp.Code.Confluence.ConfluencePluginDocumentationClass'))
 #set ($url = $obj.get('url'))
 #set ($id = $obj.get('id'))
 
