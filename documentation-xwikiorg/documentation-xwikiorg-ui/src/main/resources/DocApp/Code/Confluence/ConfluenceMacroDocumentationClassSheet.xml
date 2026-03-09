@@ -94,7 +94,7 @@
 
       Confluence macro ##
       #set ($confluenceURL = $macroObj.getValue('confluenceURL'))
-      #renderMaybeLink('' '' $confluenceURL, "{{code language='none'}}$confluenceId{{/code}}")
+      #renderMaybeLink('' '' $confluenceURL, "{{code language='none'}}$confluenceId{{/code}}") ##
       #set ($handling = $macroObj.getValue('handling'))
       #set ($xwikiId = $macroObj.getValue('xwikiId'))
       #set ($xwikiURL = $macroObj.getValue('xwikiURL'))
@@ -110,19 +110,19 @@
         #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $xwikiIdContent) ##
       #elseif ($handling == 'bridge')
         is covered by the ##
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, "{{code language}}$xwikiId{{/code}} bridge macro")##
+        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, "{{code language}}$xwikiId{{/code}} bridge macro") ##
       #elseif ($handling == 'direct')
         is imported ##
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, 'as-is')##
+        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, 'as-is') ##
       #else
         uses ##
         #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $handling) conversion ##
       #end##
       #set ($requiredForUsage = $macroObj.getValue('requiredForUsage'))
       #if ($requiredForUsage == 'XWiki Standard')
-        which a standard installation of XWiki provides##
+        which a standard installation of XWiki provides ##
       #elseif ("$!requiredForUsage" != '' &amp;&amp; !$requiredForUsage.startsWith('http'))
-        which requires $requiredForUsage##
+        which requires $requiredForUsage ##
       #else
         #set ($requiredForUsageId = $macroObj.getValue('requiredForUsageId'))
         #set ($requiredForUsageContent = $requiredForUsageId)
@@ -140,7 +140,7 @@
       #set ($requiredForImportId = $macroObj.getValue('requiredForImportId'))
       #if ("$!requiredForImportId" == '')
           #if ("$!requiredForImport" != '')
-            Importing this macro requires $requiredForImport. ##
+            Importing this macro requires $doc.display('requiredForImport'). ##
           #end
       #elseif ($requiredForImportId == 'org.xwiki.contrib.confluence:confluence-xml' || $requiredForImportId == 'com.xwiki.confluence:confluence-migration-package-ui')
           Importing this macro doesn't requires anything specific apart from the standard migration tools. ##
@@ -169,7 +169,7 @@
           #end
         #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?')
 
-          See $equivXWikiFeatureURL
+          See $doc.display('equivXWikiFeatureURL')
         #end
       #end
       #set ($handlingDetails = $macroObj.getValue('handlingDetails'))
@@ -177,7 +177,7 @@
 
         == Import details ==
 
-        $handlingDetails
+        $doc.display('handlingDetails')
       #end
     #end
   #end

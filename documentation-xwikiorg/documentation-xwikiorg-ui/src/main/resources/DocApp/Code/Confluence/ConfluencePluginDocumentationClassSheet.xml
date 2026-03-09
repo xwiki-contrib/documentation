@@ -42,13 +42,13 @@
 #set ($id = $obj.get('id'))
 
 #if ("$!url" != "" || $xcontext.action == 'edit')
-URL: $url
+URL: $doc.display('url')
 #end
 
-$!obj.get('description')
+$doc.display('description')
 
 #if ("$!id" != '' || $xcontext.action == 'edit')
-  Confluence plugin id: $id
+  Confluence plugin id: $doc.display('id')
 #end
 {{/velocity}}
 
