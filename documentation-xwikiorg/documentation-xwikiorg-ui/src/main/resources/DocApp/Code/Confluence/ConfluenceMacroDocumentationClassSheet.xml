@@ -61,14 +61,13 @@
   #set ($macroObj = $doc.getObject($className))
   #set ($confluenceId = $macroObj.confluenceId)
   #if ("$!confluenceId" != '')
-    #set($res = $services.query.xwql('from doc.object(DocApp.Code.Confluence.ConfluenceMacroDocumentationClass) obj where obj.confluenceId = :confluenceId').bindValue('confluenceId', $confluenceId).execute())
-    #if ($res.size() &gt; 1)
+    #set($queryStr = 'from doc.object(DocApp.Code.Confluence.ConfluenceMacroDocumentationClass) obj where obj.confluenceId = :confluenceId and doc.fullName &lt;&gt; :currentDocFullname')
+    #set($res = $services.query.xwql($queryStr).bindValue('confluenceId', $confluenceId).bindValue('currentDocFullname', $doc.fullName).execute())
+    #if ($res.size() &gt; 0)
       {{warning}}
       It seems that this macro is also documented elsewhere:
       #foreach ($i in $res)
-        #if ($i != $doc.fullName)
         * [[$services.rendering.escape($services.rendering.escape($i, 'xwiki/2.1'), 'xwiki/2.1')&gt;&gt;$i]]
-        #end
       #end
 {{/warning}}
 
