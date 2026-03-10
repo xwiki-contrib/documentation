@@ -38,16 +38,26 @@
   <hidden>true</hidden>
   <content>{{velocity}}
 #set ($obj = $doc.getObject('DocApp.Code.Confluence.ConfluencePluginDocumentationClass'))
-#set ($url = $obj.get('url'))
-#set ($id = $obj.get('id'))
 
-#if ("$!url" != "" || $xcontext.action == 'edit')
-URL: $doc.display('url')
+#if ("$!obj.get('url')" != "" || $xcontext.action == 'edit')
+Documentation URL: $doc.display('url')
+
 #end
+#if ("$!obj.get('marketPlaceURL')" != "" || $xcontext.action == 'edit')
+Atlassian marketplace URL: $doc.display('marketPlaceURL')
 
+#end
+#if ("$!obj.get('pluginName')" != "" || $xcontext.action == 'edit')
+Plugin name: $doc.display('pluginName')
+
+#end
+#if ("$!obj.get('publisher')" != "" || $xcontext.action == 'edit')
+Plugin publisher: $doc.display('publisher')
+
+#end
 $doc.display('description')
 
-#if ("$!id" != '' || $xcontext.action == 'edit')
+#if ("$!obj.get('id')" != '' || $xcontext.action == 'edit')
   Confluence plugin id: $doc.display('id')
 #end
 {{/velocity}}

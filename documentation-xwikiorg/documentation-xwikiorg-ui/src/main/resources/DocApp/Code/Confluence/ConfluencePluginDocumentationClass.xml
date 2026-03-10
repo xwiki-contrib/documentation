@@ -53,7 +53,7 @@
       <editor>Wysiwyg</editor>
       <hint>A description of the plugin</hint>
       <name>description</name>
-      <number>2</number>
+      <number>5</number>
       <picker>0</picker>
       <prettyName>Description</prettyName>
       <restricted>0</restricted>
@@ -77,7 +77,7 @@
       <largeStorage>0</largeStorage>
       <multiSelect>1</multiSelect>
       <name>id</name>
-      <number>4</number>
+      <number>6</number>
       <picker>1</picker>
       <prettyName>Plugin ID(s)</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -92,6 +92,76 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </id>
+    <marketPlaceURL>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Link to the Atlassian marketplace URL.</hint>
+      <name>marketPlaceURL</name>
+      <number>2</number>
+      <picker>1</picker>
+      <prettyName>Market place URL</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </marketPlaceURL>
+    <pluginName>
+      <cache>0</cache>
+      <classname>Extension.Confluence.Code.ConfluencePluginDocumentationClass</classname>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>For some plugin, in the life of the plugin, the name changed and this field is here to help to understand the plugin history and associate the plugin with this documentation.</hint>
+      <idField>pluginName</idField>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
+      <name>pluginName</name>
+      <number>3</number>
+      <picker>1</picker>
+      <prettyName>Plugin name</prettyName>
+      <relationalStorage>1</relationalStorage>
+      <separator> ,</separator>
+      <separators>,</separators>
+      <size>1</size>
+      <sort/>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </pluginName>
+    <publisher>
+      <cache>0</cache>
+      <classname>Extension.Confluence.Code.ConfluencePluginDocumentationClass</classname>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>The name of the compagny who is publishing this confluence plugin. This could contains multiple value in case of the plublisher changed in the plugin history.</hint>
+      <idField>publisher</idField>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
+      <name>publisher</name>
+      <number>4</number>
+      <picker>1</picker>
+      <prettyName>Publisher</prettyName>
+      <relationalStorage>1</relationalStorage>
+      <separator> ,</separator>
+      <separators>,</separators>
+      <size>1</size>
+      <sort/>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </publisher>
     <url>
       <customDisplay/>
       <disabled>0</disabled>
