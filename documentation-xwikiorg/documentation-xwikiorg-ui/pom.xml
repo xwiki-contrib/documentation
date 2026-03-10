@@ -43,6 +43,11 @@
       <artifactId>documentation-xwikiorg-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-macro-message</artifactId>
+      <version>${rendering.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <extensions>

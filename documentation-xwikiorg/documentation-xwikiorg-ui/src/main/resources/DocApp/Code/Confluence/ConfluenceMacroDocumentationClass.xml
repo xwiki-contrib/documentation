@@ -1,0 +1,518 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.6" reference="DocApp.Code.Confluence.ConfluenceMacroDocumentationClass" locale="">
+  <web>DocApp.Code.Confluence</web>
+  <name>ConfluenceMacroDocumentationClass</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <class>
+    <name>DocApp.Code.Confluence.ConfluenceMacroDocumentationClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <confluenceId>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>The name of the macro in Confluence</hint>
+      <name>confluenceId</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Confluence ID</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </confluenceId>
+    <confluenceURL>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>The documentation where this Confluence macro is documented</hint>
+      <name>confluenceURL</name>
+      <number>2</number>
+      <picker>0</picker>
+      <prettyName>Confluence Documentation URL</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </confluenceURL>
+    <correspondingXWikiFeature>
+      <contenttype>FullyRenderedText</contenttype>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <hint>How this macro would be implemented in XWiki and comparison with the corresponding feature</hint>
+      <name>correspondingXWikiFeature</name>
+      <number>20</number>
+      <picker>0</picker>
+      <prettyName>Corresponding feature in XWiki</prettyName>
+      <restricted>0</restricted>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </correspondingXWikiFeature>
+    <equivXWikiFeaturePage>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText/>
+      <hint>The documentation of a feature that should be used in XWiki for this feature regardless of the import</hint>
+      <idField/>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>equivXWikiFeaturePage</name>
+      <number>17</number>
+      <picker>1</picker>
+      <prettyName>Equivalent XWiki feature documentation page</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort/>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+    </equivXWikiFeaturePage>
+    <equivXWikiFeaturePageAnchor>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>The anchor in the documentation of a feature that should be used in XWiki for this feature regardless of the import</hint>
+      <name>equivXWikiFeaturePageAnchor</name>
+      <number>18</number>
+      <picker>1</picker>
+      <prettyName>Equivalent XWiki feature documentation page anchor</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </equivXWikiFeaturePageAnchor>
+    <equivXWikiFeatureURL>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>The URL to the feature that should be used in XWiki for this feature regardless of the import</hint>
+      <name>equivXWikiFeatureURL</name>
+      <number>19</number>
+      <picker>0</picker>
+      <prettyName>Equivalent XWiki feature documentation URL</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </equivXWikiFeatureURL>
+    <handling>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <freeText/>
+      <hint/>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>handling</name>
+      <number>3</number>
+      <picker>1</picker>
+      <prettyName>How this Confluence macro is imported in XWiki</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>conversion|bridge|direct|placeholder|shallow</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </handling>
+    <handlingDetails>
+      <contenttype>FullyRenderedText</contenttype>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <hint>Details on how (well) this Confluence macro is imported</hint>
+      <name>handlingDetails</name>
+      <number>21</number>
+      <picker>0</picker>
+      <prettyName>Import handling details</prettyName>
+      <restricted>0</restricted>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </handlingDetails>
+    <importSupportQualifier>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <freeText>allowed</freeText>
+      <hint>How well the feature is supported in XWiki after import</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>importSupportQualifier</name>
+      <number>4</number>
+      <picker>1</picker>
+      <prettyName>Import Support Qualifier</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>no|partial|yes</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </importSupportQualifier>
+    <requiredForImport>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>URL to an extension required for importing this macro</hint>
+      <name>requiredForImport</name>
+      <number>12</number>
+      <picker>0</picker>
+      <prettyName>Required for import URL</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </requiredForImport>
+    <requiredForImportId>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>ID of an extension required for importing this macro</hint>
+      <name>requiredForImportId</name>
+      <number>11</number>
+      <picker>0</picker>
+      <prettyName>Required for import extension ID</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </requiredForImportId>
+    <requiredForImportPage>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText/>
+      <hint>Page of an extension required for importing this macro</hint>
+      <idField/>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>requiredForImportPage</name>
+      <number>9</number>
+      <picker>1</picker>
+      <prettyName>Required for import documentation page</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort/>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+    </requiredForImportPage>
+    <requiredForImportPageAnchor>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Anchor in the page of an extension required for importing this macro</hint>
+      <name>requiredForImportPageAnchor</name>
+      <number>10</number>
+      <picker>1</picker>
+      <prettyName>Required for import documentation page anchor</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </requiredForImportPageAnchor>
+    <requiredForUsage>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>URL to the documentation of a extension required for using the imported macro</hint>
+      <name>requiredForUsage</name>
+      <number>16</number>
+      <picker>0</picker>
+      <prettyName>Required for usage URL</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </requiredForUsage>
+    <requiredForUsageId>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>ID of an extension required for using this macro</hint>
+      <name>requiredForUsageId</name>
+      <number>13</number>
+      <picker>0</picker>
+      <prettyName>Required for usage extension ID</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </requiredForUsageId>
+    <requiredForUsagePage>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText/>
+      <hint>Documentation page of an extension required for using this macro</hint>
+      <idField/>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>requiredForUsagePage</name>
+      <number>14</number>
+      <picker>1</picker>
+      <prettyName>Required for usage documentation page</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort/>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+    </requiredForUsagePage>
+    <requiredForUsagePageAnchor>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Documentation page anchor of an extension required for using this macro</hint>
+      <name>requiredForUsagePageAnchor</name>
+      <number>15</number>
+      <picker>1</picker>
+      <prettyName>Required for usage documentation page anchor</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </requiredForUsagePageAnchor>
+    <xwikiId>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>The import target macro, if applicable</hint>
+      <name>xwikiId</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>Import target XWiki ID</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </xwikiId>
+    <xwikiPage>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText/>
+      <hint>The import target macro documentation, if applicable</hint>
+      <idField/>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>xwikiPage</name>
+      <number>6</number>
+      <picker>1</picker>
+      <prettyName>Import target XWiki page</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort/>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+    </xwikiPage>
+    <xwikiPageAnchor>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>The anchor in the import target macro documentation, if applicable</hint>
+      <name>xwikiPageAnchor</name>
+      <number>7</number>
+      <picker>1</picker>
+      <prettyName>Import target XWiki page anchor</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </xwikiPageAnchor>
+    <xwikiURL>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>The import target macro documentation, if applicable</hint>
+      <name>xwikiURL</name>
+      <number>8</number>
+      <picker>0</picker>
+      <prettyName>Import target XWiki URL</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </xwikiURL>
+  </class>
+  <object>
+    <name>DocApp.Code.Confluence.ConfluenceMacroDocumentationClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>86aaa138-24f4-4010-ab7a-6eeb44493132</guid>
+    <class>
+      <name>XWiki.ClassSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <hint/>
+        <idField/>
+        <multiSelect>0</multiSelect>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Sheet</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>30</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+      </sheet>
+    </class>
+    <property>
+      <sheet>DocApp.Code.Confluence.ConfluenceMacroDocumentationClassSheet</sheet>
+    </property>
+  </object>
+  <object>
+    <name>DocApp.Code.Confluence.ConfluenceMacroDocumentationClass</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>cdcc2107-b189-4742-a8f4-aca6abac8dcb</guid>
+    <class>
+      <name>XWiki.DocumentSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <hint/>
+        <idField/>
+        <multiSelect>0</multiSelect>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Sheet</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>30</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+      </sheet>
+    </class>
+    <property>
+      <sheet>XWiki.ClassSheet</sheet>
+    </property>
+  </object>
+</xwikidoc>
