@@ -171,7 +171,9 @@
   #set ($type = $documentationObject.getValue('type'))
   #if ("$!type" != '')
     #getTargetSpaceReference($targetSpaceReference)
-    #set ($typeReference = $services.model.createSpaceReference($stringtool.capitalize($type), $targetSpaceReference))
+    ## Look for a Type page that uses the current page naming strategy
+    #set ($transformedType = $services.modelvalidation.manager.entityReferenceNameStrategy.transform($type))
+    #set ($typeReference = $services.model.createSpaceReference($transformedType, $targetSpaceReference))
     #set ($typeDocReference = $services.model.resolveDocument('', $typeReference))
     #if ($xwiki.exists($typeDocReference))
       (% class='documentation-badge' %)[[$stringtool.capitalize($type)&gt;&gt;$services.model.serialize($typeDocReference)]](%%)
