@@ -38,24 +38,19 @@
   <hidden>true</hidden>
   <content>{{velocity}}
   #macro (renderMaybeLink $page $anchor $url $content)
-    #if ($url == '-' || $url == '?')
-      #set ($url = '')
-    #end
-    #if ("$!page" != '')
-      [[##
-    #elseif ("$!url" != '' &amp;&amp; $url.startsWith('http'))
-      {{html clean=false}}&lt;a href="$escapetool.xml($url)"&gt;{{/html}}##
-    #end##
-    $content##
-    #if ("$!page" != '')
-      &gt;&gt;$page##
+    #if ($url == '-' || $url == '?' || $url == '')
+      #set ($link = "$page")
       #if ("$!anchor" != '')
-        ||anchor="$anchor"##
+        #set ($link = "$link||anchor='$anchor'")
       #end##
-      ]]##
-    #elseif ("$!url" != '' &amp;&amp; $url.startsWith("http"))
-      {{html clean=false}}&lt;/a&gt;{{/html}}##
-    #end##
+    #elseif ($url.startsWith('http'))
+      #set ($link = "url:$url")
+    #else
+      #set ($link = "")
+    #end
+    #if ($link != "")
+      [[content&gt;&gt;$link]]##
+    #end
   #end
   #set ($className = 'DocApp.Code.Confluence.ConfluenceMacroDocumentationClass')
   #set ($macroObj = $doc.getObject($className))
