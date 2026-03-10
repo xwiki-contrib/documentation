@@ -39,16 +39,16 @@
   <content>{{velocity}}
   #macro (renderMaybeLink $page $anchor $url $content)
     #if ($url == '-' || $url == '?' || $url == '')
-      #set ($link = "$page")
+      #set ($link = $page)
       #if ("$!anchor" != '')
         #set ($link = "$link||anchor='$anchor'")
       #end##
     #elseif ($url.startsWith('http'))
       #set ($link = "url:$url")
     #else
-      #set ($link = "")
+      #set ($link = '')
     #end
-    #if ($link != "")
+    #if ($link != '')
       [[content&gt;&gt;$link]]##
     #end
   #end
