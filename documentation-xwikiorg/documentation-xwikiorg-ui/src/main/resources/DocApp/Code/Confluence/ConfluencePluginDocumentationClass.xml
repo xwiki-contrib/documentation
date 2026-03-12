@@ -114,14 +114,14 @@
       <disabled>0</disabled>
       <displayType>input</displayType>
       <freeText>allowed</freeText>
-      <hint>For some plugin, in the life of the plugin, the name changed and this field is here to help to understand the plugin history and associate the plugin with this documentation.</hint>
+      <hint>For some plugin, in the life of the plugin, the name changed and this field is here to help to understand the plugin history and associate the plugin with this documentation. This is expected to be some additional names as the main name is the page title.</hint>
       <idField>pluginName</idField>
       <largeStorage>0</largeStorage>
       <multiSelect>1</multiSelect>
       <name>pluginName</name>
       <number>3</number>
       <picker>1</picker>
-      <prettyName>Plugin name</prettyName>
+      <prettyName>Alternative plugin name</prettyName>
       <relationalStorage>1</relationalStorage>
       <separator> ,</separator>
       <separators>,</separators>
