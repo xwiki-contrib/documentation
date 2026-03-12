@@ -49,7 +49,7 @@
       #set ($link = '')
     #end
     #if ($link != '')
-      [[content&gt;&gt;$link]]##
+      [[$content&gt;&gt;$link]]##
     #end
   #end
   #set ($className = 'DocApp.Code.Confluence.ConfluenceMacroDocumentationClass')
