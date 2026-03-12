@@ -115,9 +115,9 @@
       #end##
       #set ($requiredForUsage = $macroObj.getValue('requiredForUsage'))
       #if ($requiredForUsage == 'XWiki Standard')
-        which a standard installation of XWiki provides ##
+        which a standard installation of XWiki provides##
       #elseif ("$!requiredForUsage" != '' &amp;&amp; !$requiredForUsage.startsWith('http'))
-        which requires $requiredForUsage ##
+        which requires $requiredForUsage##
       #else
         #set ($requiredForUsageId = $macroObj.getValue('requiredForUsageId'))
         #set ($requiredForUsageContent = $requiredForUsageId)
