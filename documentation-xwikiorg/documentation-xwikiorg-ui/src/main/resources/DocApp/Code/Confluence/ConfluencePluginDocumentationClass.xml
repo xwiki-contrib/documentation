@@ -46,6 +46,19 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <additionalInfo>
+      <customDisplay>{{include reference="AppWithinMinutes.Content"/}}</customDisplay>
+      <disabled>0</disabled>
+      <hint>Additional information</hint>
+      <name>additionalInfo</name>
+      <number>8</number>
+      <prettyName>Additional information</prettyName>
+      <script/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </additionalInfo>
     <description>
       <contenttype>FullyRenderedText</contenttype>
       <customDisplay/>
@@ -53,7 +66,7 @@
       <editor>Wysiwyg</editor>
       <hint>A description of the plugin</hint>
       <name>description</name>
-      <number>5</number>
+      <number>6</number>
       <picker>0</picker>
       <prettyName>Description</prettyName>
       <restricted>0</restricted>
@@ -66,7 +79,7 @@
     </description>
     <id>
       <cache>0</cache>
-      <classname>Extension.Confluence.Code.ConfluencePluginDocumentationClass</classname>
+      <classname>DocApp.Code.Confluence.ConfluencePluginDocumentationClass</classname>
       <customDisplay/>
       <defaultValue/>
       <disabled>0</disabled>
@@ -77,7 +90,7 @@
       <largeStorage>0</largeStorage>
       <multiSelect>1</multiSelect>
       <name>id</name>
-      <number>6</number>
+      <number>7</number>
       <picker>1</picker>
       <prettyName>Plugin ID(s)</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -97,7 +110,7 @@
       <disabled>0</disabled>
       <hint>Link to the Atlassian marketplace URL.</hint>
       <name>marketPlaceURL</name>
-      <number>2</number>
+      <number>3</number>
       <picker>1</picker>
       <prettyName>Market place URL</prettyName>
       <size>30</size>
@@ -108,18 +121,18 @@
     </marketPlaceURL>
     <pluginName>
       <cache>0</cache>
-      <classname>Extension.Confluence.Code.ConfluencePluginDocumentationClass</classname>
+      <classname>DocApp.Code.Confluence.ConfluencePluginDocumentationClass</classname>
       <customDisplay/>
       <defaultValue/>
       <disabled>0</disabled>
       <displayType>input</displayType>
       <freeText>allowed</freeText>
-      <hint>For some plugin, in the life of the plugin, the name changed and this field is here to help to understand the plugin history and associate the plugin with this documentation. This is expected to be some additional names as the main name is the page title.</hint>
+      <hint>Some plugins have been renamed in the past. This field helps understand the plugin history and associate the plugin with this documentation. This is expected to be some additional names as the main name is the page title.</hint>
       <idField>pluginName</idField>
       <largeStorage>0</largeStorage>
       <multiSelect>1</multiSelect>
       <name>pluginName</name>
-      <number>3</number>
+      <number>4</number>
       <picker>1</picker>
       <prettyName>Alternative plugin name</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -136,7 +149,7 @@
     </pluginName>
     <publisher>
       <cache>0</cache>
-      <classname>Extension.Confluence.Code.ConfluencePluginDocumentationClass</classname>
+      <classname>DocApp.Code.Confluence.ConfluencePluginDocumentationClass</classname>
       <customDisplay/>
       <defaultValue/>
       <disabled>0</disabled>
@@ -147,7 +160,7 @@
       <largeStorage>0</largeStorage>
       <multiSelect>1</multiSelect>
       <name>publisher</name>
-      <number>4</number>
+      <number>5</number>
       <picker>1</picker>
       <prettyName>Publisher</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -162,12 +175,25 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </publisher>
+    <prettyName>
+      <customDisplay>{{include reference="AppWithinMinutes.Title"/}}</customDisplay>
+      <disabled>0</disabled>
+      <hint>The plugin name</hint>
+      <name>prettyName</name>
+      <number>1</number>
+      <prettyName>Plugin name</prettyName>
+      <script/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </prettyName>
     <url>
       <customDisplay/>
       <disabled>0</disabled>
-      <hint>URL to the documentation or marketting page of the plugin</hint>
+      <hint>URL to the documentation or marketing page of the plugin</hint>
       <name>url</name>
-      <number>1</number>
+      <number>2</number>
       <picker>1</picker>
       <prettyName>URL</prettyName>
       <size>30</size>
