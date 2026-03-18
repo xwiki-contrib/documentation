@@ -50,8 +50,11 @@
     #end
     #if ($link != '')
       [[$content&gt;&gt;$link]]##
+    #else
+      $content##
     #end
   #end
+  ##
   #set ($className = 'DocApp.Code.Confluence.ConfluenceMacroDocumentationClass')
   #set ($macroObj = $doc.getObject($className))
   #set ($confluenceId = $macroObj.confluenceId)
@@ -71,10 +74,16 @@
   #if ($macroObj != $NULL)
     #set($class = $macroObj.xWikiClass)
     #if ($xcontext.action == 'edit')
-      #foreach($property in $class.properties)
-        ; $property.prettyName
-        : $doc.display($property.getName())
-      #end
+      (% class="xform" %)
+      (((
+        #foreach($property in $class.properties)
+          ; {{html clean="false"}}
+              &lt;label for="${className}_0_${property.name}"&gt;$property.prettyName&lt;/label&gt;
+              &lt;span class="xHint"&gt;$!property.hint&lt;/span&gt;
+            {{/html}}
+          : $doc.display($property.name)
+        #end
+      )))
     #else
       #set ($importSupportQualifier = $macroObj.get('importSupportQualifier'))
       #if ($importSupportQualifier == 'partial')
@@ -154,7 +163,14 @@
 
         == What to use in XWiki
 
-        $!correspondingXWikiFeature
+        {{html clean="false"}}
+        &lt;div class="xform"&gt;&lt;span class=" xHint"&gt;
+        $xwiki.getClass($className).get('correspondingXWikiFeature').hint
+        &lt;/span&gt;&lt;/div&gt;
+        {{/html}}
+
+
+        $doc.display('correspondingXWikiFeature')
         #if ("$!equivXWikiFeaturePage" != '')
 
           #if ("$!equivXWikiFeaturePageAnchor" == '')
@@ -162,7 +178,7 @@
           #else
             See [[$equivXWikiFeaturePage||anchor="$equivXWikiFeaturePageAnchor"]]
           #end
-        #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?')
+        #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
 
           See $doc.display('equivXWikiFeatureURL')
         #end
@@ -172,7 +188,18 @@
 
         == Import details ==
 
+        {{html clean="false"}}
+        &lt;div class="xform"&gt;&lt;span class="xHint"&gt;
+        $xwiki.getClass($className).get('handlingDetails').hint
+        &lt;/span&gt;&lt;/div&gt;
+        {{/html}}
+
         $doc.display('handlingDetails')
+      #end
+      #if ("$!doc.content" != '')
+        == Additional information ==
+
+        $doc.display('content1')
       #end
     #end
   #end
