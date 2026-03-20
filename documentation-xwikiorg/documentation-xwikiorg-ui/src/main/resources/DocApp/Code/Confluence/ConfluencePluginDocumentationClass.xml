@@ -147,6 +147,19 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </pluginName>
+    <prettyName>
+      <customDisplay>{{include reference="AppWithinMinutes.Title"/}}</customDisplay>
+      <disabled>0</disabled>
+      <hint>The plugin name</hint>
+      <name>prettyName</name>
+      <number>1</number>
+      <prettyName>Plugin name</prettyName>
+      <script/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </prettyName>
     <publisher>
       <cache>0</cache>
       <classname>DocApp.Code.Confluence.ConfluencePluginDocumentationClass</classname>
@@ -175,19 +188,6 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </publisher>
-    <prettyName>
-      <customDisplay>{{include reference="AppWithinMinutes.Title"/}}</customDisplay>
-      <disabled>0</disabled>
-      <hint>The plugin name</hint>
-      <name>prettyName</name>
-      <number>1</number>
-      <prettyName>Plugin name</prettyName>
-      <script/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
-    </prettyName>
     <url>
       <customDisplay/>
       <disabled>0</disabled>

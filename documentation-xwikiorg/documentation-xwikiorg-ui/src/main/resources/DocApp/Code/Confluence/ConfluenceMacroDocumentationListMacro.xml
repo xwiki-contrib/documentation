@@ -75,7 +75,7 @@ Or with the parameters:
         <displayFormType>select</displayFormType>
         <displayType/>
         <name>async_cached</name>
-        <number>14</number>
+        <number>15</number>
         <prettyName>Cached</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
@@ -88,7 +88,7 @@ Or with the parameters:
         <largeStorage>0</largeStorage>
         <multiSelect>1</multiSelect>
         <name>async_context</name>
-        <number>15</number>
+        <number>16</number>
         <prettyName>Context elements</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator>, </separator>
@@ -104,7 +104,7 @@ Or with the parameters:
         <displayFormType>select</displayFormType>
         <displayType/>
         <name>async_enabled</name>
-        <number>13</number>
+        <number>14</number>
         <prettyName>Asynchronous rendering</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
@@ -154,6 +154,16 @@ Or with the parameters:
         <values>Unknown|Wiki</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </contentJavaType>
+      <contentOrder>
+        <disabled>0</disabled>
+        <name>contentOrder</name>
+        <number>13</number>
+        <numberType>integer</numberType>
+        <prettyName>Content order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </contentOrder>
       <contentType>
         <cache>0</cache>
         <disabled>0</disabled>
@@ -300,6 +310,9 @@ Or with the parameters:
     </property>
     <property>
       <contentJavaType/>
+    </property>
+    <property>
+      <contentOrder/>
     </property>
     <property>
       <contentType>No content</contentType>
@@ -452,6 +465,16 @@ Or with the parameters:
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
+      <order>
+        <disabled>0</disabled>
+        <name>order</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>Parameter order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </order>
       <type>
         <cache>0</cache>
         <defaultValue>Unknown</defaultValue>
@@ -502,6 +525,9 @@ Or with the parameters:
     </property>
     <property>
       <name>reference</name>
+    </property>
+    <property>
+      <order/>
     </property>
     <property>
       <type>org.xwiki.model.reference.DocumentReference</type>
@@ -628,6 +654,16 @@ Or with the parameters:
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
+      <order>
+        <disabled>0</disabled>
+        <name>order</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>Parameter order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </order>
       <type>
         <cache>0</cache>
         <defaultValue>Unknown</defaultValue>
@@ -678,6 +714,9 @@ Or with the parameters:
     </property>
     <property>
       <name>columns</name>
+    </property>
+    <property>
+      <order/>
     </property>
     <property>
       <type>Unknown</type>
