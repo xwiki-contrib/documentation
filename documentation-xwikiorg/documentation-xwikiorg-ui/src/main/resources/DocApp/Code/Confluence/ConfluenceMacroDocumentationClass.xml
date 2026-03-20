@@ -46,6 +46,19 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <additionalInfo>
+      <customDisplay>{{include reference="AppWithinMinutes.Content"/}}</customDisplay>
+      <disabled>0</disabled>
+      <hint>Additional information</hint>
+      <name>additionalInfo</name>
+      <number>25</number>
+      <prettyName>Additional information</prettyName>
+      <script/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </additionalInfo>
     <confluenceId>
       <customDisplay/>
       <disabled>0</disabled>
@@ -74,19 +87,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </confluenceURL>
-    <additionalInfo>
-      <customDisplay>{{include reference="AppWithinMinutes.Content"/}}</customDisplay>
-      <disabled>0</disabled>
-      <hint>Additional information</hint>
-      <name>additionalInfo</name>
-      <number>23</number>
-      <prettyName>Additional information</prettyName>
-      <script/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
-    </additionalInfo>
     <correspondingXWikiFeature>
       <contenttype>FullyRenderedText</contenttype>
       <customDisplay/>
@@ -94,7 +94,7 @@
       <editor>---</editor>
       <hint>How this macro would be implemented in XWiki and comparison with the corresponding feature</hint>
       <name>correspondingXWikiFeature</name>
-      <number>21</number>
+      <number>23</number>
       <picker>0</picker>
       <prettyName>Corresponding feature in XWiki</prettyName>
       <restricted>0</restricted>
@@ -118,7 +118,7 @@
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>equivXWikiFeaturePage</name>
-      <number>18</number>
+      <number>20</number>
       <picker>1</picker>
       <prettyName>Equivalent XWiki feature documentation page</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -138,7 +138,7 @@
       <disabled>0</disabled>
       <hint>The anchor in the documentation of a feature that should be used in XWiki for this feature regardless of the import</hint>
       <name>equivXWikiFeaturePageAnchor</name>
-      <number>19</number>
+      <number>21</number>
       <picker>1</picker>
       <prettyName>Equivalent XWiki feature documentation page anchor</prettyName>
       <size>30</size>
@@ -152,7 +152,7 @@
       <disabled>0</disabled>
       <hint>The URL to the feature that should be used in XWiki for this feature regardless of the import</hint>
       <name>equivXWikiFeatureURL</name>
-      <number>20</number>
+      <number>22</number>
       <picker>0</picker>
       <prettyName>Equivalent XWiki feature documentation URL</prettyName>
       <size>30</size>
@@ -161,6 +161,31 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </equivXWikiFeatureURL>
+    <functionalEquivalenceQualifier>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <freeText/>
+      <hint/>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>functionalEquivalenceQualifier</name>
+      <number>6</number>
+      <picker>1</picker>
+      <prettyName>Functional Equivalence Qualifier</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>yes=Yes|partial=Partial|no=No</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </functionalEquivalenceQualifier>
     <handling>
       <cache>0</cache>
       <customDisplay/>
@@ -183,7 +208,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>conversion|bridge|direct|placeholder|shallow</values>
+      <values>conversionToMacro|conversionToSyntax|bridge|placeholder|shallow|drop</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </handling>
     <handlingDetails>
@@ -193,7 +218,7 @@
       <editor>---</editor>
       <hint>Details on how (well) this Confluence macro is imported</hint>
       <name>handlingDetails</name>
-      <number>22</number>
+      <number>24</number>
       <picker>0</picker>
       <prettyName>Import handling details</prettyName>
       <restricted>0</restricted>
@@ -211,13 +236,13 @@
       <disabled>0</disabled>
       <displayType>select</displayType>
       <freeText>allowed</freeText>
-      <hint>How well the feature is supported in XWiki after import</hint>
+      <hint>How well the macro is imported in XWiki</hint>
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>importSupportQualifier</name>
       <number>5</number>
       <picker>1</picker>
-      <prettyName>Import Support Qualifier</prettyName>
+      <prettyName>Import Quality Qualifier</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators>|, </separators>
@@ -226,15 +251,28 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>no|partial|yes</values>
+      <values>yes=Yes|partial=Partial|no=No</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </importSupportQualifier>
+    <prettyName>
+      <customDisplay>{{include reference="AppWithinMinutes.Title"/}}</customDisplay>
+      <disabled>0</disabled>
+      <hint>The user-friendly macro name as it is presented in confluence (different from the confluence ID which is the technical name)</hint>
+      <name>prettyName</name>
+      <number>1</number>
+      <prettyName>User-friendly macro name</prettyName>
+      <script/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </prettyName>
     <requiredForImport>
       <customDisplay/>
       <disabled>0</disabled>
       <hint>URL to an extension required for importing this macro</hint>
       <name>requiredForImport</name>
-      <number>13</number>
+      <number>14</number>
       <picker>0</picker>
       <prettyName>Required for import URL</prettyName>
       <size>30</size>
@@ -248,7 +286,7 @@
       <disabled>0</disabled>
       <hint>ID of an extension required for importing this macro</hint>
       <name>requiredForImportId</name>
-      <number>12</number>
+      <number>13</number>
       <picker>0</picker>
       <prettyName>Required for import extension ID</prettyName>
       <size>30</size>
@@ -270,7 +308,7 @@
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>requiredForImportPage</name>
-      <number>10</number>
+      <number>11</number>
       <picker>1</picker>
       <prettyName>Required for import documentation page</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -290,7 +328,7 @@
       <disabled>0</disabled>
       <hint>Anchor in the page of an extension required for importing this macro</hint>
       <name>requiredForImportPageAnchor</name>
-      <number>11</number>
+      <number>12</number>
       <picker>1</picker>
       <prettyName>Required for import documentation page anchor</prettyName>
       <size>30</size>
@@ -304,7 +342,7 @@
       <disabled>0</disabled>
       <hint>URL to the documentation of a extension required for using the imported macro</hint>
       <name>requiredForUsage</name>
-      <number>17</number>
+      <number>19</number>
       <picker>0</picker>
       <prettyName>Required for usage URL</prettyName>
       <size>30</size>
@@ -318,7 +356,7 @@
       <disabled>0</disabled>
       <hint>ID of an extension required for using this macro</hint>
       <name>requiredForUsageId</name>
-      <number>14</number>
+      <number>15</number>
       <picker>0</picker>
       <prettyName>Required for usage extension ID</prettyName>
       <size>30</size>
@@ -327,6 +365,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </requiredForUsageId>
+    <requiredForUsageName>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Name of an extension required for using this macro</hint>
+      <name>requiredForUsageName</name>
+      <number>16</number>
+      <picker>1</picker>
+      <prettyName>Required for usage extension name</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </requiredForUsageName>
     <requiredForUsagePage>
       <cache>0</cache>
       <classname/>
@@ -340,7 +392,7 @@
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>requiredForUsagePage</name>
-      <number>15</number>
+      <number>17</number>
       <picker>1</picker>
       <prettyName>Required for usage documentation page</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -360,7 +412,7 @@
       <disabled>0</disabled>
       <hint>Documentation page anchor of an extension required for using this macro</hint>
       <name>requiredForUsagePageAnchor</name>
-      <number>16</number>
+      <number>18</number>
       <picker>1</picker>
       <prettyName>Required for usage documentation page anchor</prettyName>
       <size>30</size>
@@ -369,25 +421,12 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </requiredForUsagePageAnchor>
-    <prettyName>
-      <customDisplay>{{include reference="AppWithinMinutes.Title"/}}</customDisplay>
-      <disabled>0</disabled>
-      <hint>The nice macro name as it's presented in confluence (different from the confluence ID which is the technical name)</hint>
-      <name>prettyName</name>
-      <number>1</number>
-      <prettyName>Macro name</prettyName>
-      <script/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
-    </prettyName>
     <xwikiId>
       <customDisplay/>
       <disabled>0</disabled>
       <hint>The import target macro, if applicable</hint>
       <name>xwikiId</name>
-      <number>6</number>
+      <number>7</number>
       <picker>0</picker>
       <prettyName>Import target XWiki ID</prettyName>
       <size>30</size>
@@ -409,7 +448,7 @@
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>xwikiPage</name>
-      <number>7</number>
+      <number>8</number>
       <picker>1</picker>
       <prettyName>Import target XWiki page</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -429,7 +468,7 @@
       <disabled>0</disabled>
       <hint>The anchor in the import target macro documentation, if applicable</hint>
       <name>xwikiPageAnchor</name>
-      <number>8</number>
+      <number>9</number>
       <picker>1</picker>
       <prettyName>Import target XWiki page anchor</prettyName>
       <size>30</size>
@@ -443,7 +482,7 @@
       <disabled>0</disabled>
       <hint>The import target macro documentation, if applicable</hint>
       <name>xwikiURL</name>
-      <number>9</number>
+      <number>10</number>
       <picker>0</picker>
       <prettyName>Import target XWiki URL</prettyName>
       <size>30</size>
