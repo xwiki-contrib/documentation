@@ -94,7 +94,7 @@
       <picker>1</picker>
       <prettyName>Plugin ID(s)</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator> ,</separator>
+      <separator>, </separator>
       <separators>,</separators>
       <size>1</size>
       <sort/>
@@ -136,7 +136,7 @@
       <picker>1</picker>
       <prettyName>Alternative plugin name</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator> ,</separator>
+      <separator>, </separator>
       <separators>,</separators>
       <size>1</size>
       <sort/>
@@ -177,7 +177,7 @@
       <picker>1</picker>
       <prettyName>Publisher</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator> ,</separator>
+      <separator>, </separator>
       <separators>,</separators>
       <size>1</size>
       <sort/>
