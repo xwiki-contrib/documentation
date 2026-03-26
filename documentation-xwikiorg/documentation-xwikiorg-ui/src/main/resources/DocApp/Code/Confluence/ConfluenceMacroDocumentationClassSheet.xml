@@ -135,7 +135,7 @@
         is dropped##
       #else
         uses ##
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $handling) conversion ##
+        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $handling) ##
       #end##
       #if ($handling != 'drop')
         #set ($requiredForUsageURL = $macroObj.getValue('requiredForUsage'))
