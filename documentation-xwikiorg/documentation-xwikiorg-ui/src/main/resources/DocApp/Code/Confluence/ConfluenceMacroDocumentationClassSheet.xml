@@ -141,15 +141,13 @@
       #if ($handling != 'drop')
         #set ($requiredForUsageURL = $macroObj.getValue('requiredForUsage'))
         #set ($requiredForUsageName = $macroObj.getValue('requiredForUsageName'))
+        #set ($requiredForUsagePage = $macroObj.getValue('requiredForUsagePage'))
         #if (("$!requiredForUsageName" == '' &amp;&amp; "$!requiredForUsageURL" == '') || $requiredForUsageName == 'XWiki Standard')
           which a standard installation of XWiki provides##
         #elseif ("$!requiredForUsageName" != '')
           #set ($escapedUsageName = $services.rendering.escape($requiredForUsageName, 'xwiki/2.1'))
-          #if ("$!requiredForUsageURL" == '')
-            which requires $escapedUsageName##
-          #else
-            which requires [[$services.rendering.escape($escapedUsageName, 'xwiki/2.1')&gt;&gt;$requiredForUsageURL]]##
-          #end
+          which requires ##
+          #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, $escapedUsageName)##
         #else
           #set ($requiredForUsageId = $macroObj.getValue('requiredForUsageId'))
           #set ($requiredForUsageContent = $requiredForUsageId)
@@ -157,9 +155,8 @@
             #set ($requiredForUsageContent = 'this')
           #end
           which requires ##
-          #set ($requiredForUsagePage = $macroObj.getValue('requiredForUsagePage'))
           #set ($requiredForUsagePageAnchor = $macroObj.getValue('requiredForUsagePageAnchor'))
-          #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsage, "package {{code language='none'}}$requiredForUsageId{{/code}}")##
+          #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, "package {{code language='none'}}$requiredForUsageId{{/code}}")##
         #end
       #end.
       #set ($requiredForImport = $macroObj.getValue('requiredForImport'))
