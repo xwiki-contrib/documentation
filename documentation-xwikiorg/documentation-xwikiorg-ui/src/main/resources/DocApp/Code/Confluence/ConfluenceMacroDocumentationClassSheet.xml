@@ -127,7 +127,8 @@
         #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $xwikiIdContent) ##
       #elseif ($handling == 'bridge')
         is covered by the ##
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, "{{code language}}$xwikiId{{/code}} bridge macro") ##
+        #set ($linkContent = '#' + '#' + $xwikiId + '#' + '#' + ' bridge macro')
+        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $linkContent) ##
       #elseif ($handling == 'direct')
         is imported ##
         #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, 'as-is') ##
