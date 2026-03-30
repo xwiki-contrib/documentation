@@ -77,7 +77,7 @@
       #if ("$!doc.content" != '')
         == Additional information ==
 
-        $doc.display('content1')
+        $doc.display('additionalInfo')
       #end
 
       == Imported macros ==
