@@ -1,0 +1,74 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.6" reference="DocApp.Code.Confluence.ConfluenceTitleDisplayer" locale="">
+  <web>DocApp.Code.Confluence</web>
+  <name>ConfluenceTitleDisplayer</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>DocApp.Code.Confluence.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>ConfluenceTitleDisplayer</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+## Code copied from AppWithinMinutes.Title
+## This is avoiding to set WebHome as the default value if the title is not set
+## This is fixing the issue in https://jira.xwiki.org/browse/XWIKI-24180
+## As soon as this issue is fixed, this page can be removed
+#if ($type == 'edit')
+  #set ($className = $object.getxWikiClass().name)
+  #if ($doc.fullName == $className)
+    ## We are editing the class so the title must be read from / written to the template document.
+    #set ($name = 'templateTitle')
+    #set ($value = $xwiki.getDocument("$stringtool.removeEnd($className, 'Class')Template").title)
+  #else
+    ## We are editing an application entry so the title must be read from / written to the current document.
+    #set ($name = 'title')
+    #set ($value = $tdoc.title)
+    ## BEGIN Customization - Avoid to put WebHome as default value for title if not set
+    ##if ("$!value" == '')
+      ##set ($value = $tdoc.documentReference.name)
+    ##end
+    ## END Customization
+  #end
+  {{html clean="false"}}
+  &lt;input type="text" name="$name" value="$!escapetool.xml($value)"
+    ## The default value for an AppWithinMinutes field should be optional so we make only the actual page title
+    ## mandatory and not the template title, which holds the default title value.
+    #if ($name == 'title' &amp;&amp; $xwiki.getSpacePreference('xwiki.title.mandatory') == 1)required #end
+    data-validation-value-missing="$escapetool.xml($services.localization.render('core.validation.required.message'))"/&gt;
+  {{/html}}
+#elseif ("$!type" != '')
+  ## Render the title of the current document.
+  {{html}}$tdoc.getRenderedTitle('xhtml/1.0'){{/html}}
+#else
+  The display mode is not specified!
+#end
+{{/velocity}}</content>
+</xwikidoc>

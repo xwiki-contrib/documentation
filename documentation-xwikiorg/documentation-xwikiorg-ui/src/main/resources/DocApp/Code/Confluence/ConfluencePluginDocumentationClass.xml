@@ -148,7 +148,7 @@
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </pluginName>
     <prettyName>
-      <customDisplay>{{include reference="AppWithinMinutes.Title"/}}</customDisplay>
+      <customDisplay>{{include reference="DocApp.Code.Confluence.ConfluenceTitleDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
       <hint>The plugin name</hint>
       <name>prettyName</name>
