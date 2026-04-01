@@ -296,12 +296,17 @@ Or with the parameters:
       <code>{{velocity}}
 #set ($locationParam = "$doc.space")
 #if ($wikimacro.parameters.reference != $NULL)
-    #set ($locationParam = $services.model.serialize($wikimacro.parameters.reference))
+    #set ($locationParam = $services.model.serialize($wikimacro.parameters.reference).replace('.WebHome', ''))
 #end
+#set ($sourceParameters = $escapetool.url({
+  'translationPrefix': 'platform.index.',
+  'className': 'DocApp.Code.Confluence.ConfluenceMacroDocumentationClass',
+  'location': $locationParam
+}))
 {{liveData
   source="liveTable"
-  properties="$wikimacro.parameters.columns"
-  sourceParameters="translationPrefix=platform.index.&amp;className=DocApp.Code.Confluence.ConfluenceMacroDocumentationClass&amp;location=$locationParam"
+  properties="$services.rendering.escape($wikimacro.parameters.columns, 'xwiki/2.1')"
+  sourceParameters="$sourceParameters"
 /}}
 {{/velocity}}</code>
     </property>
