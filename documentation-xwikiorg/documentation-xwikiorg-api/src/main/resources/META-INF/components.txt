@@ -5,3 +5,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.ImageGalleryCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.GalleryMacroAltCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.PageNameCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.AttachmentNameCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.VideoAttachmentCheck
