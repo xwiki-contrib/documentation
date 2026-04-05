@@ -49,6 +49,8 @@ public class AttachmentNameCheck implements DocumentationCheck
 {
     private static final Pattern LOWERCASE_EXTENSION_PATTERN = Pattern.compile("[a-z0-9]+");
 
+    private static final String ATTACHMENT_NAME_CONTEXT = "Attachment name: [%s], Expected: [%s]";
+
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
@@ -59,9 +61,14 @@ public class AttachmentNameCheck implements DocumentationCheck
                 violations.add(new DocumentationViolation(
                     "Attachment name must follow the kebab-case naming convention "
                         + "(lowercase, hyphens instead of spaces or special characters).",
-                    String.format("Attachment name: [%s], Expected: [%s]", filename,
-                        toExpectedAttachmentName(filename)),
+                    String.format(ATTACHMENT_NAME_CONTEXT, filename, toExpectedAttachmentName(filename)),
                     DocumentationViolationSeverity.ERROR));
+            } else if (stemContainsReservedWord(filename)) {
+                violations.add(new DocumentationViolation(
+                    "Attachment name must not contain documentation-type words "
+                        + "(explanation, howto, reference, tutorial).",
+                    String.format(ATTACHMENT_NAME_CONTEXT, filename, toExpectedAttachmentName(filename)),
+                    DocumentationViolationSeverity.WARNING));
             }
         }
         return violations;
@@ -80,14 +87,21 @@ public class AttachmentNameCheck implements DocumentationCheck
             && LOWERCASE_EXTENSION_PATTERN.matcher(extension).matches();
     }
 
+    private boolean stemContainsReservedWord(String filename)
+    {
+        int lastDot = filename.lastIndexOf('.');
+        String stem = lastDot == -1 ? filename : filename.substring(0, lastDot);
+        return KebabNameValidator.containsReservedWord(stem);
+    }
+
     private String toExpectedAttachmentName(String filename)
     {
         int lastDot = filename.lastIndexOf('.');
         if (lastDot == -1) {
-            return KebabNameValidator.toKebab(filename);
+            return KebabNameValidator.toKebabStrict(filename);
         }
         String stem = filename.substring(0, lastDot);
         String extension = filename.substring(lastDot + 1);
-        return KebabNameValidator.toKebab(stem) + "." + extension.toLowerCase();
+        return KebabNameValidator.toKebabStrict(stem) + "." + extension.toLowerCase();
     }
 }

@@ -33,7 +33,7 @@ import org.apache.commons.lang3.Strings;
  * (without the configurable options), included here because this extension must support XWiki &lt; 18.1.0.
  * It will be removed once the minimum platform version is raised to 18.1.0+.
  * <p>
- * Transformation rules applied in order:
+ * Transformation rules applied in order by {@link #toKebab(String)}:
  * <ol>
  *   <li>Strip accents.</li>
  *   <li>Protect dots that appear between two digits (e.g. {@code 1.0}).</li>
@@ -44,6 +44,7 @@ import org.apache.commons.lang3.Strings;
  *   <li>Collapse consecutive {@code -} into one.</li>
  *   <li>Strip leading/trailing {@code -}.</li>
  * </ol>
+ * {@link #toKebabStrict(String)} additionally strips {@link #RESERVED_WORDS} segments.
  *
  * @version $Id$
  * @since 1.13
@@ -69,6 +70,16 @@ public final class KebabNameValidator
         "wheres", "which", "while", "who", "whos", "whom", "why", "whys", "with", "wont", "would", "wouldnt", "you",
         "youd", "youll", "youre", "youve", "your", "yours", "yourself", "yourselves"
     );
+
+    /**
+     * Documentation-type (Diataxis) words that should not appear as segments in page or attachment names. Their
+     * presence triggers a WARNING violation (see {@link #containsReservedWord(String)}), and they are stripped by
+     * {@link #toKebabStrict(String)}.
+     * <p>
+     * Note: the "how-to" and "how&nbsp;to" variants are already covered because "how" and "to" are both
+     * {@link #STOP_WORDS}. "howto" (written as one word) is listed here explicitly.
+     */
+    static final Set<String> RESERVED_WORDS = Set.of("explanation", "howto", "reference", "tutorial");
 
     private static final String REPLACEMENT_CHARACTER = "-";
 
@@ -100,6 +111,20 @@ public final class KebabNameValidator
     }
 
     /**
+     * @param name the name to check (in any form — it will be normalised to kebab first)
+     * @return {@code true} if the kebab form of the name contains at least one {@link #RESERVED_WORDS} segment
+     */
+    public static boolean containsReservedWord(String name)
+    {
+        for (String segment : toKebab(name).split(REPLACEMENT_CHARACTER, -1)) {
+            if (RESERVED_WORDS.contains(segment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Transform an arbitrary name to its kebab-case form following the rules described in the class javadoc.
      *
      * @param name the name to transform
@@ -120,7 +145,7 @@ public final class KebabNameValidator
         // 6. Collapse consecutive hyphens before splitting (prevents empty segments from double hyphens in input).
         result = DASH_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
         // 7. Remove stop-word segments.
-        result = removeStopWords(result);
+        result = removeSegments(result, STOP_WORDS);
         // 8. Collapse consecutive hyphens again (stop-word removal may produce adjacent hyphens).
         result = DASH_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
         // 9. Remove leading and trailing hyphens.
@@ -129,12 +154,28 @@ public final class KebabNameValidator
         return result;
     }
 
-    private static String removeStopWords(String name)
+    /**
+     * Like {@link #toKebab(String)} but also strips {@link #RESERVED_WORDS} segments.
+     *
+     * @param name the name to transform
+     * @return the strict kebab form with both stop words and reserved words removed
+     */
+    public static String toKebabStrict(String name)
+    {
+        String result = toKebab(name);
+        result = removeSegments(result, RESERVED_WORDS);
+        result = DASH_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
+        result = Strings.CS.removeEnd(result, REPLACEMENT_CHARACTER);
+        result = Strings.CS.removeStart(result, REPLACEMENT_CHARACTER);
+        return result;
+    }
+
+    private static String removeSegments(String name, Set<String> words)
     {
         String[] segments = name.split(REPLACEMENT_CHARACTER);
         StringBuilder filtered = new StringBuilder();
         for (String segment : segments) {
-            if (!segment.isEmpty() && !STOP_WORDS.contains(segment)) {
+            if (!segment.isEmpty() && !words.contains(segment)) {
                 if (!filtered.isEmpty()) {
                     filtered.append(REPLACEMENT_CHARACTER);
                 }

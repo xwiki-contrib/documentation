@@ -152,4 +152,30 @@ class AttachmentNameCheckTest
         assertEquals("Attachment name: [installation-of-xwiki.png], Expected: [installation-xwiki.png]",
             violations.get(0).getViolationContext());
     }
+
+    @Test
+    void checkWhenAttachmentStemContainsReservedWord()
+    {
+        List<DocumentationViolation> violations =
+            this.check.check(documentWithAttachments("installation-tutorial.png"));
+
+        assertEquals(1, violations.size());
+        assertEquals("Attachment name must not contain documentation-type words "
+            + "(explanation, howto, reference, tutorial).",
+            violations.get(0).getViolationMessage());
+        assertEquals("Attachment name: [installation-tutorial.png], Expected: [installation.png]",
+            violations.get(0).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+    }
+
+    @Test
+    void checkWhenAttachmentWithNoExtensionContainsReservedWord()
+    {
+        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("tutorial"));
+
+        assertEquals(1, violations.size());
+        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+        assertEquals("Attachment name: [tutorial], Expected: []",
+            violations.get(0).getViolationContext());
+    }
 }

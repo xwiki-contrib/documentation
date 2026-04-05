@@ -124,4 +124,31 @@ class PageNameCheckTest
         assertEquals("Page name: [installation-of-xwiki], Expected: [installation-xwiki]",
             violations.get(0).getViolationContext());
     }
+
+    @Test
+    void checkWhenPageNameContainsReservedWord()
+    {
+        List<DocumentationViolation> violations = this.check.check(documentWithPageName("installation-tutorial"));
+
+        assertEquals(1, violations.size());
+        assertEquals("Page name must not contain documentation-type words "
+            + "(explanation, howto, reference, tutorial).",
+            violations.get(0).getViolationMessage());
+        assertEquals("Page name: [installation-tutorial], Expected: [installation]",
+            violations.get(0).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+    }
+
+    @Test
+    void checkWhenPageNameIsReservedWordAndInvalidKebab()
+    {
+        // When the name is both invalid kebab and contains a reserved word, only ERROR is raised.
+        List<DocumentationViolation> violations = this.check.check(documentWithPageName("Installation Tutorial"));
+
+        assertEquals(1, violations.size());
+        assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
+        // Expected shows the fully clean name (reserved word "tutorial" also stripped).
+        assertEquals("Page name: [Installation Tutorial], Expected: [installation]",
+            violations.get(0).getViolationContext());
+    }
 }

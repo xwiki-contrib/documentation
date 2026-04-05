@@ -44,6 +44,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Named("pageName")
 public class PageNameCheck implements DocumentationCheck
 {
+    private static final String PAGE_NAME_CONTEXT = "Page name: [%s], Expected: [%s]";
+
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
@@ -53,8 +55,14 @@ public class PageNameCheck implements DocumentationCheck
             violations.add(new DocumentationViolation(
                 "Page name must follow the kebab-case naming convention "
                     + "(lowercase, hyphens instead of spaces or special characters).",
-                String.format("Page name: [%s], Expected: [%s]", pageName, KebabNameValidator.toKebab(pageName)),
+                String.format(PAGE_NAME_CONTEXT, pageName, KebabNameValidator.toKebabStrict(pageName)),
                 DocumentationViolationSeverity.ERROR));
+        } else if (KebabNameValidator.containsReservedWord(pageName)) {
+            violations.add(new DocumentationViolation(
+                "Page name must not contain documentation-type words "
+                    + "(explanation, howto, reference, tutorial).",
+                String.format(PAGE_NAME_CONTEXT, pageName, KebabNameValidator.toKebabStrict(pageName)),
+                DocumentationViolationSeverity.WARNING));
         }
         return violations;
     }

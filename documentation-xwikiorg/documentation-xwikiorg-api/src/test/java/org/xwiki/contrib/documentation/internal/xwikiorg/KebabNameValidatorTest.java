@@ -124,4 +124,40 @@ class KebabNameValidatorTest
         // All-stop-word name results in an empty string.
         assertEquals("", KebabNameValidator.toKebab("a-the-in"));
     }
+
+    @Test
+    void containsReservedWordWhenPresent()
+    {
+        assertTrue(KebabNameValidator.containsReservedWord("installation-tutorial"));
+        assertTrue(KebabNameValidator.containsReservedWord("xwiki-reference"));
+        assertTrue(KebabNameValidator.containsReservedWord("howto-install"));
+        assertTrue(KebabNameValidator.containsReservedWord("explanation-guide"));
+        // Case-insensitive: the name is normalised to kebab before checking.
+        assertTrue(KebabNameValidator.containsReservedWord("Installation-Tutorial"));
+        assertTrue(KebabNameValidator.containsReservedWord("REFERENCE"));
+    }
+
+    @Test
+    void containsReservedWordWhenAbsent()
+    {
+        assertFalse(KebabNameValidator.containsReservedWord("installation-guide"));
+        assertFalse(KebabNameValidator.containsReservedWord("getting-started"));
+        // "how" and "to" are stop words, not reserved words.
+        assertFalse(KebabNameValidator.containsReservedWord("how-to-install"));
+    }
+
+    @Test
+    void toKebabStrictRemovesReservedWords()
+    {
+        // Single reserved word removed.
+        assertEquals("installation", KebabNameValidator.toKebabStrict("installation-tutorial"));
+        assertEquals("xwiki", KebabNameValidator.toKebabStrict("xwiki-reference"));
+        assertEquals("install", KebabNameValidator.toKebabStrict("howto-install"));
+        // Reserved word with uppercase input (normalised first, then stripped).
+        assertEquals("installation", KebabNameValidator.toKebabStrict("Installation-Tutorial"));
+        // Reserved word plus stop word — both removed.
+        assertEquals("xwiki", KebabNameValidator.toKebabStrict("xwiki-reference-of"));
+        // Name without reserved words is unchanged.
+        assertEquals("installation-guide", KebabNameValidator.toKebabStrict("installation-guide"));
+    }
 }
