@@ -22,14 +22,11 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.rendering.block.Block;
@@ -37,7 +34,6 @@ import org.xwiki.rendering.block.ImageBlock;
 import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
-import org.xwiki.rendering.macro.MacroContentParser;
 import org.xwiki.rendering.macro.MacroExecutionException;
 import org.xwiki.rendering.transformation.MacroTransformationContext;
 import org.xwiki.rendering.transformation.TransformationContext;
@@ -53,22 +49,37 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Component
 @Singleton
 @Named("galleryMacroAlt")
-public class GalleryMacroAltCheck implements DocumentationCheck
+public class GalleryMacroAltCheck extends AbstractXDOMDocumentationCheck
 {
-    @Inject
-    private Logger logger;
+    private static final String CHECK_NAME = "Gallery Macro Alt";
 
-    @Inject
-    private MacroContentParser contentParser;
+    private static final String GALLERY_MACRO_ID = "gallery";
 
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
         XDOM xdom = document.getXDOM();
+
+        checkGalleriesInXDOM(xdom, document, violations);
+        checkInsideWikiMacros(xdom, document, GALLERY_MACRO_ID, CHECK_NAME,
+            macroXDOM -> checkGalleriesInXDOM(macroXDOM, document, violations));
+
+        XDOM faqXDOM = parseFAQXDOM(document, xdom, CHECK_NAME);
+        if (faqXDOM != null) {
+            checkGalleriesInXDOM(faqXDOM, document, violations);
+            checkInsideWikiMacros(faqXDOM, document, GALLERY_MACRO_ID, CHECK_NAME,
+                macroXDOM -> checkGalleriesInXDOM(macroXDOM, document, violations));
+        }
+
+        return violations;
+    }
+
+    private void checkGalleriesInXDOM(XDOM xdom, XWikiDocument document, List<DocumentationViolation> violations)
+    {
         List<MacroBlock> macroBlocks = xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT);
         for (MacroBlock macroBlock : macroBlocks) {
-            if ("gallery".equals(macroBlock.getId())) {
+            if (GALLERY_MACRO_ID.equals(macroBlock.getId())) {
                 // The gallery macro can be written in any markup syntax. It's using the syntax of the document it
                 // is in.
                 TransformationContext context = new TransformationContext(xdom, document.getSyntax());
@@ -98,6 +109,5 @@ public class GalleryMacroAltCheck implements DocumentationCheck
                 }
             }
         }
-        return violations;
     }
 }

@@ -26,7 +26,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.rendering.block.Block;
@@ -45,21 +44,41 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Component
 @Singleton
 @Named("imageMacroAlt")
-public class ImageMacroAltCheck implements DocumentationCheck
+public class ImageMacroAltCheck extends AbstractXDOMDocumentationCheck
 {
+    private static final String CHECK_NAME = "Image Macro Alt";
+
+    private static final String IMAGE_MACRO_ID = "image";
+
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
         XDOM xdom = document.getXDOM();
+
+        checkXDOM(xdom, violations);
+        checkInsideWikiMacros(xdom, document, IMAGE_MACRO_ID, CHECK_NAME,
+            macroXDOM -> checkXDOM(macroXDOM, violations));
+
+        XDOM faqXDOM = parseFAQXDOM(document, xdom, CHECK_NAME);
+        if (faqXDOM != null) {
+            checkXDOM(faqXDOM, violations);
+            checkInsideWikiMacros(faqXDOM, document, IMAGE_MACRO_ID, CHECK_NAME,
+                macroXDOM -> checkXDOM(macroXDOM, violations));
+        }
+
+        return violations;
+    }
+
+    private void checkXDOM(XDOM xdom, List<DocumentationViolation> violations)
+    {
         List<MacroBlock> macroBlocks = xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT);
         for (MacroBlock macroBlock : macroBlocks) {
-            if ("image".equals(macroBlock.getId()) && macroBlock.getParameter("alt") == null) {
+            if (IMAGE_MACRO_ID.equals(macroBlock.getId()) && macroBlock.getParameter("alt") == null) {
                 violations.add(new DocumentationViolation("Missing 'alt' parameter usage in the Image macro.",
                     String.format("Image reference : %s", macroBlock.getParameter("reference")),
                     DocumentationViolationSeverity.WARNING));
             }
         }
-        return violations;
     }
 }

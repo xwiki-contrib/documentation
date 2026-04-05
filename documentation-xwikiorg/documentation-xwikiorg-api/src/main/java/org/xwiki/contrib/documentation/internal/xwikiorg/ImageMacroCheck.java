@@ -22,34 +22,27 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.block.ImageBlock;
-import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
-import org.xwiki.rendering.macro.MacroContentParser;
-import org.xwiki.rendering.macro.MacroExecutionException;
-import org.xwiki.rendering.macro.MacroId;
-import org.xwiki.rendering.macro.MacroLookupException;
-import org.xwiki.rendering.macro.MacroManager;
-import org.xwiki.rendering.macro.descriptor.ContentDescriptor;
-import org.xwiki.rendering.transformation.MacroTransformationContext;
-import org.xwiki.rendering.transformation.TransformationContext;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Verify that documentation pages are not using the image syntax (i.e., they should use the image or gallery macros).
+ * The following checks are done:
+ * <ul>
+ *     <li>Check the main content for image syntax usage.</li>
+ *     <li>Check the macros used in the documentation page for image syntax usage.</li>
+ *     <li>Check the FAQ property content of the DocumentationClass XObject for image syntax usage.</li>
+ * </ul>
  *
  * @version $Id$
  * @since 1.0
@@ -57,48 +50,23 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Component
 @Singleton
 @Named("imageMacro")
-public class ImageMacroCheck implements DocumentationCheck
+public class ImageMacroCheck extends AbstractXDOMDocumentationCheck
 {
-    private static final String ROOT_ERROR_CAUSE = "Root error cause: [{}]";
-
-    @Inject
-    private Logger logger;
-
-    @Inject
-    private MacroManager macroManager;
-
-    @Inject
-    private MacroContentParser contentParser;
+    private static final String CHECK_NAME = "Image Macro";
 
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-
-        // Check for violations inside the document's main content.
         XDOM xdom = document.getXDOM();
-        checkXDOM(xdom, violations);
 
-        // Also, check inside macros that contain wiki markup.
-        List<MacroBlock> macroBlocks =
-            xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT);
-        for (MacroBlock macroBlock : macroBlocks) {
-            try {
-                ContentDescriptor contentDescriptor = this.macroManager.getMacro(new MacroId(macroBlock.getId()))
-                    .getDescriptor().getContentDescriptor();
-                if (contentDescriptor != null && Block.LIST_BLOCK_TYPE.equals(contentDescriptor.getType())) {
-                    TransformationContext context = new TransformationContext(xdom, document.getSyntax());
-                    MacroTransformationContext macroContext = new MacroTransformationContext(context);
-                    XDOM macroXDOM = this.contentParser.parse(macroBlock.getContent(), macroContext, false, false);
-                    checkXDOM(macroXDOM, violations);
-                }
-            } catch (MacroLookupException e) {
-                this.logger.warn("Failed to look up macro [{}]. Ignoring Image Macro check inside it. "
-                    + ROOT_ERROR_CAUSE, macroBlock.getId(), ExceptionUtils.getRootCauseMessage(e));
-            } catch (MacroExecutionException e) {
-                this.logger.warn("Failed to parse the content of macro [{}]. Ignoring Image Macro check inside it. "
-                    + ROOT_ERROR_CAUSE, macroBlock.getId(), ExceptionUtils.getRootCauseMessage(e));
-            }
+        checkXDOM(xdom, violations);
+        checkInsideWikiMacros(xdom, document, null, CHECK_NAME, macroXDOM -> checkXDOM(macroXDOM, violations));
+
+        XDOM faqXDOM = parseFAQXDOM(document, xdom, CHECK_NAME);
+        if (faqXDOM != null) {
+            checkXDOM(faqXDOM, violations);
+            checkInsideWikiMacros(faqXDOM, document, null, CHECK_NAME, macroXDOM -> checkXDOM(macroXDOM, violations));
         }
 
         return violations;
