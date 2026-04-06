@@ -71,8 +71,8 @@ public class FAQEntryCountCheck extends AbstractXDOMDocumentationCheck
 
         long lineCount = faqContent.lines().count();
         if (lineCount > MAX_FAQ_LINES) {
-            violations.add(new DocumentationViolation(String.format("There are more than %s lines in the FAQ of this "
-                + "page. This probably indicates that some documentation pages should be added.", MAX_FAQ_LINES),
+            violations.add(new DocumentationViolation(getViolationMessage(
+                String.format("There are more than %s lines in the FAQ of this page", MAX_FAQ_LINES)),
                 "", DocumentationViolationSeverity.WARNING));
         }
 
@@ -81,12 +81,18 @@ public class FAQEntryCountCheck extends AbstractXDOMDocumentationCheck
             List<HeaderBlock> headers =
                 faqXDOM.getBlocks(new ClassBlockMatcher(HeaderBlock.class), Block.Axes.DESCENDANT);
             if (headers.size() > MAX_FAQ_ENTRIES) {
-                violations.add(new DocumentationViolation(String.format("There are more than %s FAQ entries in this "
-                    + "page. This probably indicates that some documentation pages should be added.", MAX_FAQ_ENTRIES),
+                violations.add(new DocumentationViolation(getViolationMessage(
+                    String.format("There are more than %s FAQ entries in this page", MAX_FAQ_ENTRIES)),
                     "", DocumentationViolationSeverity.WARNING));
             }
         }
 
         return violations;
+    }
+
+    private String getViolationMessage(String message)
+    {
+        return String.format("%s. This probably indicates that some documentation pages should be added.",
+            message);
     }
 }
