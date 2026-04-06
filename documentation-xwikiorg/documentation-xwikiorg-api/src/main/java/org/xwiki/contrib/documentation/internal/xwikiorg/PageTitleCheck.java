@@ -33,35 +33,34 @@ import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Verify that the page name of a documentation page follows the kebab-case naming convention (lowercase letters,
- * digits, and hyphens only — no spaces, accented characters, or other special characters).
+ * Verify that the page title of a documentation page is not empty and does not contain reserved
+ * documentation-type words (explanation, howto, reference, tutorial).
  *
  * @version $Id$
  * @since 1.13
  */
 @Component
 @Singleton
-@Named("pageName")
-public class PageNameCheck implements DocumentationCheck
+@Named("pageTitle")
+public class PageTitleCheck implements DocumentationCheck
 {
-    private static final String PAGE_NAME_CONTEXT = "Page name: [%s], Expected: [%s]";
+    private static final String PAGE_TITLE_CONTEXT = "Page title: [%s]";
 
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-        String pageName = document.getDocumentReference().getName();
-        if (!KebabNameValidator.isValidKebab(pageName)) {
+        String title = document.getTitle();
+        if (title == null || title.isBlank()) {
             violations.add(new DocumentationViolation(
-                "Page name must follow the kebab-case naming convention "
-                    + "(lowercase, hyphens instead of spaces or special characters).",
-                String.format(PAGE_NAME_CONTEXT, pageName, KebabNameValidator.toKebabStrict(pageName)),
+                "Page title must not be empty.",
+                String.format(PAGE_TITLE_CONTEXT, ""),
                 DocumentationViolationSeverity.ERROR));
-        } else if (KebabNameValidator.containsReservedWord(pageName)) {
+        } else if (KebabNameValidator.containsReservedWord(title)) {
             violations.add(new DocumentationViolation(
-                "Page name must not contain documentation-type words "
+                "Page title must not contain documentation-type words "
                     + "(explanation, howto, reference, tutorial).",
-                String.format(PAGE_NAME_CONTEXT, pageName, KebabNameValidator.toKebabStrict(pageName)),
+                String.format(PAGE_TITLE_CONTEXT, title),
                 DocumentationViolationSeverity.ERROR));
         }
         return violations;

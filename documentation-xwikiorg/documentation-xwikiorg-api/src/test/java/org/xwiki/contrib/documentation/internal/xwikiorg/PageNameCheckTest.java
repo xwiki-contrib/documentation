@@ -136,7 +136,7 @@ class PageNameCheckTest
             violations.get(0).getViolationMessage());
         assertEquals("Page name: [installation-tutorial], Expected: [installation]",
             violations.get(0).getViolationContext());
-        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+        assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
     }
 
     @Test
