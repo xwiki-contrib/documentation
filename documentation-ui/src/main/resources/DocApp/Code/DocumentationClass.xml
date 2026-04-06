@@ -141,7 +141,7 @@
     <type>
       <cache>0</cache>
       <customDisplay/>
-      <defaultValue/>
+      <defaultValue>How-To</defaultValue>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <freeText/>
