@@ -37,8 +37,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Verify that documentation pages do not have more than 5 FAQ entries, and that the FAQ content does not exceed 15
- * lines. Having more than 5 FAQ entries or 15 lines likely indicates that some content should be moved to dedicated
+ * Verify that documentation pages do not have more than 5 FAQ entries, and that the FAQ content does not exceed 25
+ * lines. Having more than 5 FAQ entries or 25 lines likely indicates that some content should be moved to dedicated
  * documentation pages.
  *
  * @version $Id$
@@ -51,7 +51,7 @@ public class FAQEntryCountCheck extends AbstractXDOMDocumentationCheck
 {
     private static final int MAX_FAQ_ENTRIES = 5;
 
-    private static final int MAX_FAQ_LINES = 15;
+    private static final int MAX_FAQ_LINES = 25;
 
     private static final String CHECK_NAME = "FAQ Entry Count";
 
@@ -71,9 +71,8 @@ public class FAQEntryCountCheck extends AbstractXDOMDocumentationCheck
 
         long lineCount = faqContent.lines().count();
         if (lineCount > MAX_FAQ_LINES) {
-            violations.add(new DocumentationViolation(
-                "There are more than 15 lines in the FAQ of this page. This probably indicates that some "
-                    + "documentation pages should be added.",
+            violations.add(new DocumentationViolation(String.format("There are more than %s lines in the FAQ of this "
+                + "page. This probably indicates that some documentation pages should be added.", MAX_FAQ_LINES),
                 "", DocumentationViolationSeverity.WARNING));
         }
 
@@ -82,9 +81,8 @@ public class FAQEntryCountCheck extends AbstractXDOMDocumentationCheck
             List<HeaderBlock> headers =
                 faqXDOM.getBlocks(new ClassBlockMatcher(HeaderBlock.class), Block.Axes.DESCENDANT);
             if (headers.size() > MAX_FAQ_ENTRIES) {
-                violations.add(new DocumentationViolation(
-                    "There are more than 5 FAQ entries in this page. This probably indicates that some documentation "
-                        + "pages should be added.",
+                violations.add(new DocumentationViolation(String.format("There are more than %s FAQ entries in this "
+                    + "page. This probably indicates that some documentation pages should be added.", MAX_FAQ_ENTRIES),
                     "", DocumentationViolationSeverity.WARNING));
             }
         }

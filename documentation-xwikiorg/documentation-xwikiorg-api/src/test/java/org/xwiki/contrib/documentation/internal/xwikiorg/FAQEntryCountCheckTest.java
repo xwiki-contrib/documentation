@@ -170,7 +170,7 @@ class FAQEntryCountCheckTest
         when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean())).thenReturn(xdomWithHeaders(0));
 
         XWikiDocument document = createDocument(new XDOM(Collections.emptyList()));
-        document.addXObject(createFAQObject(faqWithLines(15)));
+        document.addXObject(createFAQObject(faqWithLines(25)));
 
         assertEquals(0, getChecker().check(document).size());
     }
@@ -183,13 +183,13 @@ class FAQEntryCountCheckTest
         when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean())).thenReturn(xdomWithHeaders(0));
 
         XWikiDocument document = createDocument(new XDOM(Collections.emptyList()));
-        document.addXObject(createFAQObject(faqWithLines(16)));
+        document.addXObject(createFAQObject(faqWithLines(26)));
 
         List<DocumentationViolation> violations = getChecker().check(document);
 
         assertEquals(1, violations.size());
         assertEquals(
-            "There are more than 15 lines in the FAQ of this page. This probably indicates that some "
+            "There are more than 25 lines in the FAQ of this page. This probably indicates that some "
                 + "documentation pages should be added.",
             violations.get(0).getViolationMessage());
         assertEquals("", violations.get(0).getViolationContext());
@@ -204,8 +204,8 @@ class FAQEntryCountCheckTest
         when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean())).thenReturn(xdomWithHeaders(6));
 
         XWikiDocument document = createDocument(new XDOM(Collections.emptyList()));
-        // 16 lines and 6 headings → both violations
-        document.addXObject(createFAQObject(faqWithLines(16)));
+        // 26 lines and 6 headings → both violations
+        document.addXObject(createFAQObject(faqWithLines(26)));
 
         List<DocumentationViolation> violations = getChecker().check(document);
 
