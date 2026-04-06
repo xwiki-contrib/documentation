@@ -165,39 +165,77 @@
     <property>
       <content>{{velocity}}
 {{html clean="false"}}
-&lt;form id="documentationExtraDocForm" action="?validate" class="xformInline" method="post" name="documentationExtraDocForm"&gt;
-  &lt;div&gt;
-    &lt;span class="buttonwrapper"&gt;
-      &lt;input class="button" type="submit" value="Validate"/&gt;
-    &lt;/span&gt;
-  &lt;/div&gt;
-&lt;/form&gt;
-#set ($violations = $doc.getObjects('DocApp.Code.DocumentationViolationClass'))
-#if (!$violations.isEmpty())
-  $escapetool.xml($services.localization.render('docapp.ui.review.violation-list'))
-  &lt;ul class="documentation-validation-results"&gt;
-    #foreach ($violation in $violations)
-    &lt;li&gt;
-      #set ($messageContent=$violation.getValue('message'))
-      #if ($!violation.getValue('severity') == 'Error')
-        #inlineError($messageContent)
-      #elseif ($!violation.getValue('severity') == 'Warning')
-        #inlineWarning($messageContent)
-      #else
-        $messageContent
-      #end
-      #set ($violationContext = $violation.getValue('context'))
-      #if($!violationContext != '')
-        &lt;span class="monospace" style="white-space: pre-wrap"&gt;
-          $violation.getValue('context')
-        &lt;/span&gt;
-      #end
-    &lt;/li&gt;
-    #end
-  &lt;/ul&gt;
-#else
-  #success("$escapetool.xml($services.localization.render('docapp.ui.review.violation-list.empty'))")
+#set ($reviewObj = $doc.getObject('DocApp.Code.DocumentationReviewClass'))
+#set ($hasReviewInfo = false)
+#set ($lastReviewers = '')
+#set ($lastReviewedDate = $null)
+#if ($reviewObj)
+  #set ($lastReviewers = $reviewObj.getValue('lastReviewers'))
+  #if (!$lastReviewers)#set ($lastReviewers = '')#end
+  #set ($lastReviewedDate = $reviewObj.getValue('lastReviewedDate'))
+  #if ($lastReviewers != '' || $lastReviewedDate)
+    #set ($hasReviewInfo = true)
+  #end
 #end
+&lt;div id="documentationcontent" class="xwikiintracontent"&gt;
+  #if ($hasReviewInfo || $hasEdit)
+  &lt;div class="row xform"&gt;
+    &lt;div class="col-xs-12 col-sm-6"&gt;
+      &lt;dl&gt;
+        #if ($lastReviewers != '')
+        &lt;dt&gt;&lt;label&gt;$escapetool.xml($services.localization.render('docapp.ui.review.lastReviewers'))&lt;/label&gt;&lt;/dt&gt;
+        &lt;dd&gt;
+          #foreach ($reviewer in $lastReviewers.split(','))
+            $xwiki.getUserName($reviewer.trim())#if ($foreach.hasNext), #{end}
+          #end
+        &lt;/dd&gt;
+        #end
+        #if ($lastReviewedDate)
+        &lt;dt&gt;&lt;label&gt;$escapetool.xml($services.localization.render('docapp.ui.review.lastReviewedDate'))&lt;/label&gt;&lt;/dt&gt;
+        &lt;dd&gt;$datetool.format('dd/MM/yyyy', $lastReviewedDate)&lt;/dd&gt;
+        #end
+        #if ($hasEdit)
+        #set ($violations = $doc.getObjects('DocApp.Code.DocumentationViolationClass'))
+        &lt;dt&gt;&lt;label&gt;$escapetool.xml($services.localization.render('docapp.ui.review.violations'))&lt;/label&gt;&lt;/dt&gt;
+        &lt;dd&gt;
+          #if ($violations.isEmpty())
+          #success("$escapetool.xml($services.localization.render('docapp.ui.review.violation-list.empty'))")
+          #else
+          &lt;dl class="documentation-validation-results"&gt;
+            #foreach ($violation in $violations)
+            &lt;dt&gt;
+              #set ($messageContent = $violation.getValue('message'))
+              #if ($!violation.getValue('severity') == 'Error')
+                #inlineError($messageContent)
+              #elseif ($!violation.getValue('severity') == 'Warning')
+                #inlineWarning($messageContent)
+              #else
+                $messageContent
+              #end
+            &lt;/dt&gt;
+            #set ($violationContext = $violation.getValue('context'))
+            #if ($!violationContext != '')
+            &lt;dd&gt;&lt;span class="monospace" style="white-space: pre-wrap"&gt;$escapetool.xml($violationContext)&lt;/span&gt;&lt;/dd&gt;
+            #end
+            #end
+          &lt;/dl&gt;
+          #end
+        &lt;/dd&gt;
+        #end
+      &lt;/dl&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  #end
+  #if ($hasEdit)
+  &lt;form id="documentationExtraDocForm" action="?validate" class="xformInline" method="post" name="documentationExtraDocForm"&gt;
+    &lt;div&gt;
+      &lt;span class="buttonwrapper"&gt;
+        &lt;input class="button" type="submit" value="Validate"/&gt;
+      &lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/form&gt;
+  #end
+&lt;/div&gt;
 {{/html}}
 {{/velocity}}</content>
     </property>
@@ -208,12 +246,12 @@
       <name>documentation.tab</name>
     </property>
     <property>
-      <parameters>show=#if($hasEdit &amp;&amp; !$doc.getObjects('DocApp.Code.DocumentationClass').isEmpty() &amp;&amp; 'DocApp' != $doc.getDocumentReference().extractFirstReference('SPACE').getName())true#{end}
+      <parameters>show=#set($__ro=$doc.getObject('DocApp.Code.DocumentationReviewClass'))#if(!$doc.getObjects('DocApp.Code.DocumentationClass').isEmpty() &amp;&amp; 'DocApp' != $doc.getDocumentReference().extractFirstReference('SPACE').getName() &amp;&amp; ($hasEdit || ($__ro &amp;&amp; ($__ro.getValue('lastReviewedDate') || $!__ro.getValue('lastReviewers') != ''))))true#{end}
 title=Documentation
 name=docreview
 shortcut=v
 order=10
-itemnumber=$doc.getObjects('DocApp.Code.DocumentationViolationClass').size()</parameters>
+itemnumber=#if($hasEdit &amp;&amp; !$doc.getObjects('DocApp.Code.DocumentationViolationClass').isEmpty())$doc.getObjects('DocApp.Code.DocumentationViolationClass').size()#{end}</parameters>
     </property>
     <property>
       <scope>wiki</scope>
