@@ -51,6 +51,9 @@ public class PageNameCheck implements DocumentationCheck
     {
         List<DocumentationViolation> violations = new ArrayList<>();
         String pageName = document.getDocumentReference().getName();
+        if ("WebHome".equals(pageName)) {
+            pageName = document.getDocumentReference().getLastSpaceReference().getName();
+        }
         if (!KebabNameValidator.isValidKebab(pageName)) {
             violations.add(new DocumentationViolation(
                 "Page name must follow the kebab-case naming convention "

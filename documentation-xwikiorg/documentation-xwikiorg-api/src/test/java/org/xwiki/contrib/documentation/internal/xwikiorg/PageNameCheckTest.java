@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
@@ -50,6 +52,14 @@ class PageNameCheckTest
     {
         XWikiDocument document = mock(XWikiDocument.class);
         when(document.getDocumentReference()).thenReturn(new DocumentReference("wiki", "space", pageName));
+        return document;
+    }
+
+    private XWikiDocument nonTerminalDocumentWithSpaceName(String spaceName)
+    {
+        XWikiDocument document = mock(XWikiDocument.class);
+        SpaceReference spaceReference = new SpaceReference(spaceName, new WikiReference("wiki"));
+        when(document.getDocumentReference()).thenReturn(new DocumentReference("WebHome", spaceReference));
         return document;
     }
 
@@ -150,5 +160,38 @@ class PageNameCheckTest
         // Expected shows the fully clean name (reserved word "tutorial" also stripped).
         assertEquals("Page name: [Installation Tutorial], Expected: [installation]",
             violations.get(0).getViolationContext());
+    }
+
+    @Test
+    void checkWhenNonTerminalPageHasValidKebabSpaceName()
+    {
+        assertEquals(0, this.check.check(nonTerminalDocumentWithSpaceName("getting-started")).size());
+    }
+
+    @Test
+    void checkWhenNonTerminalPageHasInvalidSpaceName()
+    {
+        List<DocumentationViolation> violations =
+            this.check.check(nonTerminalDocumentWithSpaceName("Installation Guide"));
+
+        assertEquals(1, violations.size());
+        assertEquals("Page name must follow the kebab-case naming convention "
+            + "(lowercase, hyphens instead of spaces or special characters).",
+            violations.get(0).getViolationMessage());
+        assertEquals("Page name: [Installation Guide], Expected: [installation-guide]",
+            violations.get(0).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
+    }
+
+    @Test
+    void checkWhenNonTerminalPageHasReservedWordInSpaceName()
+    {
+        List<DocumentationViolation> violations =
+            this.check.check(nonTerminalDocumentWithSpaceName("installation-tutorial"));
+
+        assertEquals(1, violations.size());
+        assertEquals("Page name must not contain documentation-type words "
+            + "(explanation, howto, reference, tutorial).",
+            violations.get(0).getViolationMessage());
     }
 }
