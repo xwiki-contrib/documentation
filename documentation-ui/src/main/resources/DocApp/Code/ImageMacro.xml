@@ -36,7 +36,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{image reference="http://www.xwiki.org/xwiki/bin/download/DownloadCode/DownloadFeedback/xwiki.png" caption="XWiki Logo" size="small"/}}
+  <content>{{image reference="http://www.xwiki.org/xwiki/bin/download/DownloadCode/DownloadFeedback/xwiki.png" caption="XWiki Logo"/}}
 
 {{image reference="http://www.xwiki.org/xwiki/bin/download/DownloadCode/DownloadFeedback/xwiki.png" caption="XWiki Logo" size="medium"/}}</content>
   <object>
@@ -274,20 +274,29 @@
     <property type="LargeString">
       <code>{{velocity}}
 #set ($image = $xcontext.macro.params.reference)
+## TODO: Remove the width parameter in the future when all doc pages on xwiki.org have stopped.
+## using the width parameter for the size one.
+#set ($width = "$!xcontext.macro.params.width")
 #set ($size = "$!xcontext.macro.params.size")
-#if ($size == 'small')
-  #set ($width = "150px")
-#elseif ($size == 'medium')
-  #set ($width = "350px")
-#elseif ($size == 'large')
-  #set ($width = "650px")
-#elseif ($size == 'extra')
-  #set ($width = "960px")
-#end
-#set ($caption = "$!xcontext.macro.params.caption")
-(% style="display: inline-block; border:1px solid silver; max-width:100%;#if ($width != '') width:$width;#end" %)[[image:$image||style="width:100%"]](%%)
-#if ($caption != '')
-  //${caption}//
+## TODO: Remove this validation when the width parameter has been removed.
+## Validation: image macro used for documentation in the Doc space (i.e. new docs) must use the size parameter and not use the width parameter
+#if ('documentation' == $doc.getDocumentReference().extractFirstReference('SPACE').getName() &amp;&amp; ("$!width" != '' || "$!size" == ''))
+  {{error}}Best practice: The Image macro, when used in the "documentation" space, must specify a 'size' parameter and no 'width' one.{{/error}}
+#else
+  #if ($size == 'small')
+    #set ($width = "150px")
+  #elseif ($size == 'medium')
+    #set ($width = "350px")
+  #elseif ($size == 'large')
+    #set ($width = "650px")
+  #elseif ($size == 'extra')
+    #set ($width = "960px")
+  #end
+  #set ($caption = "$!xcontext.macro.params.caption")
+  (% style="display: inline-block; border:1px solid silver; max-width:100%;#if ($width != '') width:$width;#end" %)[[image:$image||style="width:100%"]](%%)
+  #if ($caption != '')
+    //${caption}//
+  #end
 #end
 {{/velocity}}</code>
     </property>
@@ -514,6 +523,194 @@
     </property>
     <property type="LargeString">
       <type>org.xwiki.model.reference.AttachmentReference</type>
+    </property>
+  </object>
+  <object>
+    <name>DocApp.Code.ImageMacro</name>
+    <number>1</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>21fd8872-5309-46ac-aefa-ebf93fb97aa4</guid>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advanced>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>advanced</name>
+        <number>9</number>
+        <prettyName>Parameter advanced</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advanced>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <deprecated>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>deprecated</name>
+        <number>10</number>
+        <prettyName>Parameter deprecated</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </deprecated>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <feature>
+        <disabled>0</disabled>
+        <name>feature</name>
+        <number>6</number>
+        <prettyName>Parameter feature</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </feature>
+      <featureMandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>featureMandatory</name>
+        <number>11</number>
+        <prettyName>Parameter feature mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </featureMandatory>
+      <group>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>group</name>
+        <number>7</number>
+        <picker>1</picker>
+        <prettyName>Parameter group property</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </group>
+      <hidden>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>hidden</name>
+        <number>8</number>
+        <prettyName>Parameter hidden</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hidden>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <order>
+        <disabled>0</disabled>
+        <name>order</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>Parameter order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </order>
+      <type>
+        <cache>0</cache>
+        <defaultValue>Unknown</defaultValue>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>1</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>type</name>
+        <number>5</number>
+        <picker>1</picker>
+        <prettyName>Parameter type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Unknown|Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </type>
+    </class>
+    <property type="Integer">
+      <advanced/>
+    </property>
+    <property type="String">
+      <defaultValue/>
+    </property>
+    <property type="Integer">
+      <deprecated>1</deprecated>
+    </property>
+    <property type="LargeString">
+      <description>Image width. Deprecated (use the "size" parameter instead).</description>
+    </property>
+    <property type="String">
+      <feature/>
+    </property>
+    <property type="Integer">
+      <featureMandatory/>
+    </property>
+    <property type="StringList">
+      <group/>
+    </property>
+    <property type="Integer">
+      <hidden/>
+    </property>
+    <property type="Integer">
+      <mandatory/>
+    </property>
+    <property type="String">
+      <name>width</name>
+    </property>
+    <property type="Integer">
+      <order/>
+    </property>
+    <property type="LargeString">
+      <type/>
     </property>
   </object>
   <object>
@@ -880,7 +1077,7 @@
       <hidden/>
     </property>
     <property type="Integer">
-      <mandatory>1</mandatory>
+      <mandatory/>
     </property>
     <property type="String">
       <name>size</name>
