@@ -9,3 +9,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.VideoAttachmentCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.VideoMacroCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.FAQEntryCountCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.PageTitleCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.VerbCheck
