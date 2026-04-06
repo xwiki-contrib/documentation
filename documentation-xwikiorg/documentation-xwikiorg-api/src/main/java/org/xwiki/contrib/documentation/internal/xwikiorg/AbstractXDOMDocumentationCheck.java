@@ -55,7 +55,7 @@ public abstract class AbstractXDOMDocumentationCheck implements DocumentationChe
 {
     protected static final String ROOT_ERROR_CAUSE = "Root error cause: [{}]";
 
-    private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
+    protected static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
         new LocalDocumentReference(List.of("DocApp", "Code"), "DocumentationClass");
 
     @Inject

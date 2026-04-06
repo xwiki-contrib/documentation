@@ -7,3 +7,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.PageNameCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.AttachmentNameCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.VideoAttachmentCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.VideoMacroCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.FAQEntryCountCheck
