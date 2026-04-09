@@ -174,9 +174,8 @@
         {{/error}}
 
       #end
-      Confluence macro ##
       #set ($confluenceURL = $macroObj.getValue('confluenceURL'))
-      #renderMaybeLink('' '' $confluenceURL, "{{code language='none'}}$confluenceId{{/code}}") ##
+      The #renderMaybeLink('' '' $confluenceURL, "{{code language='none'}}$confluenceId{{/code}}") Confluence macro ##
       #set ($handling = $macroObj.getValue('handling'))
       #set ($xwikiId = $macroObj.getValue('xwikiId'))
       #set ($xwikiURL = $macroObj.getValue('xwikiURL'))
@@ -186,7 +185,7 @@
         #if ($handling == 'conversionToSyntax' || "$!xwikiId" == '')
           #set ($xwikiIdContent = 'some syntax') ##
         #else
-          #set ($xwikiIdContent = "macro {{code language='none'}}$xwikiId{{/code}}") ##
+          #set ($xwikiIdContent = "the {{code language='none'}}$xwikiId{{/code}} macro")##
         #end
         is converted to ##
         #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $xwikiIdContent) ##
@@ -211,17 +210,15 @@
           which a standard installation of XWiki provides##
         #elseif ("$!requiredForUsageName" != '')
           #set ($escapedUsageName = $services.rendering.escape($requiredForUsageName, 'xwiki/2.1'))
-          which requires ##
-          #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, $escapedUsageName)##
+          which requires #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, $escapedUsageName)##
         #else
           #set ($requiredForUsageId = $macroObj.getValue('requiredForUsageId'))
-          #set ($requiredForUsageContent = $requiredForUsageId)
-          #if ("$!requiredForUsageContent" == '')
-            #set ($requiredForUsageContent = 'this')
+          #set ($requiredForUsageContent = 'this')
+          #if ("$!requiredForUsageId" != '')
+            #set ($requiredForUsageContent = "the {{code language='none'}}$requiredForUsageId{{/code}} package")
           #end
-          which requires ##
           #set ($requiredForUsagePageAnchor = $macroObj.getValue('requiredForUsagePageAnchor'))
-          #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, "package {{code language='none'}}$requiredForUsageId{{/code}}")##
+          which requires #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, $requiredForUsageContent)##
         #end
       #end.
       #set ($requiredForImport = $macroObj.getValue('requiredForImport'))
@@ -230,18 +227,17 @@
       #set ($requiredForImportId = $macroObj.getValue('requiredForImportId'))
       #if ("$!requiredForImportId" == '')
           #if ("$!requiredForImport" != '')
-            Importing this macro requires $doc.display('requiredForImport'). ##
+
+            Importing this macro requires [[$doc.getValue('requiredForImport')]].
           #end
-      #elseif ($requiredForImportId == 'org.xwiki.contrib.confluence:confluence-xml' || $requiredForImportId == 'com.xwiki.confluence:confluence-migration-package-ui')
-          Importing this macro doesn't requires anything specific apart from the standard migration tools. ##
-      #else
-          Importing this macro requires ##
-          #renderMaybeLink($requiredForImportPage, $requiredForImportPageAnchor, $requiredForImport, "package {{code language='none'}}$requiredForImportId{{/code}}"). ##
+      #elseif ($requiredForImportId != 'org.xwiki.contrib.confluence:confluence-xml' &amp;&amp; $requiredForImportId != 'com.xwiki.confluence:confluence-migration-package-ui')
+
+          Importing this macro requires #renderMaybeLink($requiredForImportPage, $requiredForImportPageAnchor, $requiredForImport, "package {{code language='none'}}$requiredForImportId{{/code}}").
       #end
       #set ($equivXWikiFeatureURL = $macroObj.getValue('equivXWikiFeatureURL'))
       #set ($equivXWikiFeaturePageAnchor = $macroObj.getValue('equivXWikiFeaturePageAnchor'))
       #if ("$!equivXWikiFeaturePageAnchor" != '')
-        #set ($equivXWikiFeaturePageAnchor = $equivXWikiFeaturePageAnchor + '||anchor="anchor"')'
+        #set ($equivXWikiFeaturePageAnchor = $equivXWikiFeaturePageAnchor + '||anchor="anchor"')
       #end
       #set ($equivXWikiFeaturePage = $macroObj.getValue('equivXWikiFeaturePage'))
       #set ($correspondingXWikiFeature = $macroObj.getValue('correspondingXWikiFeature'))
@@ -259,15 +255,16 @@
         #if ("$!equivXWikiFeaturePage" != '')
 
           #if ("$!equivXWikiFeaturePageAnchor" == '')
-            See [[$equivXWikiFeaturePage]]
+            See [[$equivXWikiFeaturePage]].
           #else
-            See [[$equivXWikiFeaturePage||anchor="$equivXWikiFeaturePageAnchor"]]
+            See [[$equivXWikiFeaturePage||anchor="$equivXWikiFeaturePageAnchor"]].
           #end
         #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
-          See $doc.display('equivXWikiFeatureURL')
+
+          See $doc.display('equivXWikiFeatureURL').
         #end
       #end
-      #set ($handlingDetails = $macroObj.getValue('handlingDetails'))
+      #set ($handlingDetails = $macroObj.getValue('handlingDetails').trim())
       #if ("$!handlingDetails" != '')
 
         == Import details ==
@@ -280,7 +277,8 @@
 
         $doc.display('handlingDetails')
       #end
-      #if ("$!doc.content" != '')
+      #if ($doc.content.trim() != '')
+
         == Additional information ==
 
         $doc.display('additionalInfo')
