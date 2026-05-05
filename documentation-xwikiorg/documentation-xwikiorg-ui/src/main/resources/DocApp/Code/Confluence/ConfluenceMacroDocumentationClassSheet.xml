@@ -236,14 +236,11 @@
       #end
       #set ($equivXWikiFeatureURL = $macroObj.getValue('equivXWikiFeatureURL'))
       #set ($equivXWikiFeaturePageAnchor = $macroObj.getValue('equivXWikiFeaturePageAnchor'))
-      #if ("$!equivXWikiFeaturePageAnchor" != '')
-        #set ($equivXWikiFeaturePageAnchor = $equivXWikiFeaturePageAnchor + '||anchor="anchor"')
-      #end
       #set ($equivXWikiFeaturePage = $macroObj.getValue('equivXWikiFeaturePage'))
       #set ($correspondingXWikiFeature = $macroObj.getValue('correspondingXWikiFeature'))
-      #if ("$!equivXWikiFeatureURL" != '' || "$!correspondingXWikiFeature" != '')
+      #if ("$!equivXWikiFeatureURL" != '' || "$!correspondingXWikiFeature" != '' || "$!equivXWikiFeaturePage" != '' || ("$handling" != 'bridge' &amp;&amp; ("$!xwikiPage" != '' || "$!xwikiURL" != '')))
 
-        == What to use in XWiki
+        == What to use in XWiki ==
 
         {{html clean="false"}}
         &lt;div class="xform"&gt;&lt;span class=" xHint"&gt;
@@ -252,16 +249,38 @@
         {{/html}}
 
         $doc.display('correspondingXWikiFeature')
-        #if ("$!equivXWikiFeaturePage" != '')
 
-          #if ("$!equivXWikiFeaturePageAnchor" == '')
-            See [[$equivXWikiFeaturePage]].
-          #else
-            See [[$equivXWikiFeaturePage||anchor="$equivXWikiFeaturePageAnchor"]].
+        ## Logic
+        ## if it's a migration of type bridge -&gt; take equivXWikiFeature if set, otherwise nothing.
+        ## for others type: take equivXWikiFeature if set, otherwise use xwikiPage
+        #if ("$handling" == 'bridge')
+          #if ("$!equivXWikiFeaturePage" != '')
+            #if ("$!equivXWikiFeaturePageAnchor" == '')
+              See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')]].
+            #else
+              See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')||anchor="$services.rendering.escape($equivXWikiFeaturePageAnchor, 'xwiki/2.1')"]].
+            #end
+          #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
+            See $doc.display('equivXWikiFeatureURL').
           #end
-        #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
-
-          See $doc.display('equivXWikiFeatureURL').
+        #else
+          #if ("$!equivXWikiFeaturePage" != '')
+            #if ("$!equivXWikiFeaturePageAnchor" == '')
+              See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')]].
+            #else
+              See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')||anchor="$services.rendering.escape($equivXWikiFeaturePageAnchor, 'xwiki/2.1')"]].
+            #end
+          #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
+            See $doc.display('equivXWikiFeatureURL')
+          #elseif ("$!xwikiPage" != '')
+            #if ("$!xwikiPageAnchor" == '')
+              See [[$services.rendering.escape($xwikiPage, 'xwiki/2.1')]].
+            #else
+              See [[$services.rendering.escape($xwikiPage, 'xwiki/2.1')||anchor="$services.rendering.escape($xwikiPageAnchor, 'xwiki/2.1')"]].
+            #end
+          #elseif ("$!xwikiURL" != '' &amp;&amp; $xwikiURL != '?' &amp;&amp; $xwikiURL != '-')
+            See $doc.display('xwikiURL').
+          #end
         #end
       #end
       #set ($handlingDetails = $macroObj.getValue('handlingDetails').trim())

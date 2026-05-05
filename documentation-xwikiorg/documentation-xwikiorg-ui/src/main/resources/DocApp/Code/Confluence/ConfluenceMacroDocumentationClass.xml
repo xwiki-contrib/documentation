@@ -113,7 +113,7 @@
       <disabled>0</disabled>
       <displayType>input</displayType>
       <freeText/>
-      <hint>The documentation of a feature that should be used in XWiki for this feature regardless of the import.</hint>
+      <hint>The documentation of a feature that should be used in XWiki for this feature regardless of the import. This should be only if the value differs from "Import target XWiki URL" or for bridge to specify what is using the bridge and what to use in XWiki natively.</hint>
       <idField/>
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
@@ -150,7 +150,7 @@
     <equivXWikiFeatureURL>
       <customDisplay/>
       <disabled>0</disabled>
-      <hint>The URL to the feature that should be used in XWiki for this feature regardless of the import.</hint>
+      <hint>The URL to the feature that should be used in XWiki for this feature regardless of the import. This should be only if the value differs from "Import target XWiki URL" or for bridge to specify what is using the bridge and what to use in XWiki natively.</hint>
       <name>equivXWikiFeatureURL</name>
       <number>22</number>
       <picker>0</picker>
