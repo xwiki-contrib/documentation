@@ -253,7 +253,7 @@
         ## Logic
         ## if it's a migration of type bridge -&gt; take equivXWikiFeature if set, otherwise nothing.
         ## for others type: take equivXWikiFeature if set, otherwise use xwikiPage
-        #if ("$handling" == 'bridge')
+        #if ($handling == 'bridge')
           #if ("$!equivXWikiFeaturePage" != '')
             #if ("$!equivXWikiFeaturePageAnchor" == '')
               See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')]].
