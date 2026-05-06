@@ -253,26 +253,16 @@
         ## Logic
         ## if it's a migration of type bridge -&gt; take equivXWikiFeature if set, otherwise nothing.
         ## for others type: take equivXWikiFeature if set, otherwise use xwikiPage
-        #if ($handling == 'bridge')
-          #if ("$!equivXWikiFeaturePage" != '')
-            #if ("$!equivXWikiFeaturePageAnchor" == '')
-              See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')]].
-            #else
-              See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')||anchor="$services.rendering.escape($equivXWikiFeaturePageAnchor, 'xwiki/2.1')"]].
-            #end
-          #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
-            See $doc.display('equivXWikiFeatureURL').
+        #if ("$!equivXWikiFeaturePage" != '')
+          #if ("$!equivXWikiFeaturePageAnchor" == '')
+            See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')]].
+          #else
+            See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')||anchor="$services.rendering.escape($equivXWikiFeaturePageAnchor, 'xwiki/2.1')"]].
           #end
-        #else
-          #if ("$!equivXWikiFeaturePage" != '')
-            #if ("$!equivXWikiFeaturePageAnchor" == '')
-              See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')]].
-            #else
-              See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')||anchor="$services.rendering.escape($equivXWikiFeaturePageAnchor, 'xwiki/2.1')"]].
-            #end
-          #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
-            See $doc.display('equivXWikiFeatureURL')
-          #elseif ("$!xwikiPage" != '')
+        #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
+          See $doc.display('equivXWikiFeatureURL').
+        #elseif ("$handling" != 'bridge')
+          #if ("$!xwikiPage" != '')
             #if ("$!xwikiPageAnchor" == '')
               See [[$services.rendering.escape($xwikiPage, 'xwiki/2.1')]].
             #else
