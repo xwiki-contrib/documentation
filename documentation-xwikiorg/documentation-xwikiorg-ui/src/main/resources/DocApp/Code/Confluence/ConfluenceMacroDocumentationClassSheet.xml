@@ -261,7 +261,7 @@
           #end
         #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
           See $doc.display('equivXWikiFeatureURL').
-        #elseif ("$handling" != 'bridge')
+        #elseif ($handling != 'bridge')
           #if ("$!xwikiPage" != '')
             #if ("$!xwikiPageAnchor" == '')
               See [[$services.rendering.escape($xwikiPage, 'xwiki/2.1')]].
