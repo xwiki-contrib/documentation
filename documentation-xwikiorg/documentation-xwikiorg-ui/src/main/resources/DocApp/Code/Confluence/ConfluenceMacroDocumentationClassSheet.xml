@@ -37,8 +37,110 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
+  ## .get(i) throws instead of returning null on those lists unfortunately,
+  ## hence the following macros reading variables
+  #macro (readXWikiListVariables $index)
+    #set ($xwikiPage = $NULL)
+    #if ($index &lt; $xwikiPages.size())
+      #set ($xwikiPage = $xwikiPages.get($index))
+    #end
+    #set ($xwikiPageAnchor = $NULL)
+    #if ($index &lt; $xwikiPageAnchors.size())
+      #set ($xwikiPageAnchor = $xwikiPageAnchors.get($index))
+    #end
+    #set ($xwikiURL = $NULL)
+    #if ($index &lt; $xwikiURLs.size())
+      #set ($xwikiURL = $xwikiURLs.get($index))
+    #end
+  #end
+  #macro (readRequiredForImportVariables $index)
+    #set ($requiredForImportName = $NULL)
+    #if ($index &lt; $requiredForImportNames.size())
+      #set ($requiredForImportName = $requiredForImportNames.get($index))
+    #end
+    #set ($requiredForImportURL = $NULL)
+    #if ($index &lt; $requiredForImportURLs.size())
+      #set ($requiredForImportURL = $requiredForImportURLs.get($index))
+    #end
+    #set ($requiredForImportPage = $NULL)
+    #if ($index &lt; $requiredForImportPages.size())
+      #set ($requiredForImportPage = $requiredForImportPages.get($index))
+    #end
+    #set ($requiredForImportPageAnchor = $NULL)
+    #if ($index &lt; $requiredForImportPageAnchors.size())
+      #set ($requiredForImportPageAnchor = $requiredForImportPageAnchors.get($index))
+    #end
+    #set ($requiredForImportId = $NULL)
+    #if ($index &lt; $requiredForImportIds.size())
+      #set ($requiredForImportId = $requiredForImportIds.get($index))
+    #end
+  #end
+  #macro (readRequiredForUsageVariables $index)
+    #set ($requiredForUsageName = $NULL)
+    #if ($index &lt; $requiredForUsageNames.size())
+      #set ($requiredForUsageName = $requiredForUsageNames.get($index))
+    #end
+    #set ($requiredForUsageURL = $NULL)
+    #if ($index &lt; $requiredForUsageURLs.size())
+      #set ($requiredForUsageURL = $requiredForUsageURLs.get($index))
+    #end
+    #set ($requiredForUsagePage = $NULL)
+    #if ($index &lt; $requiredForUsagePages.size())
+      #set ($requiredForUsagePage = $requiredForUsagePages.get($index))
+    #end
+    #set ($requiredForUsagePageAnchor = $NULL)
+    #if ($index &lt; $requiredForUsagePageAnchors.size())
+      #set ($requiredForUsagePageAnchor = $requiredForUsagePageAnchors.get($index))
+    #end
+    #set ($requiredForUsageId = $NULL)
+    #if ($index &lt; $requiredForUsageIds.size())
+      #set ($requiredForUsageId = $requiredForUsageIds.get($index))
+    #end
+  #end
+  #macro (readEquivXWikiFeatureVariables $index)
+    #set ($equivXWikiFeatureName = $NULL)
+    #if ($index &lt; $equivXWikiFeatureNames.size())
+      #set ($equivXWikiFeatureName = $equivXWikiFeatureNames.get($index))
+    #end
+    #set ($equivXWikiFeatureURL = $NULL)
+    #if ($index &lt; $equivXWikiFeatureURLs.size())
+      #set ($equivXWikiFeatureURL = $equivXWikiFeatureURLs.get($index))
+    #end
+    #set ($equivXWikiFeaturePage = $NULL)
+    #if ($index &lt; $equivXWikiFeaturePages.size())
+      #set ($equivXWikiFeaturePage = $equivXWikiFeaturePages.get($index))
+    #end
+    #set ($equivXWikiFeaturePageAnchor = $NULL)
+    #if ($index &lt; $equivXWikiFeaturePageAnchors.size())
+      #set ($equivXWikiFeaturePageAnchor = $equivXWikiFeaturePageAnchors.get($index))
+    #end
+    #set ($equivXWikiFeatureId = $NULL)
+    #if ($index &lt; $equivXWikiFeatureIds.size())
+      #set ($equivXWikiFeatureId = $equivXWikiFeatureIds.get($index))
+    #end
+  #end
+  #macro (maybeCommaOrAnd)
+    #if (!$foreach.first)
+      #if ($foreach.last) and#else,#end ##
+    #end
+  #end
+  #macro (renderXWikiMacroList)
+    #if ($handling == 'conversionToSyntax' || $xwikiIds.isEmpty())
+      some syntax##
+    #else
+      #set ($xwikiIdContent = "")
+      #foreach ($xwikiId in $xwikiIds)
+        #maybeCommaOrAnd()
+        #readXWikiListVariables($foreach.index)
+        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, "#renderAsCode($xwikiId)")##
+      #end
+    #end
+  #end
+  #macro (renderAsCode $s)
+    {{code language="none" source="string:$services.rendering.escape($s, 'xwiki/2.1')"/}}##
+  #end
   #macro (renderMaybeLink $page $anchor $url $content)
-    #if ($url == '-' || $url == '?' || $url == '')
+    #if ($url == '-' || $url == '?' || $url == '' || $url == $NULL)
       #set ($link = $page)
       #if ("$!anchor" != '')
         #set ($link = "$services.rendering.escape($link, 'xwiki/2.1')||anchor='$services.rendering.escape($anchor, 'xwiki/2.1')'")
@@ -55,17 +157,36 @@
     #end
   #end
   ##
-  #macro (renderLinkEdit $class $urlPropertyName $pagePropertyName $pageAnchorPropertyName)
+  #macro (renderLinkEdit $class $urlPropertyName $pagePropertyName $pageAnchorPropertyName $extensionIdPropertyName $extensionNamePropertyName)
     #set ($macro.pageProperty = $class.get($pagePropertyName))
     #set ($macro.pageAnchorProperty = $class.get($pageAnchorPropertyName))
     #set ($macro.urlProperty = $class.get($urlPropertyName))
+    #set ($macro.extensionIdProperty = $class.get($extensionIdPropertyName))
+    #set ($macro.extensionNameProperty = $class.get($extensionNamePropertyName))
     &lt;fieldset class="confluenceMacroDocUrl"&gt;
       &lt;legend&gt;$macro.pageProperty.prettyName.replace(' page', '')&lt;/legend&gt;
+      &lt;dl&gt;
+        &lt;dt class="confluenceMacroDocExtensionId"&gt;
+          &lt;label for="${class.name}_0_${macro.extensionIdProperty.name}"&gt;$macro.extensionIdProperty.prettyName&lt;/label&gt;
+          &lt;span class="xHint"&gt;$!macro.extensionIdProperty.hint&lt;/span&gt;
+        &lt;/dt&gt;
+        &lt;dd class="confluenceMacroDocExtensionId"&gt;
+          {{/html}}$doc.display($extensionIdPropertyName){{html clean="false"}}
+        &lt;/dd&gt;
+        &lt;dt class="confluenceMacroDocExtensionName"&gt;
+          &lt;label for="${class.name}_0_${macro.extensionNameProperty.name}"&gt;$macro.extensionNameProperty.prettyName&lt;/label&gt;
+          &lt;span class="xHint"&gt;$!macro.extensionNameProperty.hint&lt;/span&gt;
+        &lt;/dt&gt;
+        &lt;dd class="confluenceMacroDocExtensionId"&gt;
+          {{/html}}$doc.display($extensionNamePropertyName){{html clean="false"}}
+        &lt;/dd&gt;
+      &lt;/dl&gt;
+      &lt;hr /&gt;
       &lt;dl class="confluenceMacroDocPage"&gt;
         &lt;dt class="confluenceMacroDocPageRef"&gt;
           &lt;label for="${class.name}_0_${macro.pageProperty.name}"&gt;$macro.pageProperty.prettyName&lt;/label&gt;
           &lt;span class="xHint"&gt;$!macro.pageProperty.hint&lt;/span&gt;
-          &lt;span class="xHint"&gt;Replace the URL in case of the target page is into the same wiki.&lt;/span&gt;
+          &lt;span class="xHint"&gt;Use this field if the document to link is on this XWiki instance.&lt;/span&gt;
         &lt;/dt&gt;
         &lt;dd class="confluenceMacroDocPageRef"&gt;
           {{/html}}$doc.display($pagePropertyName){{html clean="false"}}
@@ -79,6 +200,7 @@
           {{/html}}$doc.display($pageAnchorPropertyName){{html clean="false"}}
         &lt;/dd&gt;
       &lt;/dl&gt;
+      &lt;p style="text-align:center; opacity: 0.8"&gt;- OR -&lt;/p&gt;
       &lt;dl&gt;
         &lt;dt&gt;
           &lt;label for="${class.name}_0_${macro.urlProperty.name}"&gt;$macro.urlProperty.prettyName&lt;/label&gt;
@@ -115,10 +237,10 @@
       {{html clean="false"}}
         &lt;div class="xform confluenceMacroDocEdit" &gt;
           #set ($linkPropertiesMap = {
-            'xwikiURL': ['xwikiPage', 'xwikiPageAnchor'],
-            'requiredForImport': ['requiredForImportPage', 'requiredForImportPageAnchor'],
-            'requiredForUsage': ['requiredForUsagePage', 'requiredForUsagePageAnchor'],
-            'equivXWikiFeatureURL': ['equivXWikiFeaturePage', 'equivXWikiFeaturePageAnchor']
+            'xwikiURL': ['xwikiPage', 'xwikiPageAnchor', 'xwikiId', 'xwikiName'],
+            'requiredForImport': ['requiredForImportPage', 'requiredForImportPageAnchor', 'requiredForImportId', 'requiredForImportName'],
+            'requiredForUsage': ['requiredForUsagePage', 'requiredForUsagePageAnchor', 'requiredForUsageId', 'requiredForUsageName'],
+            'equivXWikiFeatureURL': ['equivXWikiFeaturePage', 'equivXWikiFeaturePageAnchor', 'equivXWikiFeatureId', 'equivXWikiFeatureName']
           })
           #set ($propertiesForLink = [])
           #set ($discard = $propertiesForLink.addAll($linkPropertiesMap.keySet()))
@@ -129,7 +251,7 @@
             #if ($propertiesForLink.contains($property.name))
               #if ($linkPropertiesMap.containsKey($property.name))
                 #set ($linkPropertyValue = $linkPropertiesMap[$property.name])
-                #renderLinkEdit($class $property.name, $linkPropertyValue[0], $linkPropertyValue[1])
+                #renderLinkEdit($class $property.name, $linkPropertyValue[0], $linkPropertyValue[1], $linkPropertyValue[2], $linkPropertyValue[3])
               #end
             #else
               #if ($foreach.first || $propertiesForLink.contains($class.properties[$foreach.count - 2].name))
@@ -152,93 +274,108 @@
     #else
       #set ($importSupportQualifier = $macroObj.getValue('importSupportQualifier'))
       #if ($importSupportQualifier == 'partial')
+
         {{warning}}
           The import of this macro may be incomplete.
         {{/warning}}
-
       #elseif ($importSupportQualifier == 'no')
+
         {{error}}
           The import of this macro is not supported: important features will be missing.
         {{/error}}
-
       #end
       #set ($functionalEquivalenceQualifier = $macroObj.getValue('functionalEquivalenceQualifier'))
       #if ($functionalEquivalenceQualifier == 'partial')
+
         {{warning}}
-          This macro's equivalent feature in XWiki may lack features.
+          This macro's alternative feature in XWiki may lack features.
         {{/warning}}
-
       #elseif ($functionalEquivalenceQualifier == 'no')
-        {{error}}
-          Important features will be missing in XWiki's equivalent feature.
-        {{/error}}
 
+        {{error}}
+          Important features will be missing in XWiki's alternative feature.
+        {{/error}}
       #end
       #set ($confluenceURL = $macroObj.getValue('confluenceURL'))
-      The #renderMaybeLink('' '' $confluenceURL, '{{code language="none" source="script:confluenceId"/}}') Confluence macro ##
+
+      The #renderMaybeLink('' '' $confluenceURL, "#renderAsCode($confluenceId)") Confluence macro ##
       #set ($handling = $macroObj.getValue('handling'))
-      #set ($xwikiId = $macroObj.getValue('xwikiId'))
-      #set ($xwikiURL = $macroObj.getValue('xwikiURL'))
-      #set ($xwikiPage = $macroObj.getValue('xwikiPage'))
-      #set ($xwikiPageAnchor = $macroObj.getValue('xwikiPageAnchor'))
-      #if ($handling.startsWith('conversion'))
-        #if ($handling == 'conversionToSyntax' || "$!xwikiId" == '')
-          #set ($xwikiIdContent = 'some syntax') ##
-        #else
-          #set ($xwikiIdContent = 'the {{code language="none" source="script:xwikiId"/}} macro') ##
-        #end
-        is converted to ##
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $xwikiIdContent) ##
+      #set ($xwikiIds = $macroObj.getValue('xwikiId'))
+      #set ($xwikiURLs = $macroObj.getValue('xwikiURL'))
+      #set ($xwikiPages = $macroObj.getValue('xwikiPage'))
+      #set ($xwikiPageAnchors = $macroObj.getValue('xwikiPageAnchor'))
+      #if ($handling.startsWith('conversion') || $handling == 'direct')
+        is converted to the #renderXWikiMacroList() macro#if ($xwikiIds.size() &gt; 1)s#end.
       #elseif ($handling == 'bridge')
-        is covered by the ##
-        #set ($linkContent = '{{code language="none" source="script:xwikiId"/}} bridge macro')
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $linkContent) ##
-      #elseif ($handling == 'direct')
-        is imported ##
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, 'as-is') ##
+        is covered by the #renderXWikiMacroList() bridge#if ($xwikiIds.size() &gt; 1)s#end.
       #elseif ($handling == 'drop')
-        is dropped##
+        is dropped.
       #else
-        uses ##
-        #renderMaybeLink($xwikiPage, $xwikiPageAnchor, $xwikiURL, $handling) ##
-      #end##
-      #if ($handling != 'drop')
-        #set ($requiredForUsageURL = $macroObj.getValue('requiredForUsage'))
-        #set ($requiredForUsageName = $macroObj.getValue('requiredForUsageName'))
-        #set ($requiredForUsagePage = $macroObj.getValue('requiredForUsagePage'))
-        #if (("$!requiredForUsageName" == '' &amp;&amp; "$!requiredForUsageURL" == '') || $requiredForUsageName == 'XWiki Standard')
-          which a standard installation of XWiki provides##
-        #elseif ("$!requiredForUsageName" != '')
-          #set ($escapedUsageName = $services.rendering.escape($requiredForUsageName, 'xwiki/2.1'))
-          which requires #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, $escapedUsageName)##
-        #else
-          #set ($requiredForUsageId = $macroObj.getValue('requiredForUsageId'))
-          #set ($requiredForUsageContent = 'this')
-          #if ("$!requiredForUsageId" != '')
-            #set ($requiredForUsageContent = 'the {{code language="none" source="script:requiredForUsageId"/}} package')
-          #end
-          #set ($requiredForUsagePageAnchor = $macroObj.getValue('requiredForUsagePageAnchor'))
-          which requires #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, 'package {{code language="none" source="script:requiredForUsageId"/}}')##
-        #end
-      #end.
-      #set ($requiredForImport = $macroObj.getValue('requiredForImport'))
-      #set ($requiredForImportPage = $macroObj.getValue('requiredForImportPage'))
-      #set ($requiredForImportPageAnchor = $macroObj.getValue('requiredForImportPageAnchor'))
-      #set ($requiredForImportId = $macroObj.getValue('requiredForImportId'))
-      #if ("$!requiredForImportId" == '')
-          #if ("$!requiredForImport" != '')
-
-            Importing this macro requires [[$services.rendering.escape($doc.getValue('requiredForImport'), 'xwiki/2.1')]].
-          #end
-      #elseif ($requiredForImportId != 'org.xwiki.contrib.confluence:confluence-xml' &amp;&amp; $requiredForImportId != 'com.xwiki.confluence:confluence-migration-package-ui')
-
-          Importing this macro requires #renderMaybeLink($requiredForImportPage, $requiredForImportPageAnchor, $requiredForImport, 'package {{code language="none" source="script:requiredForImportId"/}}').
+        uses #renderXWikiMacroList().
       #end
-      #set ($equivXWikiFeatureURL = $macroObj.getValue('equivXWikiFeatureURL'))
-      #set ($equivXWikiFeaturePageAnchor = $macroObj.getValue('equivXWikiFeaturePageAnchor'))
-      #set ($equivXWikiFeaturePage = $macroObj.getValue('equivXWikiFeaturePage'))
+      #set ($requiredForImportURLs = $macroObj.getValue('requiredForImport'))
+      #set ($requiredForImportNames = $macroObj.getValue('requiredForImportName'))
+      #set ($requiredForImportPages = $macroObj.getValue('requiredForImportPage'))
+      #set ($requiredForImportPageAnchors = $macroObj.getValue('requiredForImportPageAnchor'))
+      #set ($requiredForImportIds = $macroObj.getValue('requiredForImportId'))
+      #set ($requiredForImportMaxIndex = $mathtool.max($requiredForImportURLs.size(), $requiredForImportPages.size(), $requiredForImportPageAnchors.size(), $requiredForImportIds.size()) - 1)
+      #if ($requiredForImportMaxIndex &gt;= 0)
+        #foreach ($index in [0..$requiredForImportMaxIndex])
+          #if ($foreach.first)
+
+            Importing this macro requires ##
+          #end##
+          #maybeCommaOrAnd##
+          #readRequiredForImportVariables##
+          #if ("$!requiredForImportId" == '')
+            #set ($requiredForImportId = "$!requiredForImportPage$!requiredForImport")
+          #end
+          #if ("$!requiredForImportName" == "")
+            #set ($requiredForImportName = "package #renderAsCode($requiredForImportId)")
+          #else
+            #set ($requiredForImportName = $services.rendering.escape($requiredForImportName, 'xwiki/2.1'))
+          #end
+          #renderMaybeLink($requiredForImportPage, $requiredForImportPageAnchor, $requiredForImportURL, $requiredForImportName)
+          #if ($foreach.last).
+          #end
+        #end
+      #end
+      #if ($handling != 'drop')
+        #set ($requiredForUsageURLs = $macroObj.getValue('requiredForUsage'))
+        #set ($requiredForUsageNames = $macroObj.getValue('requiredForUsageName'))
+        #set ($requiredForUsagePages = $macroObj.getValue('requiredForUsagePage'))
+        #set ($requiredForUsagePageAnchors = $macroObj.getValue('requiredForUsagePageAnchor'))
+        #set ($requiredForUsageIds = $macroObj.getValue('requiredForUsageId'))
+        #set ($requiredForUsageMaxIndex = $mathtool.max($requiredForUsageURLs.size(), $requiredForUsagePages.size(), $requiredForUsagePageAnchors.size(), $requiredForUsageIds.size()) - 1)
+        #if ($requiredForUsageMaxIndex &gt;= 0)
+          #foreach ($index in [0..$requiredForUsageMaxIndex])
+            #if ($foreach.first)
+
+              The target macro requires ##
+            #end##
+            #maybeCommaOrAnd##
+            #readRequiredForUsageVariables##
+            #if ("$!requiredForUsageId" == '')
+              #set ($requiredForUsageId = "$!requiredForUsagePage$!requiredForUsage")
+            #end
+            #if ("$!requiredForUsageName" == "")
+              #set ($requiredForUsageName = "package #renderAsCode($requiredForUsageId)")
+            #else
+              #set ($requiredForUsageName = $services.rendering.escape($requiredForUsageName, 'xwiki/2.1'))
+            #end
+            #renderMaybeLink($requiredForUsagePage, $requiredForUsagePageAnchor, $requiredForUsageURL, $requiredForUsageName)
+            #if ($foreach.last).
+            #end
+          #end
+        #end
+      #end
+      #set ($equivXWikiFeatureURLs = $macroObj.getValue('equivXWikiFeatureURL'))
+      #set ($equivXWikiFeatureNames = $macroObj.getValue('equivXWikiFeatureName'))
+      #set ($equivXWikiFeaturePages = $macroObj.getValue('equivXWikiFeaturePage'))
+      #set ($equivXWikiFeaturePageAnchors = $macroObj.getValue('equivXWikiFeaturePageAnchor'))
+      #set ($equivXWikiFeatureIds = $macroObj.getValue('equivXWikiFeatureId'))
       #set ($correspondingXWikiFeature = $macroObj.getValue('correspondingXWikiFeature'))
-      #if ("$!equivXWikiFeatureURL" != '' || "$!correspondingXWikiFeature" != '' || "$!equivXWikiFeaturePage" != '' || ("$handling" != 'bridge' &amp;&amp; ("$!xwikiPage" != '' || "$!xwikiURL" != '')))
+      #if ("$!equivXWikiFeatureURLs" != '' || "$!correspondingXWikiFeature" != '' || "$!equivXWikiFeaturePages" != '' || ("$handling" != 'bridge' &amp;&amp; ("$!xwikiPages" != '' || "$!xwikiURLs" != '')))
 
         == What to use in XWiki ==
 
@@ -247,30 +384,37 @@
         $escapetool.xml($xwiki.getClass($className).get('correspondingXWikiFeature').hint)
         &lt;/span&gt;&lt;/div&gt;
         {{/html}}
+        #if ($doc.getValue('correspondingXWikiFeature').trim() != "")
 
         $doc.display('correspondingXWikiFeature')
-
+        #end
         ## Logic
         ## if it's a migration of type bridge -&gt; take equivXWikiFeature if set, otherwise nothing.
         ## for others type: take equivXWikiFeature if set, otherwise use xwikiPage
-        #if ("$!equivXWikiFeaturePage" != '')
-          #if ("$!equivXWikiFeaturePageAnchor" == '')
-            See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')]].
-          #else
-            See [[$services.rendering.escape($equivXWikiFeaturePage, 'xwiki/2.1')||anchor="$services.rendering.escape($equivXWikiFeaturePageAnchor, 'xwiki/2.1')"]].
-          #end
-        #elseif ("$!equivXWikiFeatureURL" != '' &amp;&amp; $equivXWikiFeatureURL != '?' &amp;&amp; $equivXWikiFeatureURL != '-')
-          See $doc.display('equivXWikiFeatureURL').
-        #elseif ($handling != 'bridge')
-          #if ("$!xwikiPage" != '')
-            #if ("$!xwikiPageAnchor" == '')
-              See [[$services.rendering.escape($xwikiPage, 'xwiki/2.1')]].
-            #else
-              See [[$services.rendering.escape($xwikiPage, 'xwiki/2.1')||anchor="$services.rendering.escape($xwikiPageAnchor, 'xwiki/2.1')"]].
+        #set ($equivXWikiFeatureMaxIndex = $mathtool.max($equivXWikiFeatureURLs.size(), $equivXWikiFeaturePages.size(), $equivXWikiFeaturePageAnchors.size(), $equivXWikiFeatureIds.size()) - 1)
+        #if ($equivXWikiFeatureMaxIndex &gt;= 0)
+          #foreach ($index in [0..$equivXWikiFeatureMaxIndex])
+            #if ($foreach.first)
+
+              See ##
+            #end##
+            #maybeCommaOrAnd##
+            #readEquivXWikiFeatureVariables##
+            #if ("$!equivXWikiFeatureId" == '')
+              #set ($equivXWikiFeatureId = "$!equivXWikiFeaturePage$!equivXWikiFeature")
             #end
-          #elseif ("$!xwikiURL" != '' &amp;&amp; $xwikiURL != '?' &amp;&amp; $xwikiURL != '-')
-            See $doc.display('xwikiURL').
+            #if ("$!equivXWikiFeatureName" == "")
+              #set ($equivXWikiFeatureName = "package #renderAsCode($equivXWikiFeatureId)")
+            #else
+              #set ($equivXWikiFeatureName = $services.rendering.escape($equivXWikiFeatureName, 'xwiki/2.1'))
+            #end
+            #renderMaybeLink($equivXWikiFeaturePage, $equivXWikiFeaturePageAnchor, $equivXWikiFeatureURL, $equivXWikiFeatureName)
+            #if ($foreach.last).
+            #end
           #end
+        #elseif ($handling != 'bridge')
+
+          See #renderXWikiMacroList().
         #end
       #end
       #set ($handlingDetails = $macroObj.getValue('handlingDetails').trim())
