@@ -51,7 +51,7 @@
       <disabled>0</disabled>
       <hint>Additional information</hint>
       <name>additionalInfo</name>
-      <number>25</number>
+      <number>28</number>
       <prettyName>Additional information</prettyName>
       <script/>
       <unmodifiable>0</unmodifiable>
@@ -92,11 +92,11 @@
       <customDisplay/>
       <disabled>0</disabled>
       <editor>---</editor>
-      <hint>How this macro would be implemented in XWiki and comparison with the corresponding feature</hint>
+      <hint>How this macro would be implemented in XWiki and comparison with the alternative feature</hint>
       <name>correspondingXWikiFeature</name>
-      <number>23</number>
+      <number>26</number>
       <picker>0</picker>
-      <prettyName>Corresponding XWiki feature description</prettyName>
+      <prettyName>Alternative XWiki feature description</prettyName>
       <restricted>0</restricted>
       <rows>5</rows>
       <size>40</size>
@@ -105,6 +105,56 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </correspondingXWikiFeature>
+    <equivXWikiFeatureId>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>The extension id of a feature that should be used in XWiki for this feature regardless of the import. This should be only set if the value differs from "Import target XWiki ID" or for bridges to specify what the bridge uses and what to use in XWiki natively. You can give several comma-separated IDs.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
+      <name>equivXWikiFeatureId</name>
+      <number>21</number>
+      <picker>1</picker>
+      <prettyName>Alternative XWiki feature extension ID</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </equivXWikiFeatureId>
+    <equivXWikiFeatureName>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>The name of a feature that should be used in XWiki for this feature regardless of the import. This should be only set if the value differs from "Import target XWiki name" or for bridges to specify what the bridge uses and what to use in XWiki natively. You can give several comma-separated names.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
+      <name>equivXWikiFeatureName</name>
+      <number>22</number>
+      <picker>1</picker>
+      <prettyName>Alternative XWiki feature name</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </equivXWikiFeatureName>
     <equivXWikiFeaturePage>
       <cache>0</cache>
       <classname/>
@@ -116,13 +166,13 @@
       <hint>The documentation of a feature that should be used in XWiki for this feature regardless of the import. This should be only set if the value differs from "Import target XWiki URL" or for bridges to specify what the bridge uses and what to use in XWiki natively.</hint>
       <idField/>
       <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>equivXWikiFeaturePage</name>
-      <number>20</number>
+      <number>23</number>
       <picker>1</picker>
-      <prettyName>Corresponding  XWiki feature documentation page</prettyName>
+      <prettyName>Alternative XWiki feature documentation page</prettyName>
       <relationalStorage>0</relationalStorage>
-      <separator> </separator>
+      <separator>, </separator>
       <separators/>
       <size>1</size>
       <sort/>
@@ -134,32 +184,54 @@
       <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
     </equivXWikiFeaturePage>
     <equivXWikiFeaturePageAnchor>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
       <hint>The anchor in the documentation of a feature that should be used in XWiki for this feature regardless of the import.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>equivXWikiFeaturePageAnchor</name>
-      <number>21</number>
+      <number>24</number>
       <picker>1</picker>
-      <prettyName>Corresponding XWiki feature documentation page anchor</prettyName>
-      <size>30</size>
+      <prettyName>Alternative XWiki feature documentation page anchor</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </equivXWikiFeaturePageAnchor>
     <equivXWikiFeatureURL>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue>29</defaultValue>
       <disabled>0</disabled>
-      <hint>The URL to the feature that should be used in XWiki for this feature regardless of the import. This should be only set if the value differs from "Import target XWiki URL" or for bridges to specify what the bridge uses and what to use in XWiki natively.</hint>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>The URL to the feature that should be used in XWiki for this feature regardless of the import. This should be only set if the value differs from "Import target XWiki URL" or for bridges to specify what the bridge uses and what to use in XWiki natively. You can give several comma-separated URLs.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>equivXWikiFeatureURL</name>
-      <number>22</number>
-      <picker>0</picker>
-      <prettyName>Corresponding XWiki feature documentation URL</prettyName>
-      <size>30</size>
+      <number>25</number>
+      <picker>1</picker>
+      <prettyName>Alternative XWiki feature documentation URL</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </equivXWikiFeatureURL>
     <functionalEquivalenceQualifier>
       <cache>0</cache>
@@ -168,15 +240,15 @@
       <disabled>0</disabled>
       <displayType>select</displayType>
       <freeText/>
-      <hint>How well the corresponding feature in XWiki is equivalent to the Confluence feature. If the corresponding XWiki feature brings the same features with no important limitations, we consider  full equivalence. If corresponding features lack or have limitations, depending on the situation, we consider partial equivalence.</hint>
+      <hint>How well the alternative feature in XWiki is equivalent to the Confluence feature. If the alternative XWiki feature brings the same features with no important limitations, we consider  full equivalence. If equivalent features lack or have limitations, depending on the situation, we consider partial equivalence.</hint>
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>functionalEquivalenceQualifier</name>
-      <number>6</number>
+      <number>27</number>
       <picker>1</picker>
       <prettyName>Functional Equivalence Qualifier</prettyName>
       <relationalStorage>0</relationalStorage>
-      <separator> </separator>
+      <separator>, </separator>
       <separators>|, </separators>
       <size>1</size>
       <sort/>
@@ -218,7 +290,7 @@
       <editor>---</editor>
       <hint>Details on how (well) this Confluence macro is imported</hint>
       <name>handlingDetails</name>
-      <number>24</number>
+      <number>29</number>
       <picker>0</picker>
       <prettyName>Import handling details</prettyName>
       <restricted>0</restricted>
@@ -235,12 +307,12 @@
       <defaultValue/>
       <disabled>0</disabled>
       <displayType>select</displayType>
-      <freeText>allowed</freeText>
+      <freeText/>
       <hint>How well the Confluence macro is handled in XWiki. If all Confluence macro parameters are mapped to supported XWiki macro parameters, we consider this fully supported. If some parameters are not supported in XWiki, depending on the situation, we consider this partial.</hint>
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>importSupportQualifier</name>
-      <number>5</number>
+      <number>8</number>
       <picker>1</picker>
       <prettyName>Import Quality Qualifier</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -257,7 +329,7 @@
     <prettyName>
       <customDisplay>{{include reference="DocApp.Code.Confluence.ConfluenceTitleDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
-      <hint>The user-friendly macro name as it is presented in confluence (different from the confluence ID which is the technical name)</hint>
+      <hint>The user-friendly macro name as it is presented in Confluence (different from the confluence ID which is the technical name)</hint>
       <name>prettyName</name>
       <number>1</number>
       <prettyName>User-friendly macro name</prettyName>
@@ -268,33 +340,80 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </prettyName>
     <requiredForImport>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
-      <hint>URL to an extension required for importing this macro.</hint>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>URL to an extension required for importing this macro. You can give several comma-separated URLs.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>requiredForImport</name>
-      <number>14</number>
-      <picker>0</picker>
+      <number>15</number>
+      <picker>1</picker>
       <prettyName>Required for import documentation URL</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </requiredForImport>
     <requiredForImportId>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
-      <hint>ID of an extension required for importing this macro</hint>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>ID of an extension required for importing this macro. You can give several comma-separated IDs.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>requiredForImportId</name>
       <number>11</number>
-      <picker>0</picker>
+      <picker>1</picker>
       <prettyName>Required for import extension ID</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </requiredForImportId>
+    <requiredForImportName>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>User-friendly name of the extension required for importing the macro. You can give several comma-separated names.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
+      <name>requiredForImportName</name>
+      <number>12</number>
+      <picker>1</picker>
+      <prettyName> Required for import extension name</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </requiredForImportName>
     <requiredForImportPage>
       <cache>0</cache>
       <classname/>
@@ -306,13 +425,13 @@
       <hint>Page of an extension required for importing this macro.</hint>
       <idField/>
       <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>requiredForImportPage</name>
       <number>13</number>
       <picker>1</picker>
       <prettyName>Required for import documentation page</prettyName>
       <relationalStorage>0</relationalStorage>
-      <separator> </separator>
+      <separator>, </separator>
       <separators/>
       <size>1</size>
       <sort/>
@@ -324,60 +443,104 @@
       <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
     </requiredForImportPage>
     <requiredForImportPageAnchor>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
       <hint>Anchor in the page of an extension required for importing this macro.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>requiredForImportPageAnchor</name>
-      <number>13</number>
+      <number>14</number>
       <picker>1</picker>
       <prettyName>Required for import documentation page anchor</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </requiredForImportPageAnchor>
     <requiredForUsage>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
-      <hint>URL to the documentation of a extension required for using the imported macro.</hint>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>URL to the documentation of a extension required for using the imported macro. You can give several comma-separated URLs.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>requiredForUsage</name>
-      <number>19</number>
-      <picker>0</picker>
+      <number>20</number>
+      <picker>1</picker>
       <prettyName>Required for usage documentation URL</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </requiredForUsage>
     <requiredForUsageId>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue>29</defaultValue>
       <disabled>0</disabled>
-      <hint>ID of an extension required for using this macro</hint>
+      <displayType>input</displayType>
+      <freeText/>
+      <hint>ID of an extension required for using this macro. You can give several comma-separated IDs.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>requiredForUsageId</name>
-      <number>15</number>
-      <picker>0</picker>
-      <prettyName>Required for usage extension ID</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </requiredForUsageId>
-    <requiredForUsageName>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <hint>Name of an extension required for using this macro</hint>
-      <name>requiredForUsageName</name>
       <number>16</number>
       <picker>1</picker>
-      <prettyName>Required for usage extension name</prettyName>
-      <size>30</size>
+      <prettyName>Required for usage extension ID</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </requiredForUsageId>
+    <requiredForUsageName>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText/>
+      <hint>Name of an extension required for using this macro. You can give several comma-separated names.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
+      <name>requiredForUsageName</name>
+      <number>17</number>
+      <picker>1</picker>
+      <prettyName>Required for usage extension name</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </requiredForUsageName>
     <requiredForUsagePage>
       <cache>0</cache>
@@ -390,15 +553,15 @@
       <hint>Documentation page of an extension required for using this macro.</hint>
       <idField/>
       <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>requiredForUsagePage</name>
-      <number>17</number>
+      <number>18</number>
       <picker>1</picker>
       <prettyName>Required for usage documentation page</prettyName>
       <relationalStorage>0</relationalStorage>
-      <separator> </separator>
+      <separator>, </separator>
       <separators/>
-      <size>1</size>
+      <size>28</size>
       <sort/>
       <sql/>
       <unmodifiable>0</unmodifiable>
@@ -408,33 +571,80 @@
       <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
     </requiredForUsagePage>
     <requiredForUsagePageAnchor>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
       <hint>Documentation page anchor of an extension required for using this macro.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>requiredForUsagePageAnchor</name>
-      <number>18</number>
+      <number>19</number>
       <picker>1</picker>
       <prettyName>Required for usage documentation page anchor</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <validationRegExp>, </validationRegExp>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </requiredForUsagePageAnchor>
     <xwikiId>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
-      <hint>The import target macro, if applicable</hint>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>The import target macro, if applicable. You can give several comma-separated macros.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>xwikiId</name>
-      <number>7</number>
-      <picker>0</picker>
+      <number>9</number>
+      <picker>1</picker>
       <prettyName>Import target XWiki ID</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </xwikiId>
+    <xwikiName>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>The (user-friendly) name of the import target, if applicable. You can give several comma-separated names.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
+      <name>xwikiName</name>
+      <number>5</number>
+      <picker>1</picker>
+      <prettyName>Import target XWiki name</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </xwikiName>
     <xwikiPage>
       <cache>0</cache>
       <classname/>
@@ -442,17 +652,17 @@
       <defaultValue/>
       <disabled>0</disabled>
       <displayType>input</displayType>
-      <freeText/>
+      <freeText>allowed</freeText>
       <hint>The import target macro documentation, if applicable.</hint>
       <idField/>
       <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>xwikiPage</name>
-      <number>8</number>
+      <number>10</number>
       <picker>1</picker>
       <prettyName>Import target XWiki page</prettyName>
       <relationalStorage>0</relationalStorage>
-      <separator> </separator>
+      <separator>, </separator>
       <separators/>
       <size>1</size>
       <sort/>
@@ -464,32 +674,54 @@
       <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
     </xwikiPage>
     <xwikiPageAnchor>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
       <hint>The anchor in the import target macro documentation, if applicable.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>xwikiPageAnchor</name>
-      <number>9</number>
+      <number>6</number>
       <picker>1</picker>
       <prettyName>Import target XWiki page anchor</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </xwikiPageAnchor>
     <xwikiURL>
+      <cache>0</cache>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
-      <hint>The import target macro documentation, if applicable.</hint>
+      <displayType>input</displayType>
+      <freeText>allowed</freeText>
+      <hint>The import target macro documentation URL, if applicable. You can give several comma-separated URLs.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>1</multiSelect>
       <name>xwikiURL</name>
-      <number>10</number>
-      <picker>0</picker>
+      <number>7</number>
+      <picker>1</picker>
       <prettyName>Import target XWiki URL</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator>, </separator>
+      <separators>, |</separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </xwikiURL>
   </class>
   <object>

@@ -99,7 +99,7 @@
         <picker>1</picker>
         <prettyName>Plugin ID(s)</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> ,</separator>
+        <separator>, </separator>
         <separators>,</separators>
         <size>1</size>
         <sort/>
@@ -141,7 +141,7 @@
         <picker>1</picker>
         <prettyName>Alternative plugin name</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> ,</separator>
+        <separator>, </separator>
         <separators>,</separators>
         <size>1</size>
         <sort/>
@@ -153,7 +153,7 @@
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </pluginName>
       <prettyName>
-        <customDisplay>{{include reference="AppWithinMinutes.Title"/}}</customDisplay>
+        <customDisplay>{{include reference="DocApp.Code.Confluence.ConfluenceTitleDisplayer"/}}</customDisplay>
         <disabled>0</disabled>
         <hint>The plugin name</hint>
         <name>prettyName</name>
@@ -182,7 +182,7 @@
         <picker>1</picker>
         <prettyName>Publisher</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> ,</separator>
+        <separator>, </separator>
         <separators>,</separators>
         <size>1</size>
         <sort/>

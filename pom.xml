@@ -78,4 +78,13 @@
       </plugins>
     </pluginManagement>
   </build>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk18on</artifactId>
+        <version>1.80.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>
