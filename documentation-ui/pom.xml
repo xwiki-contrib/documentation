@@ -43,6 +43,13 @@
       <artifactId>documentation-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Used in the Documentation Sheet -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-macro-toc</artifactId>
+      <version>${platform.version}</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <extensions>

@@ -9,7 +9,7 @@ Application to help write good documentation for any software product, and espec
   * [JIRA](https://jira.xwiki.org/browse/XDOC). Used for versions <= 1.6.1
 * Communication: [Forum](https://dev.xwiki.org/xwiki/bin/view/Community/Discuss), [Chat](https://dev.xwiki.org/xwiki/bin/view/Community/Chat)
 * [Development Practices](https://dev.xwiki.org)
-* Minimal XWiki version supported: XWiki 16.10.11
+* Minimal XWiki version supported: XWiki 17.10.9
 * License: LGPL 2.1
 * Translations: N/A
 * Sonar Dashboard: [![Status](https://sonarcloud.io/api/project_badges/measure?project=org.xwiki.contrib.documentation:documentation&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.xwiki.contrib.documentation:documentation)
