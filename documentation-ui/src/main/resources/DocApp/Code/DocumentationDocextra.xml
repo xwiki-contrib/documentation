@@ -206,11 +206,11 @@
             &lt;dt&gt;
               #set ($messageContent = $violation.getValue('message'))
               #if ($!violation.getValue('severity') == 'Error')
-                #inlineError($messageContent)
+                #inlineError($escapetool.xml($messageContent))
               #elseif ($!violation.getValue('severity') == 'Warning')
-                #inlineWarning($messageContent)
+                #inlineWarning($escapetool.xml($messageContent))
               #else
-                $messageContent
+                $escapetool.xml($messageContent)
               #end
             &lt;/dt&gt;
             #set ($violationContext = $violation.getValue('context'))
