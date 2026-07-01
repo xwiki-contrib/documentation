@@ -114,6 +114,22 @@ class ImageMacroAltCheckTest
     }
 
     @Test
+    void checkWhenImageMacroIsMissingAltTextAndReference() throws Exception
+    {
+        MacroBlock imageBlock = new MacroBlock("image", Map.of(), false);
+        XWikiDocument document = createDocument(new XDOM(List.of(imageBlock)));
+
+        List<DocumentationViolation> violations = getChecker().check(document);
+
+        assertEquals(1, violations.size());
+        assertEquals("Missing 'alt' parameter usage in the Image macro.",
+            violations.get(0).getViolationMessage());
+        assertEquals("Image reference : ",
+            violations.get(0).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+    }
+
+    @Test
     void checkWhenImageMacroIsHavingAltText() throws Exception
     {
         MacroBlock imageBlock = new MacroBlock("image", Map.of("reference", "test.png", "alt", "test"), false);

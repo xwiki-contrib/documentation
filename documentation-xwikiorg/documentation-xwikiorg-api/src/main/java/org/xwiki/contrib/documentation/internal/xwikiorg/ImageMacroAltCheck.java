@@ -75,8 +75,9 @@ public class ImageMacroAltCheck extends AbstractXDOMDocumentationCheck
         List<MacroBlock> macroBlocks = xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT);
         for (MacroBlock macroBlock : macroBlocks) {
             if (IMAGE_MACRO_ID.equals(macroBlock.getId()) && macroBlock.getParameter("alt") == null) {
+                String reference = macroBlock.getParameter("reference");
                 violations.add(new DocumentationViolation("Missing 'alt' parameter usage in the Image macro.",
-                    String.format("Image reference : %s", macroBlock.getParameter("reference")),
+                    String.format("Image reference : %s", reference == null ? "" : reference),
                     DocumentationViolationSeverity.WARNING));
             }
         }
