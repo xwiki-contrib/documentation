@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>API to validate documentation pages</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.68</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.88</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Documentation Application API</xwiki.extension.name>
     <!-- The extension's category -->
@@ -52,6 +52,12 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <!-- Provides the MacroRefactoring role implemented to keep the image macro's reference parameter in sync. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-xwiki</artifactId>
       <version>${platform.version}</version>
     </dependency>
     <!-- Test Dependencies -->
