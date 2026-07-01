@@ -62,7 +62,17 @@ Results in:
 
 {{deprecated product="Latex" since="11.10.5" useInstead="the New Feature"}}
 Content that was deprecated...
-{{/deprecated}}</content>
+{{/deprecated}}
+
+= Example 3: Inline usage =
+
+{{code}}
+A sentence with {{deprecated since='11.10.5' useInstead='the New Feature'}}an old feature{{/deprecated}} used inline.
+{{/code}}
+
+Results in:
+
+A sentence with {{deprecated since="11.10.5" useInstead="the New Feature"}}an old feature{{/deprecated}} used inline.</content>
   <object>
     <name>DocApp.Code.DeprecatedMacro</name>
     <number>0</number>
@@ -429,11 +439,15 @@ Content that was deprecated...
 #set ($product = $wikimacro.parameters.product)
 #set ($since = $wikimacro.parameters.since)
 #set ($useInstead = $wikimacro.parameters.useInstead)
+#if ($wikimacro.context.isInline())
+(% class='badge deprecated' data-xwikiorg-deprecated='true' data-xwikiorg-product="$product" data-xwikiorg-deprecated-since="$since" %)Deprecated $product $since. Use $useInstead instead.(%%) {{wikimacrocontent/}}
+#else
 (% class='box deprecationNotice' data-xwikiorg-deprecated='true' data-xwikiorg-product="$product" data-xwikiorg-deprecated-since="$since" %)(((
 (% class='badge deprecated' %)Deprecated $product $since. Use $useInstead instead.(%%)
 
 {{wikimacrocontent/}}
 )))
+#end
 {{/velocity}}</code>
     </property>
     <property>
@@ -467,7 +481,7 @@ Content that was deprecated...
       <priority/>
     </property>
     <property>
-      <supportsInlineMode>0</supportsInlineMode>
+      <supportsInlineMode>1</supportsInlineMode>
     </property>
     <property>
       <visibility>Global</visibility>

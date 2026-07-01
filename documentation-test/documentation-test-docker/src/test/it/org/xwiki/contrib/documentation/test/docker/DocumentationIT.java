@@ -194,6 +194,35 @@ class DocumentationIT
         assertFalse(viewPage.hasDocumentationTab(), "A non-documentation page must not show the Documentation tab");
     }
 
+    @Test
+    @Order(7)
+    void deprecatedMacroWorksInline(TestUtils setup)
+    {
+        // The Deprecated macro is independent of the validation flow (no DocumentationClass needed). It is used both
+        // inline (inside a sentence) and standalone (its own block) on the same page so that both renderings can be
+        // asserted: the inline use must not error and must not produce the callout box, while the standalone use still
+        // renders the box.
+        String content = "A sentence with "
+            + "{{deprecated since=\"11.10.5\" useInstead=\"the New Feature\"}}an old feature{{/deprecated}}"
+            + " used inline.\n\n"
+            + "{{deprecated since=\"11.10.5\" useInstead=\"the New Feature\"}}\nA standalone block.\n{{/deprecated}}";
+        setup.deletePage(SPACE, "deprecated-sample");
+        setup.createPage(SPACE, "deprecated-sample", content, "Deprecated sample", "xwiki/2.1");
+
+        setup.gotoPage(SPACE, "deprecated-sample");
+        DocumentationViewPage viewPage = new DocumentationViewPage();
+
+        // Used inline, the macro must not produce the "standalone macro cannot be used inline" rendering error.
+        assertFalse(viewPage.hasRenderingError(),
+            "The deprecated macro used inline must not produce a rendering error");
+        // The standalone usage still renders its callout box (the inline usage renders the badge without it).
+        assertTrue(viewPage.hasDeprecationBox(), "The standalone deprecated macro should still render its box");
+        String rendered = viewPage.getContent();
+        assertTrue(rendered.contains("used inline."), "The inline sentence text should be rendered");
+        assertTrue(rendered.contains("Deprecated XWiki 11.10.5. Use the New Feature instead."),
+            "The deprecation badge text should be rendered");
+    }
+
     private static void createChild(TestUtils setup, String name, String title, String type)
     {
         List<String> childSpace = List.of(SPACE, "guide", name);

@@ -55,6 +55,10 @@ public class DocumentationViewPage extends ViewPage
 
     private static final By MORE_SEARCH_FORM = By.cssSelector("#xwikicontent form[action*='DocumentationSearch']");
 
+    private static final By DEPRECATION_BOX = By.cssSelector("#xwikicontent .box.deprecationNotice");
+
+    private static final By RENDERING_ERROR = By.cssSelector("#xwikicontent .xwikirenderingerror");
+
     /**
      * @return true if the on-page "at least one error" validation box is displayed
      */
@@ -77,6 +81,22 @@ public class DocumentationViewPage extends ViewPage
     public boolean hasDocumentationSearchForm()
     {
         return getDriver().hasElementWithoutWaiting(MORE_SEARCH_FORM);
+    }
+
+    /**
+     * @return true if the standalone deprecation callout box rendered by the Deprecated macro is present
+     */
+    public boolean hasDeprecationBox()
+    {
+        return getDriver().hasElementWithoutWaiting(DEPRECATION_BOX);
+    }
+
+    /**
+     * @return true if a macro rendering error is displayed (e.g. a standalone macro wrongly used inline)
+     */
+    public boolean hasRenderingError()
+    {
+        return getDriver().hasElementWithoutWaiting(RENDERING_ERROR);
     }
 
     /**
