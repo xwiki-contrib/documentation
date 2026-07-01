@@ -117,6 +117,11 @@
     #end
   #end
 #end
+## A content extension may have called $doc.use() to display its own object's fields (e.g. the UIXP extension
+## selecting the UIXPClass object). That changes the object targeted by the $doc.display() calls below, so
+## reselect the DocumentationClass object to make sure the content/FAQ/Highlights/Related fields are displayed
+## from it.
+$doc.use('DocApp.Code.DocumentationClass')
 #if (!$uixExecuted)
   $doc.display('content')
 #end

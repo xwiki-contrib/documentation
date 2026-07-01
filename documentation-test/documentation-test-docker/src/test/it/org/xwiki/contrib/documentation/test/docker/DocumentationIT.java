@@ -57,6 +57,8 @@ class DocumentationIT
 
     private static final String DOC_CLASS = "DocApp.Code.DocumentationClass";
 
+    private static final String UIXP_CLASS = "DocApp.Code.UIXPClass";
+
     /**
      * The violation-scenario page. It uses a "clean" page name and title (kebab-case, no reserved words, "reference"
      * type so the title needs no leading verb) so that the only violation reported is the one induced by its content,
@@ -221,6 +223,33 @@ class DocumentationIT
         assertTrue(rendered.contains("used inline."), "The inline sentence text should be rendered");
         assertTrue(rendered.contains("Deprecated XWiki 11.10.5. Use the New Feature instead."),
             "The deprecation badge text should be rendered");
+    }
+
+    @Test
+    @Order(8)
+    void rendersDocumentationFieldsWhenPageAlsoHasUixpObject(TestUtils setup)
+    {
+        // A page can carry both a DocumentationClass object (FAQ/Related/...) and a UIXPClass object (documenting an
+        // extension point). The UIXP content extension displays the UIXPClass object's fields, but doing so must not
+        // suppress the DocumentationClass FAQ/Related content rendered by the sheet.
+        setup.deletePage(SPACE, "uixp-page");
+        setup.createPage(SPACE, "uixp-page", "", "UIXP sample", "xwiki/2.1");
+        setup.addObject(SPACE, "uixp-page", DOC_CLASS,
+            "type", "reference",
+            "faq", "MyUixpFaqText",
+            "related", "MyUixpRelatedText");
+        setup.addObject(SPACE, "uixp-page", UIXP_CLASS, "description", "MyUixpDescriptionText");
+
+        setup.gotoPage(SPACE, "uixp-page");
+        String content = new DocumentationViewPage().getContent();
+
+        // The UIXP object's structured content is rendered (replacing the free-form "content" field, by design).
+        assertTrue(content.contains("MyUixpDescriptionText"), "Missing the UIXP description content in:\n" + content);
+        // Regression guard for OP#116: the DocumentationClass FAQ/Related fields must still be displayed and not be
+        // hidden by the UIXP object's presence.
+        assertTrue(content.contains("MyUixpFaqText"), "Missing the FAQ content next to the UIXP object in:\n" + content);
+        assertTrue(content.contains("MyUixpRelatedText"),
+            "Missing the Related content next to the UIXP object in:\n" + content);
     }
 
     private static void createChild(TestUtils setup, String name, String title, String type)
