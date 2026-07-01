@@ -120,6 +120,18 @@ class VideoAttachmentCheckTest
     }
 
     @Test
+    void checkWhenUppercaseExtensionContainsI()
+    {
+        // Regression test: extensions must be lower-cased with Locale.ROOT, not the JVM default locale, otherwise
+        // an uppercase "I" (e.g. in Turkish/Azeri locales) would fold to a dotless "ı" and the extension would no
+        // longer match the (lowercase, Locale.ROOT) VIDEO_EXTENSIONS set.
+        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("movie.AVI"));
+
+        assertEquals(1, violations.size());
+        assertEquals("Attachment name: [movie.AVI]", violations.get(0).getViolationContext());
+    }
+
+    @Test
     void checkWhenMixedAttachments()
     {
         List<DocumentationViolation> violations =

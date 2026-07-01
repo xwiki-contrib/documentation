@@ -174,6 +174,21 @@ class VideoMacroCheckTest
     }
 
     @Test
+    void checkWhenUppercaseExtensionContainsIAndVideoMacro() throws Exception
+    {
+        // Regression test: extensions must be lower-cased with Locale.ROOT, not the JVM default locale, otherwise
+        // an uppercase "I" (e.g. in Turkish/Azeri locales) would fold to a dotless "ı" and the extension would no
+        // longer match the (lowercase, Locale.ROOT) VIDEO_EXTENSIONS set.
+        MacroBlock videoMacro = new MacroBlock("video", Map.of("file", "movie.AVI"), false);
+        XWikiDocument document = createDocument(new XDOM(List.of(videoMacro)), "movie.AVI");
+
+        List<DocumentationViolation> violations = getChecker().check(document);
+
+        assertEquals(1, violations.size());
+        assertEquals("Use the Embed macro instead of the Video macro.", violations.get(0).getViolationMessage());
+    }
+
+    @Test
     void checkWhenMultipleVideoMacros() throws Exception
     {
         MacroBlock videoMacro1 = new MacroBlock("video", Map.of("file", "demo1.mp4"), false);

@@ -21,6 +21,7 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.inject.Named;
@@ -102,6 +103,6 @@ public class AttachmentNameCheck implements DocumentationCheck
         }
         String stem = filename.substring(0, lastDot);
         String extension = filename.substring(lastDot + 1);
-        return KebabNameValidator.toKebabStrict(stem) + "." + extension.toLowerCase();
+        return KebabNameValidator.toKebabStrict(stem) + "." + extension.toLowerCase(Locale.ROOT);
     }
 }

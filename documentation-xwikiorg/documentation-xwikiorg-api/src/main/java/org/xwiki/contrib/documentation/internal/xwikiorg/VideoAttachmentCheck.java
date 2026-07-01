@@ -21,6 +21,7 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.inject.Named;
@@ -75,6 +76,6 @@ public class VideoAttachmentCheck implements DocumentationCheck
         if (lastDot == -1) {
             return "";
         }
-        return filename.substring(lastDot + 1).toLowerCase();
+        return filename.substring(lastDot + 1).toLowerCase(Locale.ROOT);
     }
 }

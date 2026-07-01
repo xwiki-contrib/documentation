@@ -21,6 +21,7 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.inject.Named;
@@ -95,6 +96,6 @@ public class VideoMacroCheck extends AbstractXDOMDocumentationCheck
         if (lastDot == -1) {
             return false;
         }
-        return VIDEO_EXTENSIONS.contains(filename.substring(lastDot + 1).toLowerCase());
+        return VIDEO_EXTENSIONS.contains(filename.substring(lastDot + 1).toLowerCase(Locale.ROOT));
     }
 }
