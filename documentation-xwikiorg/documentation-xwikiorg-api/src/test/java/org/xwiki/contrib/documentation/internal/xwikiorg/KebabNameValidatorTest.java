@@ -160,4 +160,13 @@ class KebabNameValidatorTest
         // Name without reserved words is unchanged.
         assertEquals("installation-guide", KebabNameValidator.toKebabStrict("installation-guide"));
     }
+    
+    @Test
+    void toKebabSplitsCamelCase()
+    {
+        assertEquals("admin-tab", KebabNameValidator.toKebab("AdminTab"));
+        assertEquals("admin-tab", KebabNameValidator.toKebab("Admin-Tab"));
+        assertEquals("confirm-deletion", KebabNameValidator.toKebab("ConfirmDeletion"));
+    }
+        
 }
