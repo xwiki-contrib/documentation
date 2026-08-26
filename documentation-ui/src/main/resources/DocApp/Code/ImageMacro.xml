@@ -293,7 +293,8 @@
     #set ($width = "960px")
   #end
   #set ($caption = "$!xcontext.macro.params.caption")
-  (% style="display: inline-block; border:1px solid silver; max-width:100%;#if ($width != '') width:$width;#end" %)[[image:$image||style="width:100%"]](%%)
+  #set ($alt = "$!xcontext.macro.params.alt")  
+  (% style="display: inline-block; border:1px solid silver; max-width:100%;#if ($width != '') width:$width;#end" %)[[image:$image||style="width:100%"#if ($alt != '') alt="$escapetool.xml($alt)"#end]](%%)
   #if ($caption != '')
     //${caption}//
   #end
