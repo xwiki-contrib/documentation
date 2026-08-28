@@ -30,8 +30,8 @@
   <groupId>org.xwiki.contrib.documentation</groupId>
   <artifactId>documentation</artifactId>
   <version>1.15-SNAPSHOT</version>
-  <name>Documentation Application - Parent POM</name>
-  <description>Parent POM for the Documentation Application modules</description>
+  <name>Documentation Application</name>
+  <description>Application to help write good documentation for any software product, and especially for XWiki.org.</description>
   <packaging>pom</packaging>
   <properties>
     <xwiki.issueManagement.system>openproject</xwiki.issueManagement.system>
