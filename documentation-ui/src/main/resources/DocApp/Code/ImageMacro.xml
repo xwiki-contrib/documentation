@@ -293,7 +293,11 @@
     #set ($width = "960px")
   #end
   #set ($caption = "$!xcontext.macro.params.caption")
-  (% style="display: inline-block; border:1px solid silver; max-width:100%;#if ($width != '') width:$width;#end" %)[[image:$image||style="width:100%"]](%%)
+  ## The alt text is passed as a quoted image parameter below, so it's escaped for the syntax generated here:
+  ## an unescaped double quote or closing square bracket would end the parameter and truncate the text.
+  #set ($syntax = $services.rendering.resolveSyntax('xwiki/2.1'))
+  #set ($alt = $services.rendering.escape("$!xcontext.macro.params.alt", $syntax))
+  (% style="display: inline-block; border:1px solid silver; max-width:100%;#if ($width != '') width:$width;#end" %)[[image:$image||style="width:100%"#if ("$!alt" != '') alt="$alt"#end]](%%)
   #if ($caption != '')
     //${caption}//
   #end

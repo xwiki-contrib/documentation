@@ -59,6 +59,8 @@ public class DocumentationViewPage extends ViewPage
 
     private static final By RENDERING_ERROR = By.cssSelector("#xwikicontent .xwikirenderingerror");
 
+    private static final By CONTENT_IMAGE = By.cssSelector("#xwikicontent img");
+
     /**
      * @return true if the on-page "at least one error" validation box is displayed
      */
@@ -127,5 +129,14 @@ public class DocumentationViewPage extends ViewPage
     public String getDocumentationTabContent()
     {
         return getDriver().findElement(TAB_CONTENT).getText();
+    }
+
+    /**
+     * @return the {@code alt} attribute of the first image rendered in the page content, with its HTML entities
+     *         already decoded, or null when that image carries no {@code alt} attribute
+     */
+    public String getContentImageAlt()
+    {
+        return getDriver().findElementWithoutWaiting(CONTENT_IMAGE).getDomAttribute("alt");
     }
 }
