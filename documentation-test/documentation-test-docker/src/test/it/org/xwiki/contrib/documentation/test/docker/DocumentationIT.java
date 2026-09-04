@@ -34,6 +34,7 @@ import org.xwiki.test.ui.po.ViewPage;
 import org.xwiki.test.ui.po.editor.EditPage;
 import org.xwiki.test.ui.po.editor.WikiEditPage;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -250,6 +251,28 @@ class DocumentationIT
         assertTrue(content.contains("MyUixpFaqText"), "Missing the FAQ content next to the UIXP object in:\n" + content);
         assertTrue(content.contains("MyUixpRelatedText"),
             "Missing the Related content next to the UIXP object in:\n" + content);
+    }
+
+    @Test
+    @Order(9)
+    void rendersTheAuthoredAltTextOnTheImage(TestUtils setup)
+    {
+        // The Image macro declares an "alt" parameter and ImageMacroAltCheck warns when it's missing, so the authored
+        // text has to reach the rendered "alt" attribute (otherwise the renderer falls back to the file name, which
+        // tells a screen reader nothing). The text carries the two characters that end a quoted image parameter in the
+        // syntax the macro generates, a double quote and a closing square bracket, so it also covers the escaping:
+        // unescaped, they truncate the alt text instead of breaking anything visibly.
+        String alt = "The \"Cannot restore\" message [1] for a page";
+        setup.deletePage(SPACE, "alt-sample");
+        setup.createPage(SPACE, "alt-sample",
+            "{{image reference=\"foo.png\" size=\"large\" alt=\"The ~\"Cannot restore~\" message [1] for a page\"/}}",
+            "Alt sample", "xwiki/2.1");
+
+        setup.gotoPage(SPACE, "alt-sample");
+        DocumentationViewPage viewPage = new DocumentationViewPage();
+        assertFalse(viewPage.hasRenderingError(), "The Image macro should not produce a rendering error");
+        assertEquals(alt, viewPage.getContentImageAlt(),
+            "The rendered image should carry the authored alt text, not the image file name");
     }
 
     private static void createChild(TestUtils setup, String name, String title, String type)
