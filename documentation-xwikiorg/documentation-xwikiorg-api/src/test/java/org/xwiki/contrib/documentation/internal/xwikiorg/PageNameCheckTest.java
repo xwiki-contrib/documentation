@@ -131,8 +131,21 @@ class PageNameCheckTest
         List<DocumentationViolation> violations = this.check.check(documentWithPageName("installation-of-xwiki"));
 
         assertEquals(1, violations.size());
-        assertEquals("Page name: [installation-of-xwiki], Expected: [installation-xwiki]",
+        assertEquals("Page name should not contain English stop words (articles, conjunctions, prepositions and "
+            + "auxiliaries), which add length without adding meaning.",
+            violations.get(0).getViolationMessage());
+        assertEquals("Page name: [installation-of-xwiki], Stop words: [of], Expected: [installation-xwiki]",
             violations.get(0).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+    }
+
+    @Test
+    void checkWhenPageNameContainsNegationOrDirectionWord()
+    {
+        // Those words are not stop words: proposing the shorter name would invert the meaning of the page name.
+        assertEquals(0, this.check.check(documentWithPageName("cannot-restore")).size());
+        assertEquals(0, this.check.check(documentWithPageName("not-found")).size());
+        assertEquals(0, this.check.check(documentWithPageName("before-upgrade")).size());
     }
 
     @Test
@@ -157,8 +170,8 @@ class PageNameCheckTest
 
         assertEquals(1, violations.size());
         assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
-        // Expected shows the fully clean name (reserved word "tutorial" also stripped).
-        assertEquals("Page name: [Installation Tutorial], Expected: [installation]",
+        // Expected shows the kebab-case fix only — the reserved word is a rule of its own.
+        assertEquals("Page name: [Installation Tutorial], Expected: [installation-tutorial]",
             violations.get(0).getViolationContext());
     }
 

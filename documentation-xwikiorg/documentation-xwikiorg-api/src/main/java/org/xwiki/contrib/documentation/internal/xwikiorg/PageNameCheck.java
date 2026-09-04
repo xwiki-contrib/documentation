@@ -33,8 +33,10 @@ import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Verify that the page name of a documentation page follows the kebab-case naming convention (lowercase letters,
- * digits, and hyphens only — no spaces, accented characters, or other special characters).
+ * Verify that the page name of a documentation page follows the naming conventions: kebab-case (lowercase letters,
+ * digits and hyphens only — no spaces, accented characters, or other special characters), no English stop word, and
+ * no documentation-type word. Each rule is reported on its own so that a name is never asked to fix something it
+ * does not break.
  *
  * @version $Id$
  * @since 1.13
@@ -45,6 +47,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public class PageNameCheck implements DocumentationCheck
 {
     private static final String PAGE_NAME_CONTEXT = "Page name: [%s], Expected: [%s]";
+
+    private static final String PAGE_STOP_WORD_CONTEXT = "Page name: [%s], Stop words: [%s], Expected: [%s]";
 
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
@@ -58,13 +62,24 @@ public class PageNameCheck implements DocumentationCheck
             violations.add(new DocumentationViolation(
                 "Page name must follow the kebab-case naming convention "
                     + "(lowercase, hyphens instead of spaces or special characters).",
-                String.format(PAGE_NAME_CONTEXT, pageName, KebabNameValidator.toKebabStrict(pageName)),
+                String.format(PAGE_NAME_CONTEXT, pageName, KebabNameValidator.toKebab(pageName)),
                 DocumentationViolationSeverity.ERROR));
-        } else if (KebabNameValidator.containsReservedWord(pageName)) {
+            return violations;
+        }
+        List<String> stopWords = KebabNameValidator.getStopWords(pageName);
+        if (!stopWords.isEmpty()) {
+            violations.add(new DocumentationViolation(
+                "Page name should not contain English stop words (articles, conjunctions, prepositions and "
+                    + "auxiliaries), which add length without adding meaning.",
+                String.format(PAGE_STOP_WORD_CONTEXT, pageName, String.join(", ", stopWords),
+                    KebabNameValidator.removeStopWords(pageName)),
+                DocumentationViolationSeverity.WARNING));
+        }
+        if (KebabNameValidator.containsReservedWord(pageName)) {
             violations.add(new DocumentationViolation(
                 "Page name must not contain documentation-type words "
                     + "(explanation, howto, reference, tutorial).",
-                String.format(PAGE_NAME_CONTEXT, pageName, KebabNameValidator.toKebabStrict(pageName)),
+                String.format(PAGE_NAME_CONTEXT, pageName, KebabNameValidator.removeReservedWords(pageName)),
                 DocumentationViolationSeverity.ERROR));
         }
         return violations;

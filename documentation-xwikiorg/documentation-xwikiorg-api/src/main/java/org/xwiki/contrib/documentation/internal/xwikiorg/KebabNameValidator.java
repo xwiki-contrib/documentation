@@ -19,6 +19,9 @@
  */
 package org.xwiki.contrib.documentation.internal.xwikiorg;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -29,22 +32,21 @@ import org.apache.commons.lang3.Strings;
 /**
  * Utility for validating and transforming kebab-style names used for pages and attachments.
  * <p>
- * This is a temporary copy of the core logic from {@code SlugEntityNameValidation} in XWiki Platform 18.1.0+
- * (without the configurable options), included here because this extension must support XWiki &lt; 18.1.0.
- * It will be removed once the minimum platform version is raised to 18.1.0+.
- * <p>
- * Transformation rules applied in order by {@link #toKebab(String)}:
- * <ol>
- *   <li>Strip accents.</li>
- *   <li>Protect dots that appear between two digits (e.g. {@code 1.0}).</li>
- *   <li>Replace all remaining non-word characters with {@code -}.</li>
- *   <li>Restore protected dots.</li>
- *   <li>Convert to lowercase.</li>
- *   <li>Remove stop-word segments (whole hyphen-delimited segments that are stop words).</li>
- *   <li>Collapse consecutive {@code -} into one.</li>
- *   <li>Strip leading/trailing {@code -}.</li>
- * </ol>
- * {@link #toKebabStrict(String)} additionally strips {@link #RESERVED_WORDS} segments.
+ * Three independent naming rules are exposed, each with its own predicate and its own transformation, so that a
+ * caller can report one without implying the others:
+ * <ul>
+ *   <li><strong>kebab-case shape</strong> — {@link #isValidKebab(String)} / {@link #toKebab(String)}: lowercase
+ *       letters, digits and single inner hyphens, plus dots between digits so that version numbers such as
+ *       {@code 1.2.3} are preserved.</li>
+ *   <li><strong>stop words</strong> — {@link #getStopWords(String)} / {@link #removeStopWords(String)}: English
+ *       function words that add length without adding meaning.</li>
+ *   <li><strong>reserved words</strong> — {@link #containsReservedWord(String)} /
+ *       {@link #removeReservedWords(String)}: documentation-type (Diataxis) words.</li>
+ * </ul>
+ * The shape rules of {@link #toKebab(String)} come from {@code SlugEntityNameValidation} in XWiki Platform
+ * 18.1.0+ (without the configurable options), copied here because this extension must support XWiki &lt; 18.1.0.
+ * The only deliberate divergence is the underscore, which that class keeps and which is not kebab-case, so it is
+ * turned into a hyphen here.
  *
  * @version $Id$
  * @since 1.13
@@ -54,27 +56,30 @@ public final class KebabNameValidator
     /**
      * Stop words to remove from page and attachment names (English function words that add no semantic value to a
      * kebab-case name). Each entry must be lowercase.
+     * <p>
+     * Words whose removal would change what a name means are deliberately absent: negations ("no", "not",
+     * "cannot", …) and words of direction or relation ("above", "below", "before", "after", "up", "down", …). A
+     * name such as {@code cannot-restore} describes the opposite of {@code restore}, so no naming rule may ask an
+     * author to shorten one into the other.
      */
     static final Set<String> STOP_WORDS = Set.of(
-        "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "arent", "as",
-        "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "cant", "cannot",
-        "could", "couldnt", "did", "didnt", "do", "does", "doesnt", "doing", "dont", "down", "during", "each", "few",
-        "for", "from", "further", "had", "hadnt", "has", "hasnt", "have", "havent", "having", "he", "hed", "hes",
-        "her", "here", "heres", "hers", "herself", "him", "himself", "his", "how", "hows", "i", "im", "ive", "if",
-        "in", "into", "is", "isnt", "it", "its", "itself", "lets", "me", "more", "most", "mustnt", "my", "myself",
-        "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves",
-        "out", "over", "own", "same", "shant", "she", "shes", "should", "shouldnt", "so", "some", "such", "than",
-        "that", "thats", "the", "their", "theirs", "them", "themselves", "then", "there", "theres", "these", "they",
-        "theyd", "theyll", "theyre", "theyve", "this", "those", "through", "to", "too", "under", "until", "up",
-        "very", "was", "wasnt", "we", "wed", "were", "weve", "werent", "what", "whats", "when", "whens", "where",
-        "wheres", "which", "while", "who", "whos", "whom", "why", "whys", "with", "wont", "would", "wouldnt", "you",
-        "youd", "youll", "youre", "youve", "your", "yours", "yourself", "yourselves"
+        "a", "about", "again", "all", "am", "an", "and", "any", "are", "as", "at", "be", "because", "been",
+        "being", "both", "but", "by", "could", "did", "do", "does", "doing", "during", "each", "few", "for",
+        "from", "further", "had", "has", "have", "having", "he", "hed", "hes", "her", "here", "heres", "hers",
+        "herself", "him", "himself", "his", "how", "hows", "i", "im", "ive", "if", "in", "is", "it", "its",
+        "itself", "lets", "me", "more", "most", "my", "myself", "of", "on", "once", "only", "or", "other",
+        "ought", "our", "ours", "ourselves", "own", "same", "she", "shes", "should", "so", "some", "such",
+        "than", "that", "thats", "the", "their", "theirs", "them", "themselves", "then", "there", "theres",
+        "these", "they", "theyd", "theyll", "theyre", "theyve", "this", "those", "to", "too", "until", "very",
+        "was", "we", "wed", "were", "weve", "what", "whats", "when", "whens", "where", "wheres", "which",
+        "while", "who", "whos", "whom", "why", "whys", "with", "would", "you", "youd", "youll", "youre",
+        "youve", "your", "yours", "yourself", "yourselves"
     );
 
     /**
      * Documentation-type (Diataxis) words that should not appear as segments in page or attachment names. Their
-     * presence triggers a WARNING violation (see {@link #containsReservedWord(String)}), and they are stripped by
-     * {@link #toKebabStrict(String)}.
+     * presence triggers a violation (see {@link #containsReservedWord(String)}), and they are stripped by
+     * {@link #removeReservedWords(String)}.
      * <p>
      * Note: the "how-to" and "how&nbsp;to" variants are already covered because "how" and "to" are both
      * {@link #STOP_WORDS}. "howto" (written as one word) is listed here explicitly.
@@ -85,15 +90,23 @@ public final class KebabNameValidator
 
     private static final Pattern DASH_PATTERN = Pattern.compile("-+");
 
-    private static final Pattern NONWORD_PATTERN = Pattern.compile("\\W");
+    /**
+     * Anything that a kebab name cannot contain at all. Dots are excluded from this pattern because they are
+     * legal between digits; {@link #ISOLATED_DOT_PATTERN} deals with the others.
+     */
+    private static final Pattern NONKEBAB_PATTERN = Pattern.compile("[^a-z0-9.]");
 
     /**
-     * Matches a literal dot that is immediately preceded by a digit and immediately followed by a digit, so that
-     * version numbers such as {@code 1.0} are preserved through the transformation.
+     * A dot that is not surrounded by digits, i.e. one that is not part of a version number such as {@code 1.0}.
      */
-    private static final Pattern DOTSBETWEENDIGITS_PATTERN = Pattern.compile("(?<=\\d)\\.(?=\\d)");
+    private static final Pattern ISOLATED_DOT_PATTERN = Pattern.compile("(?<![0-9])\\.|\\.(?![0-9])");
 
-    private static final String PROTECTED_DOT = "__DOT__";
+    /**
+     * A name that is already in kebab-case: lowercase letters and digits, single hyphens between two such
+     * characters, and dots only between two digits.
+     */
+    private static final Pattern VALID_KEBAB_PATTERN =
+        Pattern.compile("[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])|(?<=[0-9])\\.(?=[0-9]))*");
 
     private KebabNameValidator()
     {
@@ -101,87 +114,99 @@ public final class KebabNameValidator
     }
 
     /**
+     * Tell whether a name is in kebab-case. This is purely about the shape of the name — a valid kebab name may
+     * still hold stop words or reserved words, which {@link #getStopWords(String)} and
+     * {@link #containsReservedWord(String)} report separately.
+     *
      * @param name the name to validate
-     * @return {@code true} if the name is already a valid kebab-case name (i.e., {@link #toKebab(String)} would
-     *     return it unchanged)
+     * @return {@code true} if the name contains only lowercase letters, digits, single inner hyphens, and dots
+     *     between digits
      */
     public static boolean isValidKebab(String name)
     {
-        return toKebab(name).equals(name);
+        return VALID_KEBAB_PATTERN.matcher(name).matches();
     }
 
     /**
-     * @param name the name to check (in any form — it will be normalised to kebab first)
-     * @return {@code true} if the kebab form of the name contains at least one {@link #RESERVED_WORDS} segment
-     */
-    public static boolean containsReservedWord(String name)
-    {
-        for (String segment : toKebab(name).split(REPLACEMENT_CHARACTER, -1)) {
-            if (RESERVED_WORDS.contains(segment)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Transform an arbitrary name to its kebab-case form following the rules described in the class javadoc.
+     * Transform an arbitrary name into kebab-case: strip accents, lowercase, turn everything that is not a
+     * lowercase letter, a digit or a dot between digits into a hyphen, then collapse and trim the hyphens. No
+     * word is removed, so the meaning of the name is preserved.
      *
      * @param name the name to transform
      * @return the kebab-case form of the name
      */
     public static String toKebab(String name)
     {
-        // 1. Remove accents.
         String result = StringUtils.stripAccents(name);
-        // 2. Protect dots between digits so they survive the non-word replacement step.
-        result = DOTSBETWEENDIGITS_PATTERN.matcher(result).replaceAll(PROTECTED_DOT);
-        // 3. Replace non-word characters (anything that is not [a-zA-Z0-9_]) with a hyphen.
-        result = NONWORD_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
-        // 4. Restore protected dots.
-        result = result.replace(PROTECTED_DOT, ".");
-        // 5. Convert to lowercase.
         result = result.toLowerCase(Locale.ROOT);
-        // 6. Collapse consecutive hyphens before splitting (prevents empty segments from double hyphens in input).
-        result = DASH_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
-        // 7. Remove stop-word segments.
-        result = removeSegments(result, STOP_WORDS);
-        // 8. Collapse consecutive hyphens again (stop-word removal may produce adjacent hyphens).
-        result = DASH_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
-        // 9. Remove leading and trailing hyphens.
-        result = Strings.CS.removeEnd(result, REPLACEMENT_CHARACTER);
-        result = Strings.CS.removeStart(result, REPLACEMENT_CHARACTER);
-        return result;
+        result = NONKEBAB_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
+        result = ISOLATED_DOT_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
+        return trimHyphens(result);
     }
 
     /**
-     * Like {@link #toKebab(String)} but also strips {@link #RESERVED_WORDS} segments.
-     *
-     * @param name the name to transform
-     * @return the strict kebab form with both stop words and reserved words removed
+     * @param name the name to inspect (in any form — it is normalised to kebab first)
+     * @return the {@link #STOP_WORDS} appearing as whole segments of the name, in the order they appear and
+     *     without duplicates, or an empty list when the name holds none
      */
-    public static String toKebabStrict(String name)
+    public static List<String> getStopWords(String name)
     {
-        String result = toKebab(name);
-        result = removeSegments(result, RESERVED_WORDS);
-        result = DASH_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
-        result = Strings.CS.removeEnd(result, REPLACEMENT_CHARACTER);
-        result = Strings.CS.removeStart(result, REPLACEMENT_CHARACTER);
-        return result;
+        return getSegments(name, STOP_WORDS);
+    }
+
+    /**
+     * @param name the name to transform (in any form — it is normalised to kebab first)
+     * @return the kebab form of the name with its {@link #STOP_WORDS} segments removed
+     */
+    public static String removeStopWords(String name)
+    {
+        return removeSegments(toKebab(name), STOP_WORDS);
+    }
+
+    /**
+     * @param name the name to check (in any form — it is normalised to kebab first)
+     * @return {@code true} if the kebab form of the name contains at least one {@link #RESERVED_WORDS} segment
+     */
+    public static boolean containsReservedWord(String name)
+    {
+        return !getSegments(name, RESERVED_WORDS).isEmpty();
+    }
+
+    /**
+     * @param name the name to transform (in any form — it is normalised to kebab first)
+     * @return the kebab form of the name with its {@link #RESERVED_WORDS} segments removed
+     */
+    public static String removeReservedWords(String name)
+    {
+        return removeSegments(toKebab(name), RESERVED_WORDS);
+    }
+
+    private static List<String> getSegments(String name, Set<String> words)
+    {
+        Set<String> found = new LinkedHashSet<>();
+        for (String segment : toKebab(name).split(REPLACEMENT_CHARACTER, -1)) {
+            if (words.contains(segment)) {
+                found.add(segment);
+            }
+        }
+        return new ArrayList<>(found);
     }
 
     private static String removeSegments(String name, Set<String> words)
     {
-        String[] segments = name.split(REPLACEMENT_CHARACTER);
-        StringBuilder filtered = new StringBuilder();
-        for (String segment : segments) {
+        List<String> kept = new ArrayList<>();
+        for (String segment : name.split(REPLACEMENT_CHARACTER)) {
             if (!segment.isEmpty() && !words.contains(segment)) {
-                if (!filtered.isEmpty()) {
-                    filtered.append(REPLACEMENT_CHARACTER);
-                }
-                filtered.append(segment);
+                kept.add(segment);
             }
         }
-        return filtered.toString();
+        return String.join(REPLACEMENT_CHARACTER, kept);
+    }
+
+    private static String trimHyphens(String name)
+    {
+        String result = DASH_PATTERN.matcher(name).replaceAll(REPLACEMENT_CHARACTER);
+        result = Strings.CS.removeEnd(result, REPLACEMENT_CHARACTER);
+        return Strings.CS.removeStart(result, REPLACEMENT_CHARACTER);
     }
 }
