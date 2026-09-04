@@ -149,8 +149,22 @@ class AttachmentNameCheckTest
             this.check.check(documentWithAttachments("installation-of-xwiki.png"));
 
         assertEquals(1, violations.size());
-        assertEquals("Attachment name: [installation-of-xwiki.png], Expected: [installation-xwiki.png]",
+        assertEquals("Attachment name should not contain English stop words (articles, conjunctions, prepositions "
+            + "and auxiliaries), which add length without adding meaning.",
+            violations.get(0).getViolationMessage());
+        assertEquals("Attachment name: [installation-of-xwiki.png], Stop words: [of], "
+            + "Expected: [installation-xwiki.png]",
             violations.get(0).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+    }
+
+    @Test
+    void checkWhenAttachmentStemContainsNegationOrDirectionWord()
+    {
+        // Those words are not stop words: proposing the shorter name would invert the meaning of the file name.
+        assertEquals(0, this.check.check(documentWithAttachments("cannot-restore.png")).size());
+        assertEquals(0, this.check.check(documentWithAttachments("not-found.png")).size());
+        assertEquals(0, this.check.check(documentWithAttachments("before-upgrade.png")).size());
     }
 
     @Test

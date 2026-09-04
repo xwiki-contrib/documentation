@@ -19,6 +19,8 @@
  */
 package org.xwiki.contrib.documentation.internal.xwikiorg;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +48,27 @@ class KebabNameValidatorTest
     }
 
     @Test
+    void isValidKebabWhenValidAndHoldingStopOrReservedWords()
+    {
+        // Stop words and documentation-type words are other rules: they do not make a name badly shaped.
+        assertTrue(KebabNameValidator.isValidKebab("installation-of-xwiki"));
+        assertTrue(KebabNameValidator.isValidKebab("getting-started-with-xwiki"));
+        assertTrue(KebabNameValidator.isValidKebab("installation-tutorial"));
+    }
+
+    @Test
+    void isValidKebabWhenNegationOrDirectionWord()
+    {
+        // These are valid kebab names and must stay valid: shortening them would invert their meaning.
+        assertTrue(KebabNameValidator.isValidKebab("cannot-restore"));
+        assertTrue(KebabNameValidator.isValidKebab("not-found"));
+        assertTrue(KebabNameValidator.isValidKebab("before-upgrade"));
+        assertTrue(KebabNameValidator.isValidKebab("after-upgrade"));
+        assertTrue(KebabNameValidator.isValidKebab("move-up"));
+        assertTrue(KebabNameValidator.isValidKebab("move-down"));
+    }
+
+    @Test
     void isValidKebabWhenInvalid()
     {
         // Uppercase letters.
@@ -55,14 +78,15 @@ class KebabNameValidatorTest
         assertFalse(KebabNameValidator.isValidKebab("getting started"));
         // Non-digit dot.
         assertFalse(KebabNameValidator.isValidKebab("getting.started"));
+        // Underscore.
+        assertFalse(KebabNameValidator.isValidKebab("getting_started"));
         // Leading/trailing hyphens.
         assertFalse(KebabNameValidator.isValidKebab("-installation"));
         assertFalse(KebabNameValidator.isValidKebab("installation-"));
         // Consecutive hyphens.
         assertFalse(KebabNameValidator.isValidKebab("getting--started"));
-        // Contains a stop word segment.
-        assertFalse(KebabNameValidator.isValidKebab("installation-of-xwiki"));
-        assertFalse(KebabNameValidator.isValidKebab("getting-started-with-xwiki"));
+        // Empty name.
+        assertFalse(KebabNameValidator.isValidKebab(""));
     }
 
     @Test
@@ -77,6 +101,7 @@ class KebabNameValidatorTest
     {
         assertEquals("installation-guide", KebabNameValidator.toKebab("Installation Guide"));
         assertEquals("getting-started", KebabNameValidator.toKebab("getting.started"));
+        assertEquals("getting-started", KebabNameValidator.toKebab("getting_started"));
     }
 
     @Test
@@ -113,16 +138,68 @@ class KebabNameValidatorTest
     }
 
     @Test
-    void toKebabRemovesStopWords()
+    void toKebabKeepsStopAndReservedWords()
+    {
+        // toKebab is only about the shape of the name, so no word is dropped and no meaning is lost.
+        assertEquals("the-xwiki", KebabNameValidator.toKebab("the-xwiki"));
+        assertEquals("cannot-restore", KebabNameValidator.toKebab("Cannot Restore"));
+        assertEquals("installation-tutorial", KebabNameValidator.toKebab("Installation Tutorial"));
+    }
+
+    @Test
+    void toKebabIsAlwaysAValidKebabName()
+    {
+        for (String name : List.of("Installation Guide", "getting.started", "getting_started", "--installation--",
+            "présentation", "version.1.0", "release-1.2.3", "abc1.2x", "1. 2")) {
+            assertTrue(KebabNameValidator.isValidKebab(KebabNameValidator.toKebab(name)),
+                String.format("[%s] normalised to [%s]", name, KebabNameValidator.toKebab(name)));
+        }
+    }
+
+    @Test
+    void getStopWordsWhenPresent()
+    {
+        assertEquals(List.of("of"), KebabNameValidator.getStopWords("installation-of-xwiki"));
+        assertEquals(List.of("how", "to"), KebabNameValidator.getStopWords("how-to-install"));
+        // The name is normalised to kebab first, and each stop word is reported once.
+        assertEquals(List.of("the", "and"), KebabNameValidator.getStopWords("The Xwiki and The Rest"));
+    }
+
+    @Test
+    void getStopWordsWhenAbsent()
+    {
+        assertEquals(List.of(), KebabNameValidator.getStopWords("installation-guide"));
+        // Negations and direction words are not stop words: dropping them would change the meaning.
+        assertEquals(List.of(), KebabNameValidator.getStopWords("cannot-restore"));
+        assertEquals(List.of(), KebabNameValidator.getStopWords("not-found"));
+        assertEquals(List.of(), KebabNameValidator.getStopWords("before-upgrade"));
+    }
+
+    @Test
+    void stopWordsHoldNoMeaningBearingWord()
+    {
+        // Locks in the rule stated in the STOP_WORDS javadoc: no negation, no direction or relation word.
+        for (String word : List.of("no", "not", "nor", "cannot", "cant", "dont", "isnt", "wont", "above", "below",
+            "before", "after", "against", "between", "down", "up", "into", "out", "over", "under", "through",
+            "off")) {
+            assertFalse(KebabNameValidator.STOP_WORDS.contains(word), String.format("[%s] is a stop word", word));
+        }
+    }
+
+    @Test
+    void removeStopWords()
     {
         // Single stop word is removed, leaving just the meaningful word.
-        assertEquals("xwiki", KebabNameValidator.toKebab("the-xwiki"));
+        assertEquals("xwiki", KebabNameValidator.removeStopWords("the-xwiki"));
         // Multiple consecutive stop words are all removed.
-        assertEquals("installation-xwiki", KebabNameValidator.toKebab("installation-of-the-xwiki"));
+        assertEquals("installation-xwiki", KebabNameValidator.removeStopWords("installation-of-the-xwiki"));
         // Stop word in the middle is removed.
-        assertEquals("installation-xwiki", KebabNameValidator.toKebab("installation-of-xwiki"));
+        assertEquals("installation-xwiki", KebabNameValidator.removeStopWords("installation-of-xwiki"));
         // All-stop-word name results in an empty string.
-        assertEquals("", KebabNameValidator.toKebab("a-the-in"));
+        assertEquals("", KebabNameValidator.removeStopWords("a-the-in"));
+        // A name without stop words is unchanged, negations and direction words included.
+        assertEquals("installation-guide", KebabNameValidator.removeStopWords("installation-guide"));
+        assertEquals("cannot-restore", KebabNameValidator.removeStopWords("cannot-restore"));
     }
 
     @Test
@@ -147,17 +224,17 @@ class KebabNameValidatorTest
     }
 
     @Test
-    void toKebabStrictRemovesReservedWords()
+    void removeReservedWords()
     {
         // Single reserved word removed.
-        assertEquals("installation", KebabNameValidator.toKebabStrict("installation-tutorial"));
-        assertEquals("xwiki", KebabNameValidator.toKebabStrict("xwiki-reference"));
-        assertEquals("install", KebabNameValidator.toKebabStrict("howto-install"));
+        assertEquals("installation", KebabNameValidator.removeReservedWords("installation-tutorial"));
+        assertEquals("xwiki", KebabNameValidator.removeReservedWords("xwiki-reference"));
+        assertEquals("install", KebabNameValidator.removeReservedWords("howto-install"));
         // Reserved word with uppercase input (normalised first, then stripped).
-        assertEquals("installation", KebabNameValidator.toKebabStrict("Installation-Tutorial"));
-        // Reserved word plus stop word — both removed.
-        assertEquals("xwiki", KebabNameValidator.toKebabStrict("xwiki-reference-of"));
+        assertEquals("installation", KebabNameValidator.removeReservedWords("Installation-Tutorial"));
+        // Only the reserved word is removed — the stop word is a separate rule and stays.
+        assertEquals("xwiki-of", KebabNameValidator.removeReservedWords("xwiki-reference-of"));
         // Name without reserved words is unchanged.
-        assertEquals("installation-guide", KebabNameValidator.toKebabStrict("installation-guide"));
+        assertEquals("installation-guide", KebabNameValidator.removeReservedWords("installation-guide"));
     }
 }
