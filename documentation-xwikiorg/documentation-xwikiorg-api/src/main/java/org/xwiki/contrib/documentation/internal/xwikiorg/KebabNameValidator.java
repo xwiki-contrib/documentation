@@ -36,6 +36,7 @@ import org.apache.commons.lang3.Strings;
  * Transformation rules applied in order by {@link #toKebab(String)}:
  * <ol>
  *   <li>Strip accents.</li>
+ *   <li>Split camelCase word boundaries (e.g. {@code AdminTab}).</li>    
  *   <li>Protect dots that appear between two digits (e.g. {@code 1.0}).</li>
  *   <li>Replace all remaining non-word characters with {@code -}.</li>
  *   <li>Restore protected dots.</li>
@@ -84,6 +85,8 @@ public final class KebabNameValidator
     private static final String REPLACEMENT_CHARACTER = "-";
 
     private static final Pattern DASH_PATTERN = Pattern.compile("-+");
+    
+    private static final Pattern CAMEL_PATTERN = Pattern.compile("(?<=[a-z0-9])(?=[A-Z])");
 
     private static final Pattern NONWORD_PATTERN = Pattern.compile("\\W");
 
@@ -134,21 +137,23 @@ public final class KebabNameValidator
     {
         // 1. Remove accents.
         String result = StringUtils.stripAccents(name);
-        // 2. Protect dots between digits so they survive the non-word replacement step.
+        // 2. Split camelCase word boundaries (e.g. "AdminTab" -> "Admin-Tab").
+        result = CAMEL_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
+        // 3. Protect dots between digits so they survive the non-word replacement step.
         result = DOTSBETWEENDIGITS_PATTERN.matcher(result).replaceAll(PROTECTED_DOT);
-        // 3. Replace non-word characters (anything that is not [a-zA-Z0-9_]) with a hyphen.
+        // 4. Replace non-word characters (anything that is not [a-zA-Z0-9_]) with a hyphen.
         result = NONWORD_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
-        // 4. Restore protected dots.
+        // 5. Restore protected dots.
         result = result.replace(PROTECTED_DOT, ".");
-        // 5. Convert to lowercase.
+        // 6. Convert to lowercase.
         result = result.toLowerCase(Locale.ROOT);
-        // 6. Collapse consecutive hyphens before splitting (prevents empty segments from double hyphens in input).
+        // 7. Collapse consecutive hyphens before splitting (prevents empty segments from double hyphens in input).
         result = DASH_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
-        // 7. Remove stop-word segments.
+        // 8. Remove stop-word segments.
         result = removeSegments(result, STOP_WORDS);
-        // 8. Collapse consecutive hyphens again (stop-word removal may produce adjacent hyphens).
+        // 9. Collapse consecutive hyphens again (stop-word removal may produce adjacent hyphens).
         result = DASH_PATTERN.matcher(result).replaceAll(REPLACEMENT_CHARACTER);
-        // 9. Remove leading and trailing hyphens.
+        // 10. Remove leading and trailing hyphens.
         result = Strings.CS.removeEnd(result, REPLACEMENT_CHARACTER);
         result = Strings.CS.removeStart(result, REPLACEMENT_CHARACTER);
         return result;
