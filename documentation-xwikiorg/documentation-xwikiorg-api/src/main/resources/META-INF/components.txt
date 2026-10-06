@@ -19,3 +19,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.RelatedChildPageCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.ImageAttachmentFormatCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.HTMLMacroCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.FAQEntryHeadingCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.GitHubSCMLinkCheck
