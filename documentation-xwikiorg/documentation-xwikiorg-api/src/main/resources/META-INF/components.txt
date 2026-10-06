@@ -25,3 +25,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.HighlightsCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.RelatedLinkLabelCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.ScriptMacroCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.InlineStyleCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.LocationCheck
