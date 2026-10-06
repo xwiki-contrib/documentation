@@ -13,3 +13,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.VerbCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.VersionMacroCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.DocumentationConfigurationSource
 org.xwiki.contrib.documentation.internal.xwikiorg.LevelOneHeadingCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.XWikiOrgURLLinkCheck

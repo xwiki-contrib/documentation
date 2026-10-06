@@ -79,17 +79,36 @@ public abstract class AbstractXDOMDocumentationCheck implements DocumentationChe
      */
     protected XDOM parseFAQXDOM(XWikiDocument document, XDOM xdom, String checkName)
     {
+        return parseXPropertyXDOM(document, xdom, "faq", "FAQ", checkName);
+    }
+
+    /**
+     * Parse the given wiki content xproperty of the DocumentationClass XObject attached to the given document and
+     * return its XDOM. Returns {@code null} if the object or property is absent, or if parsing fails (in which case a
+     * warning is logged).
+     *
+     * @param document the document to inspect
+     * @param xdom the document's main XDOM, used as parsing context
+     * @param propertyName the name of the xproperty to parse (e.g. {@code "related"})
+     * @param propertyLabel a human-readable xproperty name used in warning messages (e.g. {@code "Related"})
+     * @param checkName a human-readable check name used in warning messages (e.g. {@code "Image Macro"})
+     * @return the parsed XDOM of the xproperty, or {@code null} if there's no such xproperty or parsing fails
+     * @since 1.15
+     */
+    protected XDOM parseXPropertyXDOM(XWikiDocument document, XDOM xdom, String propertyName, String propertyLabel,
+        String checkName)
+    {
         BaseObject docObject = document.getXObject(DOCUMENTATION_CLASS_REFERENCE);
         if (docObject != null) {
-            String faqContent = docObject.getLargeStringValue("faq");
-            if (!faqContent.isEmpty()) {
+            String content = docObject.getLargeStringValue(propertyName);
+            if (!content.isEmpty()) {
                 try {
                     TransformationContext context = new TransformationContext(xdom, document.getSyntax());
                     MacroTransformationContext macroContext = new MacroTransformationContext(context);
-                    return this.contentParser.parse(faqContent, macroContext, false, false);
+                    return this.contentParser.parse(content, macroContext, false, false);
                 } catch (MacroExecutionException e) {
-                    this.logger.warn("Failed to parse the FAQ content. Ignoring {} check inside it. "
-                        + ROOT_ERROR_CAUSE, checkName, ExceptionUtils.getRootCauseMessage(e));
+                    this.logger.warn("Failed to parse the {} content. Ignoring {} check inside it. "
+                        + ROOT_ERROR_CAUSE, propertyLabel, checkName, ExceptionUtils.getRootCauseMessage(e));
                 }
             }
         }
