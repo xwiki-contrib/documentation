@@ -81,12 +81,27 @@ public final class KebabNameValidator
      * presence triggers a violation (see {@link #containsReservedWord(String)}), and they are stripped by
      * {@link #removeReservedWords(String)}.
      * <p>
-     * Note: the "how-to" and "how&nbsp;to" variants are already covered because "how" and "to" are both
-     * {@link #STOP_WORDS}. "howto" (written as one word) is listed here explicitly.
+     * Note: "howto" is also matched when written as the two consecutive segments "how" and "to" (e.g. "How to",
+     * "How-to" or {@code how-to}), see {@link #HOW_TO_SEGMENTS}.
      */
     static final Set<String> RESERVED_WORDS = Set.of("explanation", "howto", "reference", "tutorial");
 
     private static final String REPLACEMENT_CHARACTER = "-";
+
+    /**
+     * The kebab form of "How to" and "How-to".
+     */
+    private static final String HOW_TO = "how-to";
+
+    /**
+     * The consecutive segments of {@link #HOW_TO}, which stand for the {@link #HOWTO} reserved word.
+     */
+    private static final List<String> HOW_TO_SEGMENTS = List.of(HOW_TO.split(REPLACEMENT_CHARACTER));
+
+    /**
+     * The "howto" reserved word.
+     */
+    private static final String HOWTO = HOW_TO.replace(REPLACEMENT_CHARACTER, StringUtils.EMPTY);
 
     private static final Pattern DASH_PATTERN = Pattern.compile("-+");
 
@@ -165,20 +180,39 @@ public final class KebabNameValidator
 
     /**
      * @param name the name to check (in any form — it is normalised to kebab first)
-     * @return {@code true} if the kebab form of the name contains at least one {@link #RESERVED_WORDS} segment
+     * @return {@code true} if the kebab form of the name contains at least one {@link #RESERVED_WORDS} segment,
+     *     the consecutive segments {@code how} and {@code to} counting as the {@code howto} reserved word
      */
     public static boolean containsReservedWord(String name)
     {
-        return !getSegments(name, RESERVED_WORDS).isEmpty();
+        return getReservedWordSegments(name).stream().anyMatch(RESERVED_WORDS::contains);
     }
 
     /**
      * @param name the name to transform (in any form — it is normalised to kebab first)
-     * @return the kebab form of the name with its {@link #RESERVED_WORDS} segments removed
+     * @return the kebab form of the name with its {@link #RESERVED_WORDS} segments removed, including both
+     *     segments of {@code how-to}
      */
     public static String removeReservedWords(String name)
     {
-        return removeSegments(toKebab(name), RESERVED_WORDS);
+        return removeSegments(String.join(REPLACEMENT_CHARACTER, getReservedWordSegments(name)), RESERVED_WORDS);
+    }
+
+    /**
+     * @param name the name to split (in any form — it is normalised to kebab first)
+     * @return the segments of the kebab form of the name, where each {@code how} immediately followed by
+     *     {@code to} is merged into a single {@code howto} segment
+     */
+    private static List<String> getReservedWordSegments(String name)
+    {
+        List<String> segments = new ArrayList<>(List.of(toKebab(name).split(REPLACEMENT_CHARACTER)));
+        for (int i = 0; i < segments.size() - 1; i++) {
+            if (segments.subList(i, i + HOW_TO_SEGMENTS.size()).equals(HOW_TO_SEGMENTS)) {
+                segments.subList(i, i + HOW_TO_SEGMENTS.size()).clear();
+                segments.add(i, HOWTO);
+            }
+        }
+        return segments;
     }
 
     private static List<String> getSegments(String name, Set<String> words)

@@ -215,12 +215,26 @@ class KebabNameValidatorTest
     }
 
     @Test
+    void containsReservedWordWhenHowToInTwoSegments()
+    {
+        // "how" immediately followed by "to" is the "howto" reserved word written in two words.
+        assertTrue(KebabNameValidator.containsReservedWord("how-to-install"));
+        assertTrue(KebabNameValidator.containsReservedWord("How to Install XWiki"));
+        assertTrue(KebabNameValidator.containsReservedWord("How-to: Install XWiki"));
+        assertTrue(KebabNameValidator.containsReservedWord("install-xwiki-how-to"));
+        assertTrue(KebabNameValidator.containsReservedWord("how-how-to"));
+    }
+
+    @Test
     void containsReservedWordWhenAbsent()
     {
         assertFalse(KebabNameValidator.containsReservedWord("installation-guide"));
         assertFalse(KebabNameValidator.containsReservedWord("getting-started"));
-        // "how" and "to" are stop words, not reserved words.
-        assertFalse(KebabNameValidator.containsReservedWord("how-to-install"));
+        // "how" and "to" alone, or not consecutive, are only stop words.
+        assertFalse(KebabNameValidator.containsReservedWord("how-install"));
+        assertFalse(KebabNameValidator.containsReservedWord("to-how"));
+        assertFalse(KebabNameValidator.containsReservedWord("how-xwiki-to"));
+        assertFalse(KebabNameValidator.containsReservedWord("show-tooltip"));
     }
 
     @Test
@@ -230,6 +244,12 @@ class KebabNameValidatorTest
         assertEquals("installation", KebabNameValidator.removeReservedWords("installation-tutorial"));
         assertEquals("xwiki", KebabNameValidator.removeReservedWords("xwiki-reference"));
         assertEquals("install", KebabNameValidator.removeReservedWords("howto-install"));
+        // Both segments of "how to" are removed, and only those.
+        assertEquals("install-xwiki", KebabNameValidator.removeReservedWords("how-to-install-xwiki"));
+        assertEquals("install-xwiki", KebabNameValidator.removeReservedWords("How to Install XWiki"));
+        assertEquals("install-xwiki", KebabNameValidator.removeReservedWords("How-to: Install XWiki"));
+        assertEquals("how", KebabNameValidator.removeReservedWords("how-how-to"));
+        assertEquals("how-xwiki-to", KebabNameValidator.removeReservedWords("how-xwiki-to"));
         // Reserved word with uppercase input (normalised first, then stripped).
         assertEquals("installation", KebabNameValidator.removeReservedWords("Installation-Tutorial"));
         // Only the reserved word is removed — the stop word is a separate rule and stays.

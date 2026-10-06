@@ -102,6 +102,20 @@ class PageTitleCheckTest
     }
 
     @Test
+    void checkWhenTitleStartsWithHowToInTwoWords()
+    {
+        for (String title : List.of("How to Install XWiki", "How-to: Install XWiki")) {
+            List<DocumentationViolation> violations = this.check.check(documentWithTitle(title));
+
+            assertEquals(1, violations.size());
+            assertEquals("Page title must not contain documentation-type words "
+                + "(explanation, howto, reference, tutorial).", violations.get(0).getViolationMessage());
+            assertEquals(String.format("Page title: [%s]", title), violations.get(0).getViolationContext());
+            assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
+        }
+    }
+
+    @Test
     void checkWhenTitleContainsReservedWordCaseInsensitive()
     {
         List<DocumentationViolation> violations = this.check.check(documentWithTitle("TUTORIAL on XWiki"));
