@@ -22,3 +22,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.FAQEntryHeadingCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.GitHubSCMLinkCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.PlantUMLThemeCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.HighlightsCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.RelatedLinkLabelCheck
