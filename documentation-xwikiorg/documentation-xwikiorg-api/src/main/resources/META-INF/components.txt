@@ -27,3 +27,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.ScriptMacroCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.InlineStyleCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.LocationCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.TopLevelPageCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.ImageOtherPageAttachmentCheck
