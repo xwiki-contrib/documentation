@@ -71,6 +71,8 @@ class DocumentationIT
 
     private static final String CONFIGURATION_CLASS = "DocApp.Code.DocumentationConfigurationClass";
 
+    private static final String CONFIGURATION_PAGE = "DocApp.Code.DocumentationConfiguration";
+
     /**
      * The page holding a version macro older than the oldest supported version, once that version is configured.
      */
@@ -298,8 +300,9 @@ class DocumentationIT
             "No violation expected while the oldest supported version isn't configured");
 
         // Configure it live, from the Administration (no restart).
+        // The Administration form is identified by the page holding the ConfigurableClass object, not by the class.
         AdministrationSectionPage section = AdministrationSectionPage.gotoPage("documentation");
-        section.getFormContainerElementForClass(CONFIGURATION_CLASS)
+        section.getFormContainerElementForClass(CONFIGURATION_PAGE)
             .setFieldValue(By.name(CONFIGURATION_CLASS + "_0_oldestSupportedVersion"), "16.10.0");
         section.clickSave();
 
