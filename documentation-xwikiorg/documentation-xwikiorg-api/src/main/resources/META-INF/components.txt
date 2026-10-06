@@ -16,3 +16,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.LevelOneHeadingCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.XWikiOrgURLLinkCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.CodeMacroLanguageCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.RelatedChildPageCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.ImageAttachmentFormatCheck
