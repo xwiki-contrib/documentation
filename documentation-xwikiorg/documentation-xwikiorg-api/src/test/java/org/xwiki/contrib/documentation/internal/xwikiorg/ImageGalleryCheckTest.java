@@ -19,14 +19,27 @@
  */
 package org.xwiki.contrib.documentation.internal.xwikiorg;
 
+import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.XDOM;
+import org.xwiki.rendering.macro.Macro;
+import org.xwiki.rendering.macro.MacroContentParser;
+import org.xwiki.rendering.macro.MacroId;
+import org.xwiki.rendering.macro.MacroManager;
+import org.xwiki.rendering.macro.descriptor.ContentDescriptor;
+import org.xwiki.rendering.macro.descriptor.MacroDescriptor;
+import org.xwiki.rendering.parser.Parser;
+import org.xwiki.rendering.syntax.Syntax;
 import org.xwiki.test.annotation.AllComponents;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -36,6 +49,11 @@ import com.xpn.xwiki.test.junit5.mockito.InjectMockitoOldcore;
 import com.xpn.xwiki.test.junit5.mockito.OldcoreTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link ImageGalleryCheck}.
@@ -47,64 +65,182 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @OldcoreTest
 class ImageGalleryCheckTest
 {
+    private static final String MESSAGE =
+        "Use the Gallery macro when several images are displayed next to each other.";
+
     @InjectMockitoOldcore
     private MockitoOldcore oldcore;
 
-    private DocumentationCheck getChecker() throws Exception
+    private MacroManager macroManager;
+
+    @BeforeEach
+    void setUp() throws Exception
     {
-        return this.oldcore.getMocker().getInstance(DocumentationCheck.class, "imageGallery");
+        // By default, consider that all macros have a content that is not wiki content (e.g. the Code macro).
+        this.macroManager = this.oldcore.getMocker().registerMockComponent(MacroManager.class);
+        doReturn(mockMacro(String.class)).when(this.macroManager).getMacro(any());
+    }
+
+    private Macro<?> mockMacro(Type contentType)
+    {
+        Macro<?> macro = mock(Macro.class);
+        MacroDescriptor descriptor = mock(MacroDescriptor.class);
+        ContentDescriptor contentDescriptor = mock(ContentDescriptor.class);
+        when(contentDescriptor.getType()).thenReturn(contentType);
+        when(descriptor.getContentDescriptor()).thenReturn(contentDescriptor);
+        when(macro.getDescriptor()).thenReturn(descriptor);
+        return macro;
+    }
+
+    private XDOM parse(String content) throws Exception
+    {
+        return this.oldcore.getMocker().<Parser>getInstance(Parser.class, Syntax.XWIKI_2_1.toIdString())
+            .parse(new StringReader(content));
+    }
+
+    private XWikiDocument createDocument(String content) throws Exception
+    {
+        XDOM xdom = parse(content);
+        return new XWikiDocument(new DocumentReference("wiki", "space", "page"))
+        {
+            @Override
+            public XDOM getXDOM()
+            {
+                return xdom;
+            }
+
+            @Override
+            public Syntax getSyntax()
+            {
+                return Syntax.XWIKI_2_1;
+            }
+        };
+    }
+
+    private List<DocumentationViolation> check(String content) throws Exception
+    {
+        DocumentationCheck checker = this.oldcore.getMocker().getInstance(DocumentationCheck.class, "imageGallery");
+        return checker.check(createDocument(content));
+    }
+
+    private void assertViolation(String expectedContext, DocumentationViolation violation)
+    {
+        assertEquals(MESSAGE, violation.getViolationMessage());
+        assertEquals(expectedContext, violation.getViolationContext());
+        assertEquals(DocumentationViolationSeverity.ERROR, violation.getViolationSeverity());
     }
 
     @Test
     void checkWhenImageMacrosNextToEachOther() throws Exception
     {
-        String input = "Hello\n\n{{image reference='test1.png'}}\n {{image reference='test2.png'}}\n\nworld";
-
-        XWikiDocument document = new XWikiDocument(new DocumentReference("wiki", "space", "page"));
-        document.setContent(input);
-
-        List<DocumentationViolation> violations = getChecker().check(document);
+        List<DocumentationViolation> violations =
+            check("Hello\n\n{{image reference='test1.png'/}}\n {{image reference='test2.png'/}}\n\nworld");
 
         assertEquals(1, violations.size());
-        assertEquals("Use the Gallery macro when several images are displayed next to each other.",
-            violations.get(0).getViolationMessage());
-        assertEquals("{{image reference='test1.png'}}\n {{image reference='test2.png'}}",
-            violations.get(0).getViolationContext());
-        assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
+        assertViolation("Image references : test1.png, test2.png", violations.get(0));
+    }
+
+    @Test
+    void checkWhenStandaloneImageMacrosNextToEachOther() throws Exception
+    {
+        List<DocumentationViolation> violations =
+            check("{{image reference='test1.png'/}}\n\n{{image/}}\n\n{{image reference='test3.png'/}}");
+
+        assertEquals(1, violations.size());
+        assertViolation("Image references : test1.png, , test3.png", violations.get(0));
+    }
+
+    @Test
+    void checkWhenImagesNextToEachOther() throws Exception
+    {
+        List<DocumentationViolation> violations = check("Hello [[image:test1.png]] [[image:test2.png]] world");
+
+        assertEquals(1, violations.size());
+        assertViolation("Image references : test1.png, test2.png", violations.get(0));
     }
 
     @Test
     void checkWhenImageMacrosAreNotNextToEachOther() throws Exception
     {
-        String input = "{{image reference='test1.png'}} a {{image reference='test2.png'}}";
+        assertEquals(0, check("{{image reference='test1.png'/}} a {{image reference='test2.png'/}}").size());
+    }
 
-        XWikiDocument document = new XWikiDocument(new DocumentReference("wiki", "space", "page"));
-        document.setContent(input);
+    @Test
+    void checkWhenImageMacrosAreSeparatedByParagraphEndingWithMacro() throws Exception
+    {
+        doReturn(mockMacro(Block.LIST_BLOCK_TYPE)).when(this.macroManager).getMacro(new MacroId("info"));
+        MacroContentParser contentParser =
+            this.oldcore.getMocker().registerMockComponent(MacroContentParser.class);
+        XDOM infoXDOM = parse("note");
+        when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean())).thenReturn(infoXDOM);
 
-        List<DocumentationViolation> violations = getChecker().check(document);
+        List<DocumentationViolation> violations = check("{{image reference=\"a.png\" alt=\"A\"/}}\n\n"
+            + "Some text with a {{info}}note{{/info}}\n\n{{image reference=\"b.png\" alt=\"B\"/}}");
 
         assertEquals(0, violations.size());
     }
 
     @Test
+    void checkWhenImageMacrosAreInsideCodeMacro() throws Exception
+    {
+        List<DocumentationViolation> violations = check("{{code language=\"none\"}}\n"
+            + "{{image reference=\"a.png\" alt=\"A\"/}}\n{{image reference=\"b.png\" alt=\"B\"/}}\n{{/code}}");
+
+        assertEquals(0, violations.size());
+    }
+
+    @Test
+    void checkWhenImagesAreInsideGalleryMacro() throws Exception
+    {
+        String galleryContent = "[[image:test1.png]]\n[[image:test2.png]]";
+        doReturn(mockMacro(Block.LIST_BLOCK_TYPE)).when(this.macroManager).getMacro(new MacroId("gallery"));
+        MacroContentParser contentParser =
+            this.oldcore.getMocker().registerMockComponent(MacroContentParser.class);
+        XDOM galleryXDOM = parse(galleryContent);
+        when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean())).thenReturn(galleryXDOM);
+
+        List<DocumentationViolation> violations = check("{{gallery}}\n" + galleryContent + "\n{{/gallery}}");
+
+        assertEquals(0, violations.size());
+    }
+
+    @Test
+    void checkWhenImageMacrosNextToEachOtherInsideWikiContentMacro() throws Exception
+    {
+        doReturn(mockMacro(Block.LIST_BLOCK_TYPE)).when(this.macroManager).getMacro(new MacroId("info"));
+        MacroContentParser contentParser =
+            this.oldcore.getMocker().registerMockComponent(MacroContentParser.class);
+        String infoContent = "[[image:test1.png]]\n[[image:test2.png]]";
+        XDOM infoXDOM = parse(infoContent);
+        when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean())).thenReturn(infoXDOM);
+
+        List<DocumentationViolation> violations = check("{{info}}\n" + infoContent + "\n{{/info}}");
+
+        assertEquals(1, violations.size());
+        assertViolation("Image references : test1.png, test2.png", violations.get(0));
+    }
+
+    @Test
     void checkWhenImageMacrosNextToEachOtherInFaqProperty() throws Exception
     {
-        String faqContent = "{{image reference='test1.png'}}\n {{image reference='test2.png'}}";
+        String faqContent = "{{image reference='test1.png'/}}\n {{image reference='test2.png'/}}";
+        MacroContentParser contentParser =
+            this.oldcore.getMocker().registerMockComponent(MacroContentParser.class);
+        XDOM faqXDOM = parse(faqContent);
+        when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean())).thenReturn(faqXDOM);
 
-        XWikiDocument document = new XWikiDocument(new DocumentReference("wiki", "space", "page"));
+        XWikiDocument document = createDocument("");
         BaseObject faqObj = new BaseObject();
         faqObj.setXClassReference(new DocumentReference("wiki", Arrays.asList("DocApp", "Code"),
             "DocumentationClass"));
         faqObj.setLargeStringValue("faq", faqContent);
         document.addXObject(faqObj);
 
-        List<DocumentationViolation> violations = getChecker().check(document);
+        List<DocumentationViolation> violations =
+            this.oldcore.getMocker().<DocumentationCheck>getInstance(DocumentationCheck.class, "imageGallery")
+                .check(document);
 
         assertEquals(1, violations.size());
-        assertEquals("Use the Gallery macro when several images are displayed next to each other.",
-            violations.get(0).getViolationMessage());
-        assertEquals("{{image reference='test1.png'}}\n {{image reference='test2.png'}}",
-            violations.get(0).getViolationContext());
-        assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
+        assertViolation("Image references : test1.png, test2.png", violations.get(0));
     }
 }
