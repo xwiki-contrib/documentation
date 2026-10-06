@@ -51,9 +51,20 @@ class VerbCheckTest
 
     private XWikiDocument createDocument(String title, String pageName, String type)
     {
+        return createDocument(title, new DocumentReference("wiki", "space", pageName), type);
+    }
+
+    private XWikiDocument createNonTerminalDocument(String title, String pageName, String type)
+    {
+        return createDocument(title,
+            new DocumentReference("wiki", List.of("documentation", "xs", "admin", pageName), "WebHome"), type);
+    }
+
+    private XWikiDocument createDocument(String title, DocumentReference reference, String type)
+    {
         XWikiDocument document = mock(XWikiDocument.class);
         when(document.getTitle()).thenReturn(title);
-        when(document.getDocumentReference()).thenReturn(new DocumentReference("wiki", "space", pageName));
+        when(document.getDocumentReference()).thenReturn(reference);
 
         if (type != null) {
             BaseObject docObj = mock(BaseObject.class);
@@ -204,6 +215,39 @@ class VerbCheckTest
             this.check.check(createDocument("Managing Users", "managing-users", "reference"));
 
         assertEquals(2, violations.size());
+    }
+
+    // --- Non-terminal pages: the page name is the last space name, not "WebHome" ---
+
+    @Test
+    void checkWhenNonTerminalHowToWithGerundPageName()
+    {
+        List<DocumentationViolation> violations =
+            this.check.check(createNonTerminalDocument("Add Users", "adding-users", "howto"));
+
+        assertEquals(1, violations.size());
+        assertEquals("The page name of a How-To or Tutorial page must start with a verb in imperative form "
+            + "(e.g. 'add-user', not 'adding-user').", violations.get(0).getViolationMessage());
+        assertEquals("Page name: [adding-users]", violations.get(0).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+    }
+
+    @Test
+    void checkWhenNonTerminalHowToWithValidPageName()
+    {
+        assertEquals(0, this.check.check(createNonTerminalDocument("Add Users", "add-users", "howto")).size());
+    }
+
+    @Test
+    void checkWhenNonTerminalReferenceWithGerundPageName()
+    {
+        List<DocumentationViolation> violations =
+            this.check.check(createNonTerminalDocument("User Management", "managing-users", "reference"));
+
+        assertEquals(1, violations.size());
+        assertEquals("The page name of a Reference or Explanation page must not start with a verb "
+            + "(e.g. 'user-management', not 'managing-users').", violations.get(0).getViolationMessage());
+        assertEquals("Page name: [managing-users]", violations.get(0).getViolationContext());
     }
 
     // --- Type-independent cases ---
