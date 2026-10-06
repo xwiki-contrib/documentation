@@ -48,6 +48,14 @@
       <artifactId>xwiki-rendering-macro-message</artifactId>
       <version>${rendering.version}</version>
     </dependency>
+    <!-- DocApp.Code.DocumentationConfiguration uses XWiki.ConfigurableClass to add its Administration section. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-administration-ui</artifactId>
+      <version>${platform.version}</version>
+      <type>xar</type>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <extensions>

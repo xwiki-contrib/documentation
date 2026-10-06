@@ -26,6 +26,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.openqa.selenium.By;
+import org.xwiki.administration.test.po.AdministrationSectionPage;
 import org.xwiki.contrib.documentation.test.po.DocumentationViewPage;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.docker.junit5.UITest;
@@ -66,6 +68,15 @@ class DocumentationIT
      * making the on-page box severity predictable.
      */
     private static final String VIOLATION_PAGE = "image-sample";
+
+    private static final String CONFIGURATION_CLASS = "DocApp.Code.DocumentationConfigurationClass";
+
+    private static final String CONFIGURATION_PAGE = "DocApp.Code.DocumentationConfiguration";
+
+    /**
+     * The page holding a version macro older than the oldest supported version, once that version is configured.
+     */
+    private static final String VERSION_PAGE = "version-sample";
 
     private static final List<String> GUIDE_SPACE = List.of(SPACE, "guide");
 
@@ -273,6 +284,37 @@ class DocumentationIT
         assertFalse(viewPage.hasRenderingError(), "The Image macro should not produce a rendering error");
         assertEquals(alt, viewPage.getContentImageAlt(),
             "The rendered image should carry the authored alt text, not the image file name");
+    }
+
+    @Test
+    @Order(10)
+    void reportsOldVersionMacrosOnceConfiguredInAdministration(TestUtils setup)
+    {
+        // As long as the oldest supported version isn't configured, old version macros aren't reported.
+        setup.deletePage(SPACE, VERSION_PAGE);
+        setup.createPage(SPACE, VERSION_PAGE, "{{version since=\"12.0\"}}\nAn old feature.\n{{/version}}",
+            "Version sample", "xwiki/2.1");
+        setup.addObject(SPACE, VERSION_PAGE, DOC_CLASS, "type", "reference");
+        setup.gotoPage(SPACE, VERSION_PAGE);
+        assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
+            "No violation expected while the oldest supported version isn't configured");
+
+        // Configure it live, from the Administration (no restart).
+        // The Administration form is identified by the page holding the ConfigurableClass object, not by the class.
+        AdministrationSectionPage section = AdministrationSectionPage.gotoPage("documentation");
+        section.getFormContainerElementForClass(CONFIGURATION_PAGE)
+            .setFieldValue(By.name(CONFIGURATION_CLASS + "_0_oldestSupportedVersion"), "16.10.0");
+        section.clickSave();
+
+        // The next save of the page reports the version macro.
+        WikiEditPage.gotoPage(SPACE, VERSION_PAGE).clickSaveAndView();
+        setup.gotoPage(SPACE, VERSION_PAGE);
+        DocumentationViewPage viewPage = new DocumentationViewPage();
+        assertTrue(viewPage.hasWarningValidationBox(), "Expected the on-page warning validation box to be displayed");
+        viewPage.openDocumentationTab();
+        assertTrue(viewPage.getDocumentationTabContent()
+                .contains("Version macro markers for versions older than the supported LTS cycle must be removed."),
+            "The Documentation tab should list the old version macro violation message");
     }
 
     private static void createChild(TestUtils setup, String name, String title, String type)
