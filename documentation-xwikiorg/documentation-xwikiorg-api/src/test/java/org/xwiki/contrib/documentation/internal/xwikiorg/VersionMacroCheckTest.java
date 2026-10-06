@@ -172,6 +172,15 @@ class VersionMacroCheckTest
     }
 
     @Test
+    void checkWhenProductIsXWiki() throws Exception
+    {
+        assertViolation("Version macro : since=12.0, oldest supported version : 16.10.0",
+            check(Map.of("product", "XWiki", "since", "12.0")));
+        assertViolation("Version macro : since=12.0, oldest supported version : 16.10.0",
+            check(Map.of("product", " xwiki ", "since", "12.0")));
+    }
+
+    @Test
     void checkWhenNoVersion() throws Exception
     {
         assertEquals(0, check(Map.of()).size());

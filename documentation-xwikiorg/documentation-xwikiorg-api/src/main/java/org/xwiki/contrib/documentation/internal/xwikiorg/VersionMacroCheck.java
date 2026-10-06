@@ -41,7 +41,8 @@ import org.xwiki.rendering.block.match.ClassBlockMatcher;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Verify that {@code {{version}}} macros about XWiki itself (i.e. without a {@code product} parameter) don't only
+ * Verify that {@code {{version}}} macros about XWiki itself (i.e. without a {@code product} parameter or with it set
+ * to {@code XWiki}, its default value) don't only
  * reference versions older than the oldest supported XWiki version, defined by the {@code oldestSupportedVersion}
  * property of the documentation configuration (editable in the wiki Administration). When that property isn't set,
  * nothing is checked.
@@ -63,6 +64,10 @@ public class VersionMacroCheck extends AbstractXDOMDocumentationCheck
     private static final String SINCE_PARAMETER = "since";
 
     private static final String BEFORE_PARAMETER = "before";
+
+    private static final String PRODUCT_PARAMETER = "product";
+
+    private static final String XWIKI_PRODUCT = "XWiki";
 
     @Inject
     @Named(DocumentationConfigurationSource.HINT)
@@ -100,12 +105,18 @@ public class VersionMacroCheck extends AbstractXDOMDocumentationCheck
     {
         List<MacroBlock> macroBlocks = xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT);
         for (MacroBlock macroBlock : macroBlocks) {
-            if (VERSION_MACRO_ID.equals(macroBlock.getId())
-                && StringUtils.isBlank(macroBlock.getParameter("product")))
-            {
+            if (VERSION_MACRO_ID.equals(macroBlock.getId()) && isAboutXWiki(macroBlock)) {
                 checkVersionMacro(macroBlock, oldestSupportedVersion, violations);
             }
         }
+    }
+
+    private boolean isAboutXWiki(MacroBlock macroBlock)
+    {
+        // The version macro uses XWiki as product when none is set. Other products (e.g. extensions) have their own
+        // release cycle, to which the XWiki LTS cycle doesn't apply.
+        String product = macroBlock.getParameter(PRODUCT_PARAMETER);
+        return StringUtils.isBlank(product) || XWIKI_PRODUCT.equalsIgnoreCase(product.trim());
     }
 
     private void checkVersionMacro(MacroBlock macroBlock, Version oldestSupportedVersion,
