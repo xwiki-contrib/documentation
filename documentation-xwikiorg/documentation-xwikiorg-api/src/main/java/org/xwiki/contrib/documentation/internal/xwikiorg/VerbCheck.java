@@ -93,8 +93,18 @@ public class VerbCheck implements DocumentationCheck
 
         List<DocumentationViolation> violations = new ArrayList<>();
         checkTitle(document.getTitle(), mustStartWithVerb, violations);
-        checkPageName(document.getDocumentReference().getName(), mustStartWithVerb, violations);
+        checkPageName(getPageName(document), mustStartWithVerb, violations);
         return violations;
+    }
+
+    private String getPageName(XWikiDocument document)
+    {
+        // For a non-terminal page, the page name is the name of the last space, not "WebHome".
+        String pageName = document.getDocumentReference().getName();
+        if ("WebHome".equals(pageName)) {
+            pageName = document.getDocumentReference().getLastSpaceReference().getName();
+        }
+        return pageName;
     }
 
     private void checkTitle(String title, boolean mustStartWithVerb, List<DocumentationViolation> violations)
