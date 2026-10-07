@@ -44,9 +44,6 @@ import org.xwiki.rendering.block.WordBlock;
 import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
 import org.xwiki.rendering.listener.reference.ResourceReference;
-import org.xwiki.rendering.macro.MacroExecutionException;
-import org.xwiki.rendering.transformation.MacroTransformationContext;
-import org.xwiki.rendering.transformation.TransformationContext;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -83,33 +80,13 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-        XDOM relatedXDOM = parseRelatedXDOM(document);
+        XDOM relatedXDOM = parseXPropertyXDOM(document, document.getXDOM(), "related", "Related", CHECK_NAME);
         if (relatedXDOM != null) {
             checkLinks(relatedXDOM, document.getDocumentReference(), violations);
             checkInsideWikiMacros(relatedXDOM, document, null, CHECK_NAME,
                 macroXDOM -> checkLinks(macroXDOM, document.getDocumentReference(), violations));
         }
         return violations;
-    }
-
-    private XDOM parseRelatedXDOM(XWikiDocument document)
-    {
-        BaseObject docObject = document.getXObject(DOCUMENTATION_CLASS_REFERENCE);
-        if (docObject != null) {
-            String relatedContent = docObject.getLargeStringValue("related");
-            if (!relatedContent.isEmpty()) {
-                try {
-                    TransformationContext context =
-                        new TransformationContext(document.getXDOM(), document.getSyntax());
-                    MacroTransformationContext macroContext = new MacroTransformationContext(context);
-                    return this.contentParser.parse(relatedContent, macroContext, false, false);
-                } catch (MacroExecutionException e) {
-                    this.logger.warn("Failed to parse the Related content. Ignoring {} check inside it. "
-                        + ROOT_ERROR_CAUSE, CHECK_NAME, ExceptionUtils.getRootCauseMessage(e));
-                }
-            }
-        }
-        return null;
     }
 
     private void checkLinks(XDOM xdom, DocumentReference documentReference, List<DocumentationViolation> violations)

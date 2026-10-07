@@ -205,7 +205,7 @@ class HighlightsCheckTest
             .thenThrow(new MacroExecutionException("error"));
 
         assertEquals(0, getChecker().check(createDocument(highlights(7))).size());
-        assertEquals("Failed to parse the Highlights content. Ignoring Highlights check. "
+        assertEquals("Failed to parse the Highlights content. Ignoring Highlights check inside it. "
             + "Root error cause: [MacroExecutionException: error]", this.logCapture.getMessage(0));
     }
 }
