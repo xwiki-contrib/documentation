@@ -117,8 +117,8 @@ public class RelatedChildPageCheck extends AbstractXDOMDocumentationCheck
         SpaceReference spaceReference = linkedDocumentReference.getLastSpaceReference();
         if (DEFAULT_DOCUMENT_NAME.equals(linkedDocumentReference.getName())) {
             EntityReference parent = spaceReference.getParent();
-            return parent instanceof SpaceReference
-                ? new DocumentReference(DEFAULT_DOCUMENT_NAME, (SpaceReference) parent) : null;
+            return parent instanceof SpaceReference parentSpaceReference
+                ? new DocumentReference(DEFAULT_DOCUMENT_NAME, parentSpaceReference) : null;
         }
         return new DocumentReference(DEFAULT_DOCUMENT_NAME, spaceReference);
     }

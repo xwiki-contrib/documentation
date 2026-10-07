@@ -68,7 +68,7 @@ public class InlineStyleCheck extends AbstractXDOMDocumentationCheck
             Block.Axes.DESCENDANT);
         for (Block styledBlock : styledBlocks) {
             violations.add(new DocumentationViolation("Inline styles should not be used in the content.",
-                String.format("Style : %s", styledBlock.getParameter(STYLE_PARAMETER)),
+                "Style : " + styledBlock.getParameter(STYLE_PARAMETER),
                 DocumentationViolationSeverity.WARNING));
         }
     }

@@ -109,10 +109,10 @@ public class ImageGalleryCheck extends AbstractXDOMDocumentationCheck
     private String getImageReference(Block block)
     {
         String result = null;
-        if (block instanceof ImageBlock) {
-            result = ((ImageBlock) block).getReference().getReference();
-        } else if (block instanceof MacroBlock && IMAGE_MACRO_ID.equals(((MacroBlock) block).getId())) {
-            String reference = ((MacroBlock) block).getParameter("reference");
+        if (block instanceof ImageBlock imageBlock) {
+            result = imageBlock.getReference().getReference();
+        } else if (block instanceof MacroBlock macroBlock && IMAGE_MACRO_ID.equals(macroBlock.getId())) {
+            String reference = macroBlock.getParameter("reference");
             result = reference == null ? "" : reference;
         }
         return result;

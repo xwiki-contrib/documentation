@@ -131,8 +131,8 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
         for (Block block : linkBlock.getBlocks(block -> block instanceof WordBlock || block instanceof SpaceBlock
             || block instanceof SpecialSymbolBlock, Block.Axes.DESCENDANT))
         {
-            if (block instanceof WordBlock) {
-                builder.append(((WordBlock) block).getWord());
+            if (block instanceof WordBlock wordBlock) {
+                builder.append(wordBlock.getWord());
             } else if (block instanceof SpaceBlock) {
                 builder.append(' ');
             } else {

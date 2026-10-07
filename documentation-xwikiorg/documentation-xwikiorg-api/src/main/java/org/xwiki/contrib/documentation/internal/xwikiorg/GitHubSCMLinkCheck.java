@@ -92,7 +92,7 @@ public class GitHubSCMLinkCheck extends AbstractXDOMDocumentationCheck
             if (ResourceType.URL.equals(reference.getType()) && isXWikiGitHubFileURL(reference.getReference())) {
                 violations.add(new DocumentationViolation(
                     "Link to a file on GitHub using a URL. Use the SCM macro instead.",
-                    String.format("URL : %s", reference.getReference()), DocumentationViolationSeverity.ERROR));
+                    "URL : " + reference.getReference(), DocumentationViolationSeverity.ERROR));
             }
         }
     }

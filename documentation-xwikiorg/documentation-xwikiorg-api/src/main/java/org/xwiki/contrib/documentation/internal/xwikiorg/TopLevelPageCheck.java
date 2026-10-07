@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -107,7 +106,7 @@ public class TopLevelPageCheck implements DocumentationCheck
     private boolean isTopLevelPage(DocumentReference reference)
     {
         List<String> spaces =
-            reference.getSpaceReferences().stream().map(EntityReference::getName).collect(Collectors.toList());
+            reference.getSpaceReferences().stream().map(EntityReference::getName).toList();
         if (!"WebHome".equals(reference.getName()) || spaces.size() != TOP_LEVEL_DEPTH) {
             return false;
         }

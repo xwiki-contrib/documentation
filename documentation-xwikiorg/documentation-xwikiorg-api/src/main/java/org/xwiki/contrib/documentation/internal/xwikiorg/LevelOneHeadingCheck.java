@@ -79,7 +79,7 @@ public class LevelOneHeadingCheck extends AbstractXDOMDocumentationCheck
                 violations.add(new DocumentationViolation(
                     "Level 1 headings are not allowed in the page content, since the page structure fields are "
                         + "already displayed as level 1 headings. Use level 2 headings or lower.",
-                    String.format("Heading : %s", getText(header)), DocumentationViolationSeverity.ERROR));
+                    "Heading : " + getText(header), DocumentationViolationSeverity.ERROR));
             }
         }
     }
