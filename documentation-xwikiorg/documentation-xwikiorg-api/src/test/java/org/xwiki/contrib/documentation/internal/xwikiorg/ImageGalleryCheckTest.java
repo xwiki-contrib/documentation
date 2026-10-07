@@ -23,9 +23,13 @@ import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
@@ -130,33 +134,27 @@ class ImageGalleryCheckTest
         assertEquals(DocumentationViolationSeverity.ERROR, violation.getViolationSeverity());
     }
 
-    @Test
-    void checkWhenImageMacrosNextToEachOther() throws Exception
+    static Stream<Arguments> checkWhenImagesNextToEachOtherSource()
     {
-        List<DocumentationViolation> violations =
-            check("Hello\n\n{{image reference='test1.png'/}}\n {{image reference='test2.png'/}}\n\nworld");
-
-        assertEquals(1, violations.size());
-        assertViolation("Image references : test1.png, test2.png", violations.get(0));
+        return Stream.of(
+            // Image macros.
+            Arguments.of("Hello\n\n{{image reference='test1.png'/}}\n {{image reference='test2.png'/}}\n\nworld",
+                "test1.png, test2.png"),
+            // Standalone image macros, one of them without a reference.
+            Arguments.of("{{image reference='test1.png'/}}\n\n{{image/}}\n\n{{image reference='test3.png'/}}",
+                "test1.png, , test3.png"),
+            // Images.
+            Arguments.of("Hello [[image:test1.png]] [[image:test2.png]] world", "test1.png, test2.png"));
     }
 
-    @Test
-    void checkWhenStandaloneImageMacrosNextToEachOther() throws Exception
+    @ParameterizedTest
+    @MethodSource("checkWhenImagesNextToEachOtherSource")
+    void checkWhenImagesNextToEachOther(String content, String references) throws Exception
     {
-        List<DocumentationViolation> violations =
-            check("{{image reference='test1.png'/}}\n\n{{image/}}\n\n{{image reference='test3.png'/}}");
+        List<DocumentationViolation> violations = check(content);
 
         assertEquals(1, violations.size());
-        assertViolation("Image references : test1.png, , test3.png", violations.get(0));
-    }
-
-    @Test
-    void checkWhenImagesNextToEachOther() throws Exception
-    {
-        List<DocumentationViolation> violations = check("Hello [[image:test1.png]] [[image:test2.png]] world");
-
-        assertEquals(1, violations.size());
-        assertViolation("Image references : test1.png, test2.png", violations.get(0));
+        assertViolation("Image references : " + references, violations.get(0));
     }
 
     @Test
@@ -174,8 +172,12 @@ class ImageGalleryCheckTest
         XDOM infoXDOM = parse("note");
         when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean())).thenReturn(infoXDOM);
 
-        List<DocumentationViolation> violations = check("{{image reference=\"a.png\" alt=\"A\"/}}\n\n"
-            + "Some text with a {{info}}note{{/info}}\n\n{{image reference=\"b.png\" alt=\"B\"/}}");
+        List<DocumentationViolation> violations = check("""
+            {{image reference="a.png" alt="A"/}}
+
+            Some text with a {{info}}note{{/info}}
+
+            {{image reference="b.png" alt="B"/}}""");
 
         assertEquals(0, violations.size());
     }
@@ -183,8 +185,11 @@ class ImageGalleryCheckTest
     @Test
     void checkWhenImageMacrosAreInsideCodeMacro() throws Exception
     {
-        List<DocumentationViolation> violations = check("{{code language=\"none\"}}\n"
-            + "{{image reference=\"a.png\" alt=\"A\"/}}\n{{image reference=\"b.png\" alt=\"B\"/}}\n{{/code}}");
+        List<DocumentationViolation> violations = check("""
+            {{code language="none"}}
+            {{image reference="a.png" alt="A"/}}
+            {{image reference="b.png" alt="B"/}}
+            {{/code}}""");
 
         assertEquals(0, violations.size());
     }

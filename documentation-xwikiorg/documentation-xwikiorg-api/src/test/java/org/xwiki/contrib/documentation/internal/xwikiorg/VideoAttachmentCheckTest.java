@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -92,43 +94,22 @@ class VideoAttachmentCheckTest
         assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
     }
 
-    @Test
-    void checkWhenMovVideo()
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "demo.mov",
+        "demo.avi",
+        "demo.MP4",
+        // Extensions must be lower-cased with Locale.ROOT, not the JVM default locale, otherwise an uppercase "I"
+        // (e.g. in Turkish/Azeri locales) would fold to a dotless "ı" and the extension would no longer match the
+        // (lowercase, Locale.ROOT) VIDEO_EXTENSIONS set.
+        "movie.AVI"
+    })
+    void checkWhenVideo(String attachmentName)
     {
-        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("demo.mov"));
+        List<DocumentationViolation> violations = this.check.check(documentWithAttachments(attachmentName));
 
         assertEquals(1, violations.size());
-        assertEquals("Attachment name: [demo.mov]", violations.get(0).getViolationContext());
-    }
-
-    @Test
-    void checkWhenAviVideo()
-    {
-        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("demo.avi"));
-
-        assertEquals(1, violations.size());
-        assertEquals("Attachment name: [demo.avi]", violations.get(0).getViolationContext());
-    }
-
-    @Test
-    void checkWhenUppercaseExtension()
-    {
-        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("demo.MP4"));
-
-        assertEquals(1, violations.size());
-        assertEquals("Attachment name: [demo.MP4]", violations.get(0).getViolationContext());
-    }
-
-    @Test
-    void checkWhenUppercaseExtensionContainsI()
-    {
-        // Regression test: extensions must be lower-cased with Locale.ROOT, not the JVM default locale, otherwise
-        // an uppercase "I" (e.g. in Turkish/Azeri locales) would fold to a dotless "ı" and the extension would no
-        // longer match the (lowercase, Locale.ROOT) VIDEO_EXTENSIONS set.
-        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("movie.AVI"));
-
-        assertEquals(1, violations.size());
-        assertEquals("Attachment name: [movie.AVI]", violations.get(0).getViolationContext());
+        assertEquals("Attachment name: [" + attachmentName + "]", violations.get(0).getViolationContext());
     }
 
     @Test

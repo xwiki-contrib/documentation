@@ -104,14 +104,14 @@ class HighlightsCheckTest
     private static String highlights(int count)
     {
         return IntStream.rangeClosed(1, count)
-            .mapToObj(i -> String.format("* [[Page %1$s>>doc:Space.Page%1$s]]\n** Description %1$s", i))
+            .mapToObj(i -> "* [[Page " + i + ">>doc:Space.Page" + i + "]]\n** Description " + i)
             .collect(Collectors.joining("\n"));
     }
 
     private void assertWarning(DocumentationViolation violation, String message, String highlight)
     {
         assertEquals(message, violation.getViolationMessage());
-        assertEquals(String.format("Highlight : %s", highlight), violation.getViolationContext());
+        assertEquals("Highlight : " + highlight, violation.getViolationContext());
         assertEquals(DocumentationViolationSeverity.WARNING, violation.getViolationSeverity());
     }
 
