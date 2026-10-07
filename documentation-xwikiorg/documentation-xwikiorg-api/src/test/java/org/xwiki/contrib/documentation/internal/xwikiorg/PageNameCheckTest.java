@@ -163,6 +163,24 @@ class PageNameCheckTest
     }
 
     @Test
+    void checkWhenPageNameContainsHowTo()
+    {
+        List<DocumentationViolation> violations = this.check.check(documentWithPageName("how-to-install-xwiki"));
+
+        // "how" and "to" are both stop words, and together they are the "howto" reserved word.
+        assertEquals(2, violations.size());
+        assertEquals("Page name: [how-to-install-xwiki], Stop words: [how, to], Expected: [install-xwiki]",
+            violations.get(0).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.WARNING, violations.get(0).getViolationSeverity());
+        assertEquals("Page name must not contain documentation-type words "
+            + "(explanation, howto, reference, tutorial).",
+            violations.get(1).getViolationMessage());
+        assertEquals("Page name: [how-to-install-xwiki], Expected: [install-xwiki]",
+            violations.get(1).getViolationContext());
+        assertEquals(DocumentationViolationSeverity.ERROR, violations.get(1).getViolationSeverity());
+    }
+
+    @Test
     void checkWhenPageNameIsReservedWordAndInvalidKebab()
     {
         // When the name is both invalid kebab and contains a reserved word, only ERROR is raised.
