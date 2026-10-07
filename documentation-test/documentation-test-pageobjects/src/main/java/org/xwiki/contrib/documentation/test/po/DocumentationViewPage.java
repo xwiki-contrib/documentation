@@ -96,6 +96,7 @@ public class DocumentationViewPage extends ViewPage
     /**
      * @return true if a macro rendering error is displayed (e.g. a standalone macro wrongly used inline)
      */
+    @Override
     public boolean hasRenderingError()
     {
         return getDriver().hasElementWithoutWaiting(RENDERING_ERROR);

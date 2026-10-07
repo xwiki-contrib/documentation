@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -83,13 +82,13 @@ public class LocationCheck implements DocumentationCheck
         List<DocumentationViolation> violations = new ArrayList<>();
         DocumentReference reference = document.getDocumentReference();
         List<String> spaces =
-            reference.getSpaceReferences().stream().map(EntityReference::getName).collect(Collectors.toList());
+            reference.getSpaceReferences().stream().map(EntityReference::getName).toList();
         String target = getTarget(document);
         String expectedAudience = AUDIENCES.get(target);
 
         String section = spaces.size() > 1 && SECTIONS.contains(spaces.get(1)) ? spaces.get(1) : "xs|extensions";
-        String expectedLocation = String.format("%s:%s.%s.%s", this.wikiDescriptorManager.getMainWikiId(),
-            ROOT_SPACE, section, expectedAudience != null ? expectedAudience : "user|admin|dev");
+        String expectedLocation = this.wikiDescriptorManager.getMainWikiId() + ':' + ROOT_SPACE + '.' + section + '.'
+            + (expectedAudience != null ? expectedAudience : "user|admin|dev");
         String context = String.format(LOCATION_CONTEXT, this.serializer.serialize(reference), target,
             expectedLocation);
 

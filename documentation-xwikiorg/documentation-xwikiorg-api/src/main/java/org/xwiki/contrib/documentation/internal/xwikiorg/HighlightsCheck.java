@@ -96,8 +96,8 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
             // Only consider lists that are not nested inside another list item.
             if (list.getFirstBlock(new ClassBlockMatcher(ListItemBlock.class), Block.Axes.ANCESTOR) == null) {
                 for (Block child : list.getChildren()) {
-                    if (child instanceof ListItemBlock) {
-                        items.add((ListItemBlock) child);
+                    if (child instanceof ListItemBlock listItemBlock) {
+                        items.add(listItemBlock);
                     }
                 }
             }

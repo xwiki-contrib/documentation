@@ -91,7 +91,7 @@ public class XWikiOrgURLLinkCheck extends AbstractXDOMDocumentationCheck
             if (ResourceType.URL.equals(reference.getType()) && isXWikiOrgWikiPageURL(reference.getReference())) {
                 violations.add(new DocumentationViolation(
                     "Link to a wiki page of xwiki.org using a URL. Use a page reference instead.",
-                    String.format("URL : %s", reference.getReference()), DocumentationViolationSeverity.ERROR));
+                    "URL : " + reference.getReference(), DocumentationViolationSeverity.ERROR));
             }
         }
     }
