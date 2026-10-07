@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.contrib.documentation</groupId>
     <artifactId>documentation-test</artifactId>
-    <version>1.15</version>
+    <version>1.16-SNAPSHOT</version>
   </parent>
   <artifactId>documentation-test-pageobjects</artifactId>
   <name>Documentation Application - Tests - Page Objects</name>
