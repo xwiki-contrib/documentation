@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.AttachmentReference;
@@ -39,7 +40,6 @@ import org.xwiki.rendering.listener.reference.AttachmentResourceReference;
 import org.xwiki.rendering.listener.reference.ResourceReference;
 import org.xwiki.rendering.macro.MacroRefactoring;
 import org.xwiki.rendering.macro.MacroRefactoringException;
-import org.xwiki.text.StringUtils;
 
 /**
  * Refactoring of the Documentation {@code {{image}}} macro (see {@code DocApp.Code.ImageMacro}). The macro carries the
