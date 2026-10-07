@@ -57,6 +57,12 @@
       <artifactId>xwiki-platform-configuration-default</artifactId>
       <version>${platform.version}</version>
     </dependency>
+    <!-- Needed to recognize script macros (ScriptMacro) -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-macro-script</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
     <!-- Test Dependencies -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
