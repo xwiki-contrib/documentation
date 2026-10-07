@@ -58,16 +58,7 @@ public class ImageMacroCheck extends AbstractXDOMDocumentationCheck
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-        XDOM xdom = document.getXDOM();
-
-        checkXDOM(xdom, violations);
-        checkInsideWikiMacros(xdom, document, null, CHECK_NAME, macroXDOM -> checkXDOM(macroXDOM, violations));
-
-        XDOM faqXDOM = parseFAQXDOM(document, xdom, CHECK_NAME);
-        if (faqXDOM != null) {
-            checkXDOM(faqXDOM, violations);
-            checkInsideWikiMacros(faqXDOM, document, null, CHECK_NAME, macroXDOM -> checkXDOM(macroXDOM, violations));
-        }
+        checkContentAndFAQ(document, null, CHECK_NAME, contentXDOM -> checkXDOM(contentXDOM, violations));
 
         return violations;
     }

@@ -59,18 +59,8 @@ public class GalleryMacroAltCheck extends AbstractXDOMDocumentationCheck
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-        XDOM xdom = document.getXDOM();
-
-        checkGalleriesInXDOM(xdom, document, violations);
-        checkInsideWikiMacros(xdom, document, GALLERY_MACRO_ID, CHECK_NAME,
-            macroXDOM -> checkGalleriesInXDOM(macroXDOM, document, violations));
-
-        XDOM faqXDOM = parseFAQXDOM(document, xdom, CHECK_NAME);
-        if (faqXDOM != null) {
-            checkGalleriesInXDOM(faqXDOM, document, violations);
-            checkInsideWikiMacros(faqXDOM, document, GALLERY_MACRO_ID, CHECK_NAME,
-                macroXDOM -> checkGalleriesInXDOM(macroXDOM, document, violations));
-        }
+        checkContentAndFAQ(document, GALLERY_MACRO_ID, CHECK_NAME,
+            contentXDOM -> checkGalleriesInXDOM(contentXDOM, document, violations));
 
         return violations;
     }
