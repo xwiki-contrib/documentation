@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -101,23 +103,18 @@ class AttachmentNameCheckTest
         assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
     }
 
-    @Test
-    void checkWhenAttachmentStemHasSpaces()
+    @ParameterizedTest
+    @CsvSource({
+        "Installation Guide.png, installation-guide.png",
+        "GettingStarted.png, gettingstarted.png",
+        "présentation.png, presentation.png"
+    })
+    void checkWhenAttachmentStemIsNotKebabCase(String attachmentName, String expectedName)
     {
-        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("Installation Guide.png"));
+        List<DocumentationViolation> violations = this.check.check(documentWithAttachments(attachmentName));
 
         assertEquals(1, violations.size());
-        assertEquals("Attachment name: [Installation Guide.png], Expected: [installation-guide.png]",
-            violations.get(0).getViolationContext());
-    }
-
-    @Test
-    void checkWhenAttachmentStemHasUppercase()
-    {
-        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("GettingStarted.png"));
-
-        assertEquals(1, violations.size());
-        assertEquals("Attachment name: [GettingStarted.png], Expected: [gettingstarted.png]",
+        assertEquals("Attachment name: [" + attachmentName + "], Expected: [" + expectedName + "]",
             violations.get(0).getViolationContext());
     }
 
@@ -129,16 +126,6 @@ class AttachmentNameCheckTest
 
         assertEquals(1, violations.size());
         assertEquals("Attachment name: [Invalid Screenshot.jpg], Expected: [invalid-screenshot.jpg]",
-            violations.get(0).getViolationContext());
-    }
-
-    @Test
-    void checkWhenAttachmentNameHasAccentedChars()
-    {
-        List<DocumentationViolation> violations = this.check.check(documentWithAttachments("présentation.png"));
-
-        assertEquals(1, violations.size());
-        assertEquals("Attachment name: [présentation.png], Expected: [presentation.png]",
             violations.get(0).getViolationContext());
     }
 

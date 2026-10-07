@@ -221,10 +221,13 @@ class DocumentationIT
         // inline (inside a sentence) and standalone (its own block) on the same page so that both renderings can be
         // asserted: the inline use must not error and must not produce the callout box, while the standalone use still
         // renders the box.
-        String content = "A sentence with "
-            + "{{deprecated since=\"11.10.5\" useInstead=\"the New Feature\"}}an old feature{{/deprecated}}"
-            + " used inline.\n\n"
-            + "{{deprecated since=\"11.10.5\" useInstead=\"the New Feature\"}}\nA standalone block.\n{{/deprecated}}";
+        String content = """
+            A sentence with {{deprecated since="11.10.5" useInstead="the New Feature"}}an old feature{{/deprecated}} \
+            used inline.
+
+            {{deprecated since="11.10.5" useInstead="the New Feature"}}
+            A standalone block.
+            {{/deprecated}}""";
         setup.deletePage(page("deprecated-sample"));
         setup.createPage(page("deprecated-sample"), content, "Deprecated sample", "xwiki/2.1");
 

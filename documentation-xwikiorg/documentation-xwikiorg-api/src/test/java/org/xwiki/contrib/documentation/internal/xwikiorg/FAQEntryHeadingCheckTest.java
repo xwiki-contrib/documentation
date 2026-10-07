@@ -94,7 +94,7 @@ class FAQEntryHeadingCheckTest
     private void assertViolation(DocumentationViolation violation, String message, String heading)
     {
         assertEquals(message, violation.getViolationMessage());
-        assertEquals(String.format("Heading : %s", heading), violation.getViolationContext());
+        assertEquals("Heading : " + heading, violation.getViolationContext());
         assertEquals(DocumentationViolationSeverity.WARNING, violation.getViolationSeverity());
     }
 

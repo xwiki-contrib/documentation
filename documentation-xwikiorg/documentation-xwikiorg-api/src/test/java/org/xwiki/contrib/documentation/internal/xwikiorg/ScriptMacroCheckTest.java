@@ -168,9 +168,11 @@ class ScriptMacroCheckTest
     @Test
     void checkWhenScriptMacroHasLongMultilineContent() throws Exception
     {
-        MacroBlock velocityBlock = new MacroBlock("velocity", Map.of(),
-            "#set ($results = $services.query.xwql('from doc.object(XWiki.XWikiUsers) as user').execute())\n"
-                + "#foreach ($result in $results)\n  * $result\n#end", false);
+        MacroBlock velocityBlock = new MacroBlock("velocity", Map.of(), """
+            #set ($results = $services.query.xwql('from doc.object(XWiki.XWikiUsers) as user').execute())
+            #foreach ($result in $results)
+              * $result
+            #end""", false);
         XWikiDocument document = createDocument(new XDOM(List.of(velocityBlock)));
 
         List<DocumentationViolation> violations = getChecker().check(document);

@@ -22,6 +22,8 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.model.reference.DocumentReference;
@@ -95,33 +97,18 @@ class PageNameCheckTest
         assertEquals(DocumentationViolationSeverity.ERROR, violations.get(0).getViolationSeverity());
     }
 
-    @Test
-    void checkWhenPageNameHasUppercase()
+    @ParameterizedTest
+    @CsvSource({
+        "GettingStarted, gettingstarted",
+        "getting.started, getting-started",
+        "présentation, presentation"
+    })
+    void checkWhenPageNameIsNotKebabCase(String pageName, String expectedName)
     {
-        List<DocumentationViolation> violations = this.check.check(documentWithPageName("GettingStarted"));
+        List<DocumentationViolation> violations = this.check.check(documentWithPageName(pageName));
 
         assertEquals(1, violations.size());
-        assertEquals("Page name: [GettingStarted], Expected: [gettingstarted]",
-            violations.get(0).getViolationContext());
-    }
-
-    @Test
-    void checkWhenPageNameHasDot()
-    {
-        List<DocumentationViolation> violations = this.check.check(documentWithPageName("getting.started"));
-
-        assertEquals(1, violations.size());
-        assertEquals("Page name: [getting.started], Expected: [getting-started]",
-            violations.get(0).getViolationContext());
-    }
-
-    @Test
-    void checkWhenPageNameHasAccentedChars()
-    {
-        List<DocumentationViolation> violations = this.check.check(documentWithPageName("présentation"));
-
-        assertEquals(1, violations.size());
-        assertEquals("Page name: [présentation], Expected: [presentation]",
+        assertEquals("Page name: [" + pageName + "], Expected: [" + expectedName + "]",
             violations.get(0).getViolationContext());
     }
 

@@ -23,9 +23,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
@@ -112,40 +116,27 @@ class PlantUMLThemeCheckTest
         assertEquals(DocumentationViolationSeverity.ERROR, violation.getViolationSeverity());
     }
 
-    @Test
-    void checkWhenThemeIsMissing() throws Exception
+    static Stream<Arguments> checkWhenThemeIsNotBluegraySource()
     {
-        List<DocumentationViolation> violations = checkContent("\n  @startuml\nAlice -> Bob\n@enduml");
-
-        assertEquals(1, violations.size());
-        assertViolation(violations.get(0), "Diagram first line : @startuml");
+        return Stream.of(
+            // The theme is missing.
+            Arguments.of("\n  @startuml\nAlice -> Bob\n@enduml", "@startuml"),
+            // Another theme is used.
+            Arguments.of("!theme cerulean\nAlice -> Bob", "!theme cerulean"),
+            // The theme name only starts with "bluegray".
+            Arguments.of("!theme bluegrayish\nAlice -> Bob", "!theme bluegrayish"),
+            // The theme is inside a comment.
+            Arguments.of("' !theme bluegray\nAlice -> Bob", "' !theme bluegray"));
     }
 
-    @Test
-    void checkWhenAnotherThemeIsUsed() throws Exception
+    @ParameterizedTest
+    @MethodSource("checkWhenThemeIsNotBluegraySource")
+    void checkWhenThemeIsNotBluegray(String content, String firstLine) throws Exception
     {
-        List<DocumentationViolation> violations = checkContent("!theme cerulean\nAlice -> Bob");
+        List<DocumentationViolation> violations = checkContent(content);
 
         assertEquals(1, violations.size());
-        assertViolation(violations.get(0), "Diagram first line : !theme cerulean");
-    }
-
-    @Test
-    void checkWhenThemeNameOnlyStartsWithBluegray() throws Exception
-    {
-        List<DocumentationViolation> violations = checkContent("!theme bluegrayish\nAlice -> Bob");
-
-        assertEquals(1, violations.size());
-        assertViolation(violations.get(0), "Diagram first line : !theme bluegrayish");
-    }
-
-    @Test
-    void checkWhenThemeIsInsideAComment() throws Exception
-    {
-        List<DocumentationViolation> violations = checkContent("' !theme bluegray\nAlice -> Bob");
-
-        assertEquals(1, violations.size());
-        assertViolation(violations.get(0), "Diagram first line : ' !theme bluegray");
+        assertViolation(violations.get(0), "Diagram first line : " + firstLine);
     }
 
     @Test
