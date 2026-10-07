@@ -20,11 +20,12 @@
 package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -114,14 +115,15 @@ public final class KebabNameValidator
     /**
      * A dot that is not surrounded by digits, i.e. one that is not part of a version number such as {@code 1.0}.
      */
-    private static final Pattern ISOLATED_DOT_PATTERN = Pattern.compile("(?<![0-9])\\.|\\.(?![0-9])");
+    private static final Pattern ISOLATED_DOT_PATTERN = Pattern.compile("(?<!\\d)\\.|\\.(?!\\d)");
 
     /**
      * A name that is already in kebab-case: lowercase letters and digits, single hyphens between two such
-     * characters, and dots only between two digits.
+     * characters, and dots only between two digits. Each repetition consumes a whole run of letters and digits, and the
+     * quantifiers are possessive, so that a long name doesn't overflow the stack.
      */
     private static final Pattern VALID_KEBAB_PATTERN =
-        Pattern.compile("[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])|(?<=[0-9])\\.(?=[0-9]))*");
+        Pattern.compile("[a-z0-9]++(?:-[a-z0-9]++|(?<=\\d)\\.\\d[a-z0-9]*+)*+");
 
     private KebabNameValidator()
     {
@@ -217,24 +219,17 @@ public final class KebabNameValidator
 
     private static List<String> getSegments(String name, Set<String> words)
     {
-        Set<String> found = new LinkedHashSet<>();
-        for (String segment : toKebab(name).split(REPLACEMENT_CHARACTER, -1)) {
-            if (words.contains(segment)) {
-                found.add(segment);
-            }
-        }
-        return new ArrayList<>(found);
+        return Arrays.stream(toKebab(name).split(REPLACEMENT_CHARACTER, -1))
+            .filter(words::contains)
+            .distinct()
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private static String removeSegments(String name, Set<String> words)
     {
-        List<String> kept = new ArrayList<>();
-        for (String segment : name.split(REPLACEMENT_CHARACTER)) {
-            if (!segment.isEmpty() && !words.contains(segment)) {
-                kept.add(segment);
-            }
-        }
-        return String.join(REPLACEMENT_CHARACTER, kept);
+        return Arrays.stream(name.split(REPLACEMENT_CHARACTER))
+            .filter(segment -> !segment.isEmpty() && !words.contains(segment))
+            .collect(Collectors.joining(REPLACEMENT_CHARACTER));
     }
 
     private static String trimHyphens(String name)
