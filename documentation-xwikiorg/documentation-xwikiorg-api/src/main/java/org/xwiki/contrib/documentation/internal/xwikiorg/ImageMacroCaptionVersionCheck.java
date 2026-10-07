@@ -21,11 +21,13 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
@@ -54,30 +56,30 @@ public class ImageMacroCaptionVersionCheck extends AbstractXDOMDocumentationChec
     private static final String IMAGE_MACRO_ID = "image";
 
     /**
-     * A version number with at least two numeric parts (e.g. {@code 17.10}, {@code v16.10.5}), optionally followed by
-     * a qualifier (e.g. {@code 18.0.0RC1}, {@code 18.0.0-rc-1}, {@code 17.0M2}, {@code 17.10-SNAPSHOT}), or the word
-     * {@code XWiki} followed by a number (e.g. {@code XWiki 17}).
+     * A run of word characters and dots, in which a version number is looked for. A {@code -} ends the run, so that
+     * {@code 17.10} is found in {@code 17.10-SNAPSHOT} or {@code 18.0.0-rc-1}.
      */
-    private static final Pattern VERSION_PATTERN = Pattern.compile(
-        "(?<![\\w.])v?\\d+(?:\\.\\d+)+(?:-?(?:rc|m|milestone|snapshot)(?:-?\\d+)?)?(?![\\w.]*\\w)"
-            + "|\\bxwiki\\s*v?\\d+",
-        Pattern.CASE_INSENSITIVE);
+    private static final Pattern WORD_RUN_PATTERN = Pattern.compile("[\\w.]++");
+
+    /**
+     * A whole version number with at least two numeric parts (e.g. {@code 17.10}, {@code v16.10.5}), optionally
+     * followed by a qualifier (e.g. {@code 18.0.0RC1}, {@code 17.0M2}). The quantifiers are possessive to keep the
+     * matching linear in the length of the caption.
+     */
+    private static final Pattern VERSION_PATTERN =
+        Pattern.compile("v?\\d++(?:\\.\\d++)++(?:(?:rc|m|milestone|snapshot)\\d*+)?", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * The word {@code XWiki} followed by a number (e.g. {@code XWiki 17}).
+     */
+    private static final Pattern XWIKI_VERSION_PATTERN =
+        Pattern.compile("\\bxwiki\\s*+v?\\d", Pattern.CASE_INSENSITIVE);
 
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-        XDOM xdom = document.getXDOM();
-        checkXDOM(xdom, violations);
-        checkInsideWikiMacros(xdom, document, IMAGE_MACRO_ID, CHECK_NAME,
-            macroXDOM -> checkXDOM(macroXDOM, violations));
-
-        XDOM faqXDOM = parseFAQXDOM(document, xdom, CHECK_NAME);
-        if (faqXDOM != null) {
-            checkXDOM(faqXDOM, violations);
-            checkInsideWikiMacros(faqXDOM, document, IMAGE_MACRO_ID, CHECK_NAME,
-                macroXDOM -> checkXDOM(macroXDOM, violations));
-        }
+        checkContentAndFAQ(document, IMAGE_MACRO_ID, CHECK_NAME, contentXDOM -> checkXDOM(contentXDOM, violations));
 
         return violations;
     }
@@ -88,7 +90,7 @@ public class ImageMacroCaptionVersionCheck extends AbstractXDOMDocumentationChec
         for (MacroBlock macroBlock : macroBlocks) {
             if (IMAGE_MACRO_ID.equals(macroBlock.getId())) {
                 String caption = macroBlock.getParameter("caption");
-                if (caption != null && VERSION_PATTERN.matcher(caption).find()) {
+                if (caption != null && containsVersion(caption)) {
                     String reference = macroBlock.getParameter("reference");
                     violations.add(new DocumentationViolation(
                         "The caption of the Image macro should not indicate the XWiki version in which the "
@@ -99,5 +101,20 @@ public class ImageMacroCaptionVersionCheck extends AbstractXDOMDocumentationChec
                 }
             }
         }
+    }
+
+    private boolean containsVersion(String caption)
+    {
+        if (XWIKI_VERSION_PATTERN.matcher(caption).find()) {
+            return true;
+        }
+        Matcher runMatcher = WORD_RUN_PATTERN.matcher(caption);
+        while (runMatcher.find()) {
+            // Ignore the dots ending the run, such as the period ending a sentence.
+            if (VERSION_PATTERN.matcher(StringUtils.stripEnd(runMatcher.group(), ".")).matches()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

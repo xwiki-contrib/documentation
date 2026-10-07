@@ -84,19 +84,9 @@ public class VersionMacroCheck extends AbstractXDOMDocumentationCheck
         }
         Version oldestSupportedVersion = new DefaultVersion(oldestSupportedVersionString.trim());
 
-        XDOM xdom = document.getXDOM();
-
         // Don't skip the version macro: its content is wiki content that can contain other version macros.
-        checkXDOM(xdom, oldestSupportedVersion, violations);
-        checkInsideWikiMacros(xdom, document, null, CHECK_NAME,
-            macroXDOM -> checkXDOM(macroXDOM, oldestSupportedVersion, violations));
-
-        XDOM faqXDOM = parseFAQXDOM(document, xdom, CHECK_NAME);
-        if (faqXDOM != null) {
-            checkXDOM(faqXDOM, oldestSupportedVersion, violations);
-            checkInsideWikiMacros(faqXDOM, document, null, CHECK_NAME,
-                macroXDOM -> checkXDOM(macroXDOM, oldestSupportedVersion, violations));
-        }
+        checkContentAndFAQ(document, null, CHECK_NAME,
+            contentXDOM -> checkXDOM(contentXDOM, oldestSupportedVersion, violations));
 
         return violations;
     }

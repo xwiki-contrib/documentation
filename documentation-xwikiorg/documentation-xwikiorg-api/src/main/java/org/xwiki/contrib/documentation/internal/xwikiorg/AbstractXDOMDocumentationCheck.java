@@ -155,4 +155,29 @@ public abstract class AbstractXDOMDocumentationCheck implements DocumentationChe
             }
         }
     }
+
+    /**
+     * Pass to {@code consumer} the XDOM of the document content and of the FAQ xproperty, and the XDOM of the
+     * wiki-markup content of the macros found in each of them (see
+     * {@link #checkInsideWikiMacros(XDOM, XWikiDocument, String, String, Consumer)}).
+     *
+     * @param document the document to check
+     * @param skipMacroId macro ID whose content is not checked, or {@code null} to check the content of all macros
+     * @param checkName a human-readable check name used in warning messages
+     * @param consumer called with each XDOM to check
+     * @since 1.15
+     */
+    protected void checkContentAndFAQ(XWikiDocument document, String skipMacroId, String checkName,
+        Consumer<XDOM> consumer)
+    {
+        XDOM xdom = document.getXDOM();
+        consumer.accept(xdom);
+        checkInsideWikiMacros(xdom, document, skipMacroId, checkName, consumer);
+
+        XDOM faqXDOM = parseFAQXDOM(document, xdom, checkName);
+        if (faqXDOM != null) {
+            consumer.accept(faqXDOM);
+            checkInsideWikiMacros(faqXDOM, document, skipMacroId, checkName, consumer);
+        }
+    }
 }

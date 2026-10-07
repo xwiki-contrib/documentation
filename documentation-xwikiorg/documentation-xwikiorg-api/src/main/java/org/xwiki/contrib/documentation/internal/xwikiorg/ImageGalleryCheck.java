@@ -63,19 +63,8 @@ public class ImageGalleryCheck extends AbstractXDOMDocumentationCheck
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
-        XDOM xdom = document.getXDOM();
-
         // Images inside the Gallery macro are meant to be next to each other, thus we don't look inside it.
-        checkXDOM(xdom, violations);
-        checkInsideWikiMacros(xdom, document, GALLERY_MACRO_ID, CHECK_NAME,
-            macroXDOM -> checkXDOM(macroXDOM, violations));
-
-        XDOM faqXDOM = parseFAQXDOM(document, xdom, CHECK_NAME);
-        if (faqXDOM != null) {
-            checkXDOM(faqXDOM, violations);
-            checkInsideWikiMacros(faqXDOM, document, GALLERY_MACRO_ID, CHECK_NAME,
-                macroXDOM -> checkXDOM(macroXDOM, violations));
-        }
+        checkContentAndFAQ(document, GALLERY_MACRO_ID, CHECK_NAME, contentXDOM -> checkXDOM(contentXDOM, violations));
 
         return violations;
     }
