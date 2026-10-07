@@ -29,7 +29,7 @@
   </parent>
   <groupId>org.xwiki.contrib.documentation</groupId>
   <artifactId>documentation</artifactId>
-  <version>1.15-SNAPSHOT</version>
+  <version>1.15</version>
   <name>Documentation Application</name>
   <description>Application to help write good documentation for any software product, and especially for XWiki.org.</description>
   <packaging>pom</packaging>
@@ -41,7 +41,7 @@
     <connection>scm:git:git://github.com/xwiki-contrib/documentation.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki-contrib/documentation.git</developerConnection>
     <url>https://github.com/xwiki-contrib/documentation/tree/master</url>
-    <tag>documentation-1.9</tag>
+    <tag>documentation-1.15</tag>
   </scm>
   <developers>
     <developer>
