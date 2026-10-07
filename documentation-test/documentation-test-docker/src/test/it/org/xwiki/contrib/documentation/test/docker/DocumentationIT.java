@@ -20,6 +20,7 @@
 package org.xwiki.contrib.documentation.test.docker;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -56,7 +57,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DocumentationIT
 {
-    private static final String SPACE = "DocumentationIT";
+    /**
+     * The space holding the test pages. It is in the documentation tree, since documentation pages located anywhere
+     * else are reported as an error by the location check.
+     */
+    private static final List<String> SPACE = List.of("documentation", "xs", "user", "documentation-it");
 
     private static final String DOC_CLASS = "DocApp.Code.DocumentationClass";
 
@@ -78,7 +83,7 @@ class DocumentationIT
      */
     private static final String VERSION_PAGE = "version-sample";
 
-    private static final List<String> GUIDE_SPACE = List.of(SPACE, "guide");
+    private static final List<String> GUIDE_SPACE = space("guide");
 
     private static final DocumentReference GUIDE_REFERENCE = new DocumentReference("xwiki", GUIDE_SPACE, "WebHome");
 
@@ -89,9 +94,9 @@ class DocumentationIT
 
         // Violation scenario page: an Image macro missing its "alt" parameter is a single WARNING to start with. The
         // ordered tests below then edit this same page (raw image syntax -> ERROR, then fixed -> no violation).
-        setup.deletePage(SPACE, VIOLATION_PAGE);
-        setup.createPage(SPACE, VIOLATION_PAGE, "{{image reference=\"foo.png\"/}}", "Image sample", "xwiki/2.1");
-        setup.addObject(SPACE, VIOLATION_PAGE, DOC_CLASS, "type", "reference");
+        setup.deletePage(page(VIOLATION_PAGE));
+        setup.createPage(page(VIOLATION_PAGE), "{{image reference=\"foo.png\"/}}", "Image sample", "xwiki/2.1");
+        setup.addObject(page(VIOLATION_PAGE), DOC_CLASS, "type", "reference");
 
         // Structure + navigation page: a How-To with FAQ and Related sections and two documentation children, so that
         // both the sheet structure and the "More" navigation section can be asserted on a single page.
@@ -106,8 +111,8 @@ class DocumentationIT
 
         // A page WITHOUT a DocumentationClass object: the listener must not analyse it (even though its content would
         // otherwise violate the syntax check).
-        setup.deletePage(SPACE, "plain-page");
-        setup.createPage(SPACE, "plain-page", "image:foo.png", "Plain page", "xwiki/2.0");
+        setup.deletePage(page("plain-page"));
+        setup.createPage(page("plain-page"), "image:foo.png", "Plain page", "xwiki/2.0");
     }
 
     @Test
@@ -153,7 +158,7 @@ class DocumentationIT
     @Order(3)
     void surfacesWarningViolationInBoxAndTab(TestUtils setup)
     {
-        setup.gotoPage(SPACE, VIOLATION_PAGE);
+        setup.gotoPage(page(VIOLATION_PAGE));
         DocumentationViewPage viewPage = new DocumentationViewPage();
 
         assertTrue(viewPage.hasWarningValidationBox(), "Expected the on-page warning validation box to be displayed");
@@ -169,11 +174,11 @@ class DocumentationIT
     void surfacesErrorViolationAfterEdit(TestUtils setup)
     {
         // Using the raw image syntax (instead of the Image macro) is an ERROR. Re-saving re-runs the analysis.
-        WikiEditPage editPage = WikiEditPage.gotoPage(SPACE, VIOLATION_PAGE);
+        WikiEditPage editPage = WikiEditPage.gotoPage(page(VIOLATION_PAGE));
         editPage.setContent("image:foo.png");
         editPage.clickSaveAndView();
 
-        setup.gotoPage(SPACE, VIOLATION_PAGE);
+        setup.gotoPage(page(VIOLATION_PAGE));
         DocumentationViewPage viewPage = new DocumentationViewPage();
         assertTrue(viewPage.hasErrorValidationBox(), "Expected the on-page error validation box to be displayed");
 
@@ -187,11 +192,11 @@ class DocumentationIT
     void removesViolationsWhenContentIsFixed(TestUtils setup)
     {
         // Fixing the content (a proper Image macro with an alt parameter) makes the analysis remove the violations.
-        WikiEditPage editPage = WikiEditPage.gotoPage(SPACE, VIOLATION_PAGE);
+        WikiEditPage editPage = WikiEditPage.gotoPage(page(VIOLATION_PAGE));
         editPage.setContent("{{image reference=\"foo.png\" alt=\"A foo\"/}}");
         editPage.clickSaveAndView();
 
-        setup.gotoPage(SPACE, VIOLATION_PAGE);
+        setup.gotoPage(page(VIOLATION_PAGE));
         DocumentationViewPage viewPage = new DocumentationViewPage();
         assertFalse(viewPage.hasWarningValidationBox(), "The warning box should be gone once the content is fixed");
         assertFalse(viewPage.hasErrorValidationBox(), "No validation box should remain once the content is fixed");
@@ -201,7 +206,7 @@ class DocumentationIT
     @Order(6)
     void doesNotAnalysePageWithoutDocumentationClass(TestUtils setup)
     {
-        setup.gotoPage(SPACE, "plain-page");
+        setup.gotoPage(page("plain-page"));
         DocumentationViewPage viewPage = new DocumentationViewPage();
         assertFalse(viewPage.hasErrorValidationBox(), "A non-documentation page must not show a validation box");
         assertFalse(viewPage.hasWarningValidationBox(), "A non-documentation page must not show a validation box");
@@ -220,10 +225,10 @@ class DocumentationIT
             + "{{deprecated since=\"11.10.5\" useInstead=\"the New Feature\"}}an old feature{{/deprecated}}"
             + " used inline.\n\n"
             + "{{deprecated since=\"11.10.5\" useInstead=\"the New Feature\"}}\nA standalone block.\n{{/deprecated}}";
-        setup.deletePage(SPACE, "deprecated-sample");
-        setup.createPage(SPACE, "deprecated-sample", content, "Deprecated sample", "xwiki/2.1");
+        setup.deletePage(page("deprecated-sample"));
+        setup.createPage(page("deprecated-sample"), content, "Deprecated sample", "xwiki/2.1");
 
-        setup.gotoPage(SPACE, "deprecated-sample");
+        setup.gotoPage(page("deprecated-sample"));
         DocumentationViewPage viewPage = new DocumentationViewPage();
 
         // Used inline, the macro must not produce the "standalone macro cannot be used inline" rendering error.
@@ -244,15 +249,15 @@ class DocumentationIT
         // A page can carry both a DocumentationClass object (FAQ/Related/...) and a UIXPClass object (documenting an
         // extension point). The UIXP content extension displays the UIXPClass object's fields, but doing so must not
         // suppress the DocumentationClass FAQ/Related content rendered by the sheet.
-        setup.deletePage(SPACE, "uixp-page");
-        setup.createPage(SPACE, "uixp-page", "", "UIXP sample", "xwiki/2.1");
-        setup.addObject(SPACE, "uixp-page", DOC_CLASS,
+        setup.deletePage(page("uixp-page"));
+        setup.createPage(page("uixp-page"), "", "UIXP sample", "xwiki/2.1");
+        setup.addObject(page("uixp-page"), DOC_CLASS,
             "type", "reference",
             "faq", "MyUixpFaqText",
             "related", "MyUixpRelatedText");
-        setup.addObject(SPACE, "uixp-page", UIXP_CLASS, "description", "MyUixpDescriptionText");
+        setup.addObject(page("uixp-page"), UIXP_CLASS, "description", "MyUixpDescriptionText");
 
-        setup.gotoPage(SPACE, "uixp-page");
+        setup.gotoPage(page("uixp-page"));
         String content = new DocumentationViewPage().getContent();
 
         // The UIXP object's structured content is rendered (replacing the free-form "content" field, by design).
@@ -274,12 +279,12 @@ class DocumentationIT
         // syntax the macro generates, a double quote and a closing square bracket, so it also covers the escaping:
         // unescaped, they truncate the alt text instead of breaking anything visibly.
         String alt = "The \"Cannot restore\" message [1] for a page";
-        setup.deletePage(SPACE, "alt-sample");
-        setup.createPage(SPACE, "alt-sample",
+        setup.deletePage(page("alt-sample"));
+        setup.createPage(page("alt-sample"),
             "{{image reference=\"foo.png\" size=\"large\" alt=\"The ~\"Cannot restore~\" message [1] for a page\"/}}",
             "Alt sample", "xwiki/2.1");
 
-        setup.gotoPage(SPACE, "alt-sample");
+        setup.gotoPage(page("alt-sample"));
         DocumentationViewPage viewPage = new DocumentationViewPage();
         assertFalse(viewPage.hasRenderingError(), "The Image macro should not produce a rendering error");
         assertEquals(alt, viewPage.getContentImageAlt(),
@@ -291,11 +296,11 @@ class DocumentationIT
     void reportsOldVersionMacrosOnceConfiguredInAdministration(TestUtils setup)
     {
         // As long as the oldest supported version isn't configured, old version macros aren't reported.
-        setup.deletePage(SPACE, VERSION_PAGE);
-        setup.createPage(SPACE, VERSION_PAGE, "{{version since=\"12.0\"}}\nAn old feature.\n{{/version}}",
+        setup.deletePage(page(VERSION_PAGE));
+        setup.createPage(page(VERSION_PAGE), "{{version since=\"12.0\"}}\nAn old feature.\n{{/version}}",
             "Version sample", "xwiki/2.1");
-        setup.addObject(SPACE, VERSION_PAGE, DOC_CLASS, "type", "reference");
-        setup.gotoPage(SPACE, VERSION_PAGE);
+        setup.addObject(page(VERSION_PAGE), DOC_CLASS, "type", "reference");
+        setup.gotoPage(page(VERSION_PAGE));
         assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
             "No violation expected while the oldest supported version isn't configured");
 
@@ -307,8 +312,8 @@ class DocumentationIT
         section.clickSave();
 
         // The next save of the page reports the version macro.
-        WikiEditPage.gotoPage(SPACE, VERSION_PAGE).clickSaveAndView();
-        setup.gotoPage(SPACE, VERSION_PAGE);
+        WikiEditPage.gotoPage(page(VERSION_PAGE)).clickSaveAndView();
+        setup.gotoPage(page(VERSION_PAGE));
         DocumentationViewPage viewPage = new DocumentationViewPage();
         assertTrue(viewPage.hasWarningValidationBox(), "Expected the on-page warning validation box to be displayed");
         viewPage.openDocumentationTab();
@@ -317,9 +322,19 @@ class DocumentationIT
             "The Documentation tab should list the old version macro violation message");
     }
 
+    private static DocumentReference page(String name)
+    {
+        return new DocumentReference("xwiki", SPACE, name);
+    }
+
+    private static List<String> space(String... names)
+    {
+        return Stream.concat(SPACE.stream(), Stream.of(names)).toList();
+    }
+
     private static void createChild(TestUtils setup, String name, String title, String type)
     {
-        List<String> childSpace = List.of(SPACE, "guide", name);
+        List<String> childSpace = space("guide", name);
         setup.createPage(childSpace, "WebHome", "Child content", title, "xwiki/2.1");
         setup.addObject(new DocumentReference("xwiki", childSpace, "WebHome"), DOC_CLASS, "type", type);
     }
