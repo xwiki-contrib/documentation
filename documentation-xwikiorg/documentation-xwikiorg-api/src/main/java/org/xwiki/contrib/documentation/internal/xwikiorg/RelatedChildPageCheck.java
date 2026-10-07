@@ -55,16 +55,16 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Named("relatedChildPage")
 public class RelatedChildPageCheck extends AbstractXDOMDocumentationCheck
 {
-    private static final String CHECK_NAME = "Related Child Page";
-
-    private static final String DEFAULT_DOCUMENT_NAME = "WebHome";
-
     /**
      * The link types that target a page. Links to an attachment of a child page, for example, are not links to the
      * child page itself.
      */
-    private static final List<ResourceType> PAGE_RESOURCE_TYPES =
+    static final List<ResourceType> PAGE_RESOURCE_TYPES =
         List.of(ResourceType.DOCUMENT, ResourceType.PAGE, ResourceType.SPACE);
+
+    private static final String CHECK_NAME = "Related Child Page";
+
+    private static final String DEFAULT_DOCUMENT_NAME = "WebHome";
 
     @Inject
     private EntityReferenceResolver<ResourceReference> resourceReferenceResolver;

@@ -51,12 +51,15 @@ import com.xpn.xwiki.objects.BaseObject;
 @Named("topLevelPage")
 public class TopLevelPageCheck implements DocumentationCheck
 {
+    /**
+     * The names of the audience pages, in a fixed order so that violations are reported in a stable order.
+     */
+    static final List<String> AUDIENCES = List.of("user", "admin", "dev");
+
     private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
         new LocalDocumentReference(List.of("DocApp", "Code"), "DocumentationClass");
 
     private static final Set<String> SECTIONS = Set.of("xs", "extensions");
-
-    private static final Set<String> AUDIENCES = Set.of("user", "admin", "dev");
 
     private static final int TOP_LEVEL_DEPTH = 4;
 
@@ -103,7 +106,12 @@ public class TopLevelPageCheck implements DocumentationCheck
         return violations;
     }
 
-    private boolean isTopLevelPage(DocumentReference reference)
+    /**
+     * @param reference the reference of a page
+     * @return {@code true} if the page is a top-level documentation page, i.e.
+     *     {@code documentation.<xs|extensions>.<user|admin|dev>.<page>.WebHome}
+     */
+    static boolean isTopLevelPage(DocumentReference reference)
     {
         List<String> spaces =
             reference.getSpaceReferences().stream().map(EntityReference::getName).toList();
