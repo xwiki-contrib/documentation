@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
@@ -36,15 +35,11 @@ import org.xwiki.rendering.block.ListBLock;
 import org.xwiki.rendering.block.ListItemBlock;
 import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
-import org.xwiki.rendering.macro.MacroExecutionException;
 import org.xwiki.rendering.renderer.BlockRenderer;
 import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
-import org.xwiki.rendering.transformation.MacroTransformationContext;
-import org.xwiki.rendering.transformation.TransformationContext;
 
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Verify the Highlights field of documentation pages: it must not have more than 6 highlights, and each highlight
@@ -63,6 +58,8 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
 
     private static final String HIGHLIGHTS_PROPERTY = "highlights";
 
+    private static final String CHECK_NAME = "Highlights";
+
     private static final String CONTEXT_FORMAT = "Highlight : %s";
 
     @Inject
@@ -74,7 +71,8 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
     {
         List<DocumentationViolation> violations = new ArrayList<>();
 
-        XDOM highlightsXDOM = parseHighlightsXDOM(document);
+        XDOM highlightsXDOM =
+            parseXPropertyXDOM(document, document.getXDOM(), HIGHLIGHTS_PROPERTY, CHECK_NAME, CHECK_NAME);
         if (highlightsXDOM != null) {
             List<ListItemBlock> highlights = getFirstLevelItems(highlightsXDOM);
             if (highlights.size() > MAX_HIGHLIGHTS) {
@@ -88,26 +86,6 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
         }
 
         return violations;
-    }
-
-    private XDOM parseHighlightsXDOM(XWikiDocument document)
-    {
-        BaseObject docObject = document.getXObject(DOCUMENTATION_CLASS_REFERENCE);
-        if (docObject != null) {
-            String highlightsContent = docObject.getLargeStringValue(HIGHLIGHTS_PROPERTY);
-            if (!highlightsContent.isEmpty()) {
-                try {
-                    TransformationContext context =
-                        new TransformationContext(document.getXDOM(), document.getSyntax());
-                    MacroTransformationContext macroContext = new MacroTransformationContext(context);
-                    return this.contentParser.parse(highlightsContent, macroContext, false, false);
-                } catch (MacroExecutionException e) {
-                    this.logger.warn("Failed to parse the Highlights content. Ignoring Highlights check. "
-                        + ROOT_ERROR_CAUSE, ExceptionUtils.getRootCauseMessage(e));
-                }
-            }
-        }
-        return null;
     }
 
     private List<ListItemBlock> getFirstLevelItems(XDOM xdom)
