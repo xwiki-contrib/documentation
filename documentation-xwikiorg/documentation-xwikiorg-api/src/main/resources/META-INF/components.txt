@@ -24,3 +24,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.PlantUMLThemeCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.HighlightsCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.RelatedLinkLabelCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.ScriptMacroCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.InlineStyleCheck
