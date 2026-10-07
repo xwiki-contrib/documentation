@@ -325,6 +325,51 @@ class DocumentationIT
             "The Documentation tab should list the old version macro violation message");
     }
 
+    @Test
+    @Order(11)
+    void recommendsHighlightsOnPagesWithManyChildPages(TestUtils setup)
+    {
+        // The highlights check counts the child documentation pages with a database query, which the unit tests can
+        // only mock. The hub page gets 15 child documentation pages, nested and terminal, plus a child page that is not
+        // a documentation page and must not count: being at the threshold, it gets no recommendation.
+        List<String> hubSpace = space("hub-sample");
+        DocumentReference hubReference = new DocumentReference("xwiki", hubSpace, "WebHome");
+        setup.deletePage(hubReference, true);
+        for (int i = 1; i <= 8; i++) {
+            List<String> childSpace = space("hub-sample", "nested-" + i);
+            setup.createPage(childSpace, "WebHome", "", "Nested " + i, "xwiki/2.1");
+            setup.addObject(new DocumentReference("xwiki", childSpace, "WebHome"), DOC_CLASS, "type", "reference");
+        }
+        for (int i = 1; i <= 7; i++) {
+            DocumentReference childReference = new DocumentReference("xwiki", hubSpace, "terminal-" + i);
+            setup.createPage(childReference, "", "Terminal " + i, "xwiki/2.1");
+            setup.addObject(childReference, DOC_CLASS, "type", "reference");
+        }
+        setup.createPage(new DocumentReference("xwiki", hubSpace, "plain-child"), "", "Plain child", "xwiki/2.1");
+        setup.createPage(hubSpace, "WebHome", "", "Hub sample", "xwiki/2.1");
+        setup.addObject(hubReference, DOC_CLASS, "type", "reference");
+
+        setup.gotoPage(hubReference);
+        assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
+            "No recommendation expected for a page with 15 child documentation pages");
+
+        // A 16th child documentation page puts the hub over the threshold, reported on the next save of the hub.
+        DocumentReference lastChildReference = new DocumentReference("xwiki", hubSpace, "terminal-8");
+        setup.createPage(lastChildReference, "", "Terminal 8", "xwiki/2.1");
+        setup.addObject(lastChildReference, DOC_CLASS, "type", "reference");
+        WikiEditPage.gotoPage(hubReference).clickSaveAndView();
+
+        setup.gotoPage(hubReference);
+        DocumentationViewPage viewPage = new DocumentationViewPage();
+        assertTrue(viewPage.hasWarningValidationBox(), "Expected the on-page warning validation box to be displayed");
+        viewPage.openDocumentationTab();
+        String tabContent = viewPage.getDocumentationTabContent();
+        assertTrue(tabContent.contains("Highlights are recommended for pages with more than 15 child pages"),
+            "The Documentation tab should list the Highlights recommendation, but got:\n" + tabContent);
+        assertTrue(tabContent.contains("Child pages: [16]"),
+            "The Documentation tab should give the number of child pages, but got:\n" + tabContent);
+    }
+
     private static DocumentReference page(String name)
     {
         return new DocumentReference("xwiki", SPACE, name);

@@ -26,9 +26,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.block.LinkBlock;
 import org.xwiki.rendering.block.ListBLock;
@@ -40,11 +47,12 @@ import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
 
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Verify the Highlights field of documentation pages: it must not have more than 6 highlights, and each highlight
- * must be a first-level list item holding a link to the highlighted page, with exactly one nested list item holding
- * its one-line description.
+ * Verify the Highlights field of documentation pages: it should be filled once the page has more than 15 child
+ * documentation pages, it must not have more than 6 highlights, and each highlight must be a first-level list item
+ * holding a link to the highlighted page, with exactly one nested list item holding its one-line description.
  *
  * @version $Id$
  * @since 1.15
@@ -56,20 +64,52 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
 {
     private static final int MAX_HIGHLIGHTS = 6;
 
+    /**
+     * Highlights are recommended once a page has more child pages than this.
+     */
+    private static final int HIGHLIGHTS_THRESHOLD = 15;
+
     private static final String HIGHLIGHTS_PROPERTY = "highlights";
 
     private static final String CHECK_NAME = "Highlights";
 
     private static final String CONTEXT_FORMAT = "Highlight : %s";
 
+    private static final String DEFAULT_DOCUMENT_NAME = "WebHome";
+
+    /**
+     * Count the direct child pages that are documentation pages: the nested pages (home pages of the direct child
+     * spaces) and the terminal pages of the page's own space. Only documentation pages count, so that technical
+     * children don't push a page over the threshold.
+     */
+    private static final String CHILD_PAGE_COUNT_QUERY = "select count(distinct doc.fullName) "
+        + "from XWikiDocument doc, BaseObject obj "
+        + "where obj.name = doc.fullName and obj.className = 'DocApp.Code.DocumentationClass' "
+        + "and doc.translation = 0 "
+        + "and ((doc.space = :space and doc.name <> 'WebHome') "
+        + "or (doc.name = 'WebHome' and doc.space in "
+        + "(select space.reference from XWikiSpace space where space.parent = :space)))";
+
     @Inject
     @Named("plain/1.0")
     private BlockRenderer plainTextRenderer;
+
+    @Inject
+    private QueryManager queryManager;
+
+    @Inject
+    @Named("local")
+    private EntityReferenceSerializer<String> localSerializer;
 
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
         List<DocumentationViolation> violations = new ArrayList<>();
+
+        BaseObject docObject = document.getXObject(DOCUMENTATION_CLASS_REFERENCE);
+        if (docObject != null && StringUtils.isBlank(docObject.getLargeStringValue(HIGHLIGHTS_PROPERTY))) {
+            checkChildPageCount(document.getDocumentReference(), violations);
+        }
 
         XDOM highlightsXDOM =
             parseXPropertyXDOM(document, document.getXDOM(), HIGHLIGHTS_PROPERTY, CHECK_NAME, CHECK_NAME);
@@ -86,6 +126,31 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
         }
 
         return violations;
+    }
+
+    private void checkChildPageCount(DocumentReference documentReference, List<DocumentationViolation> violations)
+    {
+        // A terminal page cannot have child pages.
+        if (!DEFAULT_DOCUMENT_NAME.equals(documentReference.getName())) {
+            return;
+        }
+
+        try {
+            List<Long> result = this.queryManager.<Long>createQuery(CHILD_PAGE_COUNT_QUERY, Query.HQL)
+                .bindValue("space", this.localSerializer.serialize(documentReference.getLastSpaceReference()))
+                .setWiki(documentReference.getWikiReference().getName())
+                .execute();
+            long childPageCount = result.get(0);
+            if (childPageCount > HIGHLIGHTS_THRESHOLD) {
+                violations.add(new DocumentationViolation(String.format(
+                    "Highlights are recommended for pages with more than %s child pages, to guide readers to the "
+                        + "most important ones.", HIGHLIGHTS_THRESHOLD),
+                    String.format("Child pages: [%s]", childPageCount), DocumentationViolationSeverity.WARNING));
+            }
+        } catch (QueryException e) {
+            this.logger.warn("Failed to count the child pages of [{}]. Ignoring the Highlights recommendation. "
+                + ROOT_ERROR_CAUSE, documentReference, ExceptionUtils.getRootCauseMessage(e));
+        }
     }
 
     private List<ListItemBlock> getFirstLevelItems(XDOM xdom)
