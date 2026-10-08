@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="DocApp.Code.DocumentationConfiguration" locale="">
+<xwikidoc version="1.6" reference="DocApp.Code.CheckAllPagesAdministration" locale="">
   <web>DocApp.Code</web>
-  <name>DocumentationConfiguration</name>
+  <name>CheckAllPagesAdministration</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,17 +31,76 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Documentation Configuration</title>
+  <title>Check All Documentation Pages Administration</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content/>
+  <content>{{velocity}}
+## The Administration adds a "Customize &lt;page&gt;:" heading above each page contributing to a section, except the first
+## one, which this page's stylesheet hides (as XWiki's own WYSIWYG section does). So the page displays its own heading.
+#set ($discard = $xwiki.ssx.use('DocApp.Code.CheckAllPagesAdministration'))##
+== $services.rendering.escape($services.localization.render('docapp.checkAllPages.heading'), 'xwiki/2.1') ==
+
+## Displayed in the "Documentation" section of the wiki Administration, so only to the wiki administrators. The script
+## service also checks that the current user is one, since checking all pages saves each page whose violations changed.
+#set ($sectionURL = $xwiki.getURL('XWiki.XWikiPreferences', 'admin', 'editor=globaladmin&amp;section=documentation'))##
+#if ($request.method == 'POST' &amp;&amp; $services.csrf.isTokenValid($request.form_token))##
+  #if ($request.checkAllPagesAction == 'start')##
+    #set ($discard = $services.documentation.checkAllPages())##
+  #elseif ($request.checkAllPagesAction == 'cancel')##
+    #set ($discard = $services.documentation.cancelCheckAllPages())##
+  #end##
+  ## Redirect so that reloading the page doesn't post the action again.
+  $response.sendRedirect($sectionURL)
+  #stop##
+#end##
+#set ($checkAllPagesStatus = $services.documentation.checkAllPagesStatus)##
+#set ($checkAllPagesRunning = $checkAllPagesStatus &amp;&amp; $checkAllPagesStatus.state != 'FINISHED')##
+{{html clean="false"}}
+## Loaded inside the HTML macro, where the whitespace output by the template doesn't produce empty lines.
+#template('job_macros.vm')
+&lt;form class="docapp-check-all-pages" method="post" action="$escapetool.xml($sectionURL)"&gt;
+  &lt;p class="xHint"&gt;$escapetool.xml($services.localization.render('docapp.checkAllPages.hint'))&lt;/p&gt;
+  &lt;input type="hidden" name="form_token" value="$!escapetool.xml($services.csrf.token)"/&gt;
+  #if ($checkAllPagesRunning)
+    &lt;button type="submit" name="checkAllPagesAction" value="cancel" class="btn btn-default"&gt;
+      $escapetool.xml($services.localization.render('docapp.checkAllPages.cancel'))
+    &lt;/button&gt;
+  #else
+    &lt;button type="submit" name="checkAllPagesAction" value="start" class="btn btn-primary"&gt;
+      $escapetool.xml($services.localization.render('docapp.checkAllPages.start'))
+    &lt;/button&gt;
+  #end
+&lt;/form&gt;
+#if ($checkAllPagesStatus)
+  #set ($jobStatusURL = $doc.getURL('get', $escapetool.url({
+    'xpage': 'job_status_json',
+    'outputSyntax': 'plain',
+    'jobId': $checkAllPagesStatus.request.id,
+    'translationPrefix': 'docapp.checkAllPages'
+  })))
+  &lt;div class="xcontent job-status docapp-check-all-pages-status" data-url="$escapetool.xml($jobStatusURL)"&gt;
+    #if ($checkAllPagesRunning)
+      ## Refreshes the progress bar and, once done, replaces it with the finish message.
+      #set ($discard = $xwiki.jsfx.use('uicomponents/job/job.js'))
+      #displayJobProgressBar($checkAllPagesStatus)
+    #else
+      #jobFinishedMessage($checkAllPagesStatus, 'docapp.checkAllPages', 'docapp.checkAllPages.lastRun.success')
+      &lt;p class="docapp-check-all-pages-summary"&gt;$escapetool.xml($services.localization.render(
+        'docapp.checkAllPages.summary', [$checkAllPagesStatus.checkedCount, $checkAllPagesStatus.updatedCount,
+        $checkAllPagesStatus.failedCount]))&lt;/p&gt;
+    #end
+    #displayJobStatusLog($checkAllPagesStatus, true)
+  &lt;/div&gt;
+#end
+{{/html}}
+{{/velocity}}</content>
   <object>
-    <name>DocApp.Code.DocumentationConfiguration</name>
+    <name>DocApp.Code.CheckAllPagesAdministration</name>
     <number>0</number>
     <className>XWiki.ConfigurableClass</className>
-    <guid>a87f603d-c597-4de4-a917-6dd3f784a797</guid>
+    <guid>ec349ccc-b255-427f-b2c5-be8e92f45d62</guid>
     <class>
       <name>XWiki.ConfigurableClass</name>
       <customClass/>
@@ -263,14 +322,10 @@
       <categoryIcon/>
     </property>
     <property>
-      <codeToExecute>{{velocity}}
-## The Documentation Application hides the headings that the Administration generates for the pages contributing to its
-## section, so each contribution displays its own heading.
-== $services.rendering.escape($services.localization.render('docapp.xwikiorg.configuration.heading'), 'xwiki/2.1') ==
-{{/velocity}}</codeToExecute>
+      <codeToExecute>{{include reference="DocApp.Code.CheckAllPagesAdministration"/}}</codeToExecute>
     </property>
     <property>
-      <configurationClass>DocApp.Code.DocumentationConfigurationClass</configurationClass>
+      <configurationClass/>
     </property>
     <property>
       <displayBeforeCategory/>
@@ -291,7 +346,7 @@
       <linkPrefix/>
     </property>
     <property>
-      <propertiesToShow>oldestSupportedVersion</propertiesToShow>
+      <propertiesToShow/>
     </property>
     <property>
       <scope>WIKI</scope>
@@ -301,12 +356,12 @@
     </property>
   </object>
   <object>
-    <name>DocApp.Code.DocumentationConfiguration</name>
+    <name>DocApp.Code.CheckAllPagesAdministration</name>
     <number>0</number>
-    <className>DocApp.Code.DocumentationConfigurationClass</className>
-    <guid>909673df-40a4-4b8b-bd79-d8095f929fb8</guid>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>dc33922f-f697-4f46-8ac1-dea232dd1695</guid>
     <class>
-      <name>DocApp.Code.DocumentationConfigurationClass</name>
+      <name>XWiki.StyleSheetExtension</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -314,23 +369,117 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <oldestSupportedVersion>
-        <customDisplay/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
         <disabled>0</disabled>
-        <hint>The oldest XWiki version still supported, i.e. the start of the current LTS cycle (e.g. 16.10.0). Version macros whose versions are all older are reported as violations. Leave empty to disable this check.</hint>
-        <name>oldestSupportedVersion</name>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
         <number>1</number>
-        <picker>0</picker>
-        <prettyName>Oldest supported XWiki version</prettyName>
+        <prettyName>Name</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </oldestSupportedVersion>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
     </class>
     <property>
-      <oldestSupportedVersion/>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>/* The Administration adds a "Customize &lt;page&gt;:" heading above each page contributing to the section, except the
+   first one. The Administration means to hide it, but its script looks for h1 headings while these are h2 (XWIKI-20104:
+   Improve the display of Administration sections coming from different pages). Hide it, as XWiki's own WYSIWYG section
+   does, since each contribution displays its own heading. */
+#admin-page-content &gt; h2.wikigeneratedheader {
+  display: none;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Hide the Customize headings</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
     </property>
   </object>
 </xwikidoc>

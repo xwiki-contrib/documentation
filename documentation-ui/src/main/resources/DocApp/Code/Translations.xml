@@ -54,6 +54,19 @@ docapp.more.textWithoutHighlights=To find more about the current topic, you can 
 docapp.ui.review.lastReviewers=Last Reviewers
 docapp.ui.review.lastReviewedDate=Last Review Date
 docapp.ui.review.violations=Violations
+admin.documentation=Documentation
+admin.documentation.description=Configure the checks of the documentation quality.
+docapp.checkAllPages.heading=Check all pages
+docapp.checkAllPages.hint=Violations are updated when a documentation page is saved. Check all pages to also update the violations of the pages that haven't been saved since the checks changed. Each page whose violations change gets saved.
+docapp.checkAllPages.start=Check all pages
+docapp.checkAllPages.cancel=Cancel
+docapp.checkAllPages.finish.success=All documentation pages have been checked.
+docapp.checkAllPages.finish.warning=Some documentation pages couldn't be checked. See the log for details.
+docapp.checkAllPages.finish.error=Failed to check the documentation pages. See the log for details.
+docapp.checkAllPages.finish.canceled=The check of the documentation pages has been canceled.
+docapp.checkAllPages.lastRun.success=All documentation pages have been checked.
+docapp.checkAllPages.summary=Checked {0} documentation pages: {1} updated, {2} failed.
+docapp.checkAllPages.notFound=No check of the documentation pages was found.
 </content>
   <object>
     <name>DocApp.Code.Translations</name>

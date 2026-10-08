@@ -37,5 +37,11 @@
       <artifactId>xwiki-platform-test-ui</artifactId>
       <version>${platform.version}</version>
     </dependency>
+    <!-- The Documentation Administration section page object extends the Administration section page object. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-administration-test-pageobjects</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
   </dependencies>
 </project>

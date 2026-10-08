@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
 import org.xwiki.administration.test.po.AdministrationSectionPage;
+import org.xwiki.contrib.documentation.test.po.DocumentationAdministrationSectionPage;
 import org.xwiki.contrib.documentation.test.po.DocumentationViewPage;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.docker.junit5.UITest;
@@ -308,11 +309,7 @@ class DocumentationIT
             "No violation expected while the oldest supported version isn't configured");
 
         // Configure it live, from the Administration (no restart).
-        // The Administration form is identified by the page holding the ConfigurableClass object, not by the class.
-        AdministrationSectionPage section = AdministrationSectionPage.gotoPage("documentation");
-        section.getFormContainerElementForClass(CONFIGURATION_PAGE)
-            .setFieldValue(By.name(CONFIGURATION_CLASS + "_0_oldestSupportedVersion"), "16.10.0");
-        section.clickSave();
+        setOldestSupportedVersion("16.10.0");
 
         // The next save of the page reports the version macro.
         WikiEditPage.gotoPage(page(VERSION_PAGE)).clickSaveAndView();
@@ -368,6 +365,41 @@ class DocumentationIT
             "The Documentation tab should list the Highlights recommendation, but got:\n" + tabContent);
         assertTrue(tabContent.contains("Child pages: [16]"),
             "The Documentation tab should give the number of child pages, but got:\n" + tabContent);
+    }
+
+    @Test
+    @Order(12)
+    void checksAllPagesFromTheAdministration(TestUtils setup)
+    {
+        // A page whose violations are out of date: its old version macro is only reported once the oldest supported
+        // version is raised, which happens after the page was last saved.
+        setOldestSupportedVersion("12.0");
+        DocumentReference stalePage = page("stale-sample");
+        setup.deletePage(stalePage);
+        setup.createPage(stalePage, "{{version since=\"13.0\"}}\nAn old feature.\n{{/version}}", "Stale sample",
+            "xwiki/2.1");
+        setup.addObject(stalePage, DOC_CLASS, "type", "reference");
+        setOldestSupportedVersion("16.10.0");
+        setup.gotoPage(stalePage);
+        assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
+            "No violation expected before the page is checked again");
+
+        // Checking all pages from the Administration reports the violation, without having to save the page.
+        String message = DocumentationAdministrationSectionPage.gotoPage().checkAllPages().getCheckAllPagesMessage();
+        assertTrue(message.contains("All documentation pages have been checked."),
+            "The check of all pages should succeed, but got:\n" + message);
+        setup.gotoPage(stalePage);
+        assertTrue(new DocumentationViewPage().hasWarningValidationBox(),
+            "Expected the on-page warning validation box once all pages are checked");
+    }
+
+    private static void setOldestSupportedVersion(String version)
+    {
+        // The Administration form is identified by the page holding the ConfigurableClass object, not by the class.
+        AdministrationSectionPage section = AdministrationSectionPage.gotoPage("documentation");
+        section.getFormContainerElementForClass(CONFIGURATION_PAGE)
+            .setFieldValue(By.name(CONFIGURATION_CLASS + "_0_oldestSupportedVersion"), version);
+        section.clickSave();
     }
 
     private static DocumentReference page(String name)

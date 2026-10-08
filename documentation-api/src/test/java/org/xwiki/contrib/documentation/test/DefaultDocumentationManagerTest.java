@@ -42,7 +42,9 @@ import com.xpn.xwiki.test.junit5.mockito.InjectMockitoOldcore;
 import com.xpn.xwiki.test.junit5.mockito.OldcoreTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -93,7 +95,7 @@ class DefaultDocumentationManagerTest
         when(check.check(this.document)).thenReturn(Collections.singletonList(
             new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
 
-        this.manager.analyse(this.document);
+        assertTrue(this.manager.analyse(this.document));
 
         // Verify that there's now a single violation xobject
         List<BaseObject> objects = this.document.getXObjects(VIOLATION_CLASS_REFERENCE);
@@ -124,7 +126,7 @@ class DefaultDocumentationManagerTest
         // Add an existing violation xobject.
         addViolationObject("existing message", "existing context", "existing error");
 
-        this.manager.analyse(this.document);
+        assertTrue(this.manager.analyse(this.document));
 
         // Verify that we have a single violation xobject.
         // Note: Because the XWiki API is weird, removing an xobject simply puts a null in place of the baseobject but
@@ -158,7 +160,7 @@ class DefaultDocumentationManagerTest
         // Add an existing violation xobject.
         addViolationObject("message", "context", "Error");
 
-        this.manager.analyse(this.document);
+        assertFalse(this.manager.analyse(this.document));
 
         // Verify that we have a single violation xobject.
         List<BaseObject> objects = this.document.getXObjects(VIOLATION_CLASS_REFERENCE);
@@ -187,7 +189,7 @@ class DefaultDocumentationManagerTest
         addViolationObject("message2", "context2", "Error");
         this.document.removeXObject(v1);
 
-        this.manager.analyse(this.document);
+        assertTrue(this.manager.analyse(this.document));
 
         // Verify all violations have been removed.
         List<BaseObject> objects = this.document.getXObjects(VIOLATION_CLASS_REFERENCE);

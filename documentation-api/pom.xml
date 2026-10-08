@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>API to validate documentation pages</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.88</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.93</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Documentation Application API</xwiki.extension.name>
     <!-- The extension's category -->
@@ -60,6 +60,18 @@
       <artifactId>xwiki-platform-rendering-xwiki</artifactId>
       <version>${platform.version}</version>
     </dependency>
+    <!-- Runs the analysis of all documentation pages in the background. -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-job-api</artifactId>
+      <version>${commons.version}</version>
+    </dependency>
+    <!-- Restricts the analysis of all documentation pages to wiki administrators. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-security-authorization-api</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
     <!-- Test Dependencies -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -69,4 +81,34 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <analysisConfiguration>
+            <revapi.differences>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.returnTypeChanged</code>
+                  <old>method void org.xwiki.contrib.documentation.DocumentationManager::analyse(com.xpn.xwiki.doc.XWikiDocument) throws org.xwiki.index.IndexException</old>
+                  <new>method boolean org.xwiki.contrib.documentation.DocumentationManager::analyse(com.xpn.xwiki.doc.XWikiDocument) throws org.xwiki.index.IndexException</new>
+                  <justification>analyse() reports whether the violations changed, so that the analysis of all documentation pages can tell how many pages it updated. Callers ignoring the result keep working once recompiled.</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.returnTypeChanged</code>
+                  <old>method void org.xwiki.contrib.documentation.script.DocumentationScriptService::analyse(com.xpn.xwiki.doc.XWikiDocument) throws org.xwiki.index.IndexException</old>
+                  <new>method boolean org.xwiki.contrib.documentation.script.DocumentationScriptService::analyse(com.xpn.xwiki.doc.XWikiDocument) throws org.xwiki.index.IndexException</new>
+                  <justification>analyse() reports whether the violations changed, so that the analysis of all documentation pages can tell how many pages it updated. Callers ignoring the result keep working once recompiled.</justification>
+                </item>
+              </differences>
+            </revapi.differences>
+          </analysisConfiguration>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
