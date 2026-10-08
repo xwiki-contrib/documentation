@@ -393,6 +393,35 @@ class DocumentationIT
             "Expected the on-page warning validation box once all pages are checked");
     }
 
+    @Test
+    @Order(13)
+    void linksToGitHubWithTheSCMMacro(TestUtils setup)
+    {
+        // The SCM macro is provided by the XWiki.org UI. Its parameters are optional and the defaults fill in what a
+        // link to a path needs (the "xwiki-platform" project and the "master" branch). It is used inline, as in the
+        // documentation pages, with and without a label.
+        String content = """
+            Links to {{scm/}}, {{scm project="xwiki-rendering"/}}, {{scm path="xwiki-platform-core/pom.xml"/}}, \
+            {{scm user="xwiki-contrib" project="documentation" branch="stable-1.x" path="pom.xml"}}a **label**{{/scm}} \
+            and {{scm project="xwiki-commons" path="pom.xml" raw="true"/}}.""";
+        setup.deletePage(page("scm-sample"));
+        setup.createPage(page("scm-sample"), content, "SCM sample", "xwiki/2.1");
+
+        setup.gotoPage(page("scm-sample"));
+        DocumentationViewPage viewPage = new DocumentationViewPage();
+        assertFalse(viewPage.hasRenderingError(), "The SCM macro should not produce a rendering error");
+        List<String> expectedTargets = List.of(
+            "https://github.com/xwiki",
+            "https://github.com/xwiki/xwiki-rendering",
+            "https://github.com/xwiki/xwiki-platform/tree/master/xwiki-platform-core/pom.xml",
+            "https://github.com/xwiki-contrib/documentation/tree/stable-1.x/pom.xml",
+            "https://raw.githubusercontent.com/xwiki/xwiki-commons/master/pom.xml");
+        assertEquals(expectedTargets, viewPage.getContentLinkTargets());
+        // Without content, the label is the URL.
+        assertEquals("https://github.com/xwiki/xwiki-rendering", viewPage.getContentLinkLabels().get(1));
+        assertEquals("a label", viewPage.getContentLinkLabels().get(3));
+    }
+
     private static void setOldestSupportedVersion(String version)
     {
         // The Administration form is identified by the page holding the ConfigurableClass object, not by the class.

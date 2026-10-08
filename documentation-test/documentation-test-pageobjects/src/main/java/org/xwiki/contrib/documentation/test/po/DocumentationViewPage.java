@@ -19,7 +19,10 @@
  */
 package org.xwiki.contrib.documentation.test.po;
 
+import java.util.List;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.xwiki.test.ui.po.ViewPage;
 
 /**
@@ -60,6 +63,8 @@ public class DocumentationViewPage extends ViewPage
     private static final By RENDERING_ERROR = By.cssSelector("#xwikicontent .xwikirenderingerror");
 
     private static final By CONTENT_IMAGE = By.cssSelector("#xwikicontent img");
+
+    private static final By CONTENT_LINK = By.cssSelector("#xwikicontent a[href]");
 
     /**
      * @return true if the on-page "at least one error" validation box is displayed
@@ -139,5 +144,25 @@ public class DocumentationViewPage extends ViewPage
     public String getContentImageAlt()
     {
         return getDriver().findElementWithoutWaiting(CONTENT_IMAGE).getDomAttribute("alt");
+    }
+
+    /**
+     * @return the targets of the links rendered in the page content, in document order
+     */
+    public List<String> getContentLinkTargets()
+    {
+        return getDriver().findElementsWithoutWaiting(CONTENT_LINK).stream()
+            .map(link -> link.getDomAttribute("href"))
+            .toList();
+    }
+
+    /**
+     * @return the labels of the links rendered in the page content, in document order
+     */
+    public List<String> getContentLinkLabels()
+    {
+        return getDriver().findElementsWithoutWaiting(CONTENT_LINK).stream()
+            .map(WebElement::getText)
+            .toList();
     }
 }
