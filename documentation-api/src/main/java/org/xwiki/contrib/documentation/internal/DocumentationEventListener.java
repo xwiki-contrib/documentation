@@ -19,8 +19,6 @@
  */
 package org.xwiki.contrib.documentation.internal;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -31,9 +29,7 @@ import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationManager;
 import org.xwiki.index.IndexException;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReferenceSerializer;
-import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
@@ -50,11 +46,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Named("DocumentationEventListener")
 public class DocumentationEventListener extends AbstractEventListener
 {
-    private static final String SPACE = "DocApp";
-
-    private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
-        new LocalDocumentReference(List.of(SPACE, "Code"), "DocumentationClass");
-
     @Inject
     private Logger logger;
 
@@ -80,15 +71,10 @@ public class DocumentationEventListener extends AbstractEventListener
 
         XWikiDocument document = (XWikiDocument) source;
 
-        // 1) Only validate pages containing a DocumentationClass xobject
+        // 1) Only validate documentation pages (see DocumentationPages#isAnalysable)
         // 2) Protection for infinite recursion: don't trigger the analysis when the save is done by the Documentation
         //    checker. We identify this by the save message.
-        // 3) Exclude documentation templates from the analysis to not have violation objects added to them. We do that
-        //    by excluding all pages from the DocApp space.
-        if (document.getXObject(DOCUMENTATION_CLASS_REFERENCE) != null
-            && !"Documentation analysis".equals(document.getComment())
-            && !SPACE.equals(document.getDocumentReference().extractFirstReference(EntityType.SPACE).getName()))
-        {
+        if (DocumentationPages.isAnalysable(document) && !"Documentation analysis".equals(document.getComment())) {
             try {
                 this.manager.analyse(document);
             } catch (IndexException e) {

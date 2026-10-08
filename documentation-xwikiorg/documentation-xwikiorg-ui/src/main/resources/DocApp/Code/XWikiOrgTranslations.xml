@@ -39,6 +39,7 @@
   <content>## Administration section of the documentation configuration
 admin.documentation=Documentation
 admin.documentation.description=Configure the checks of the documentation quality.
+docapp.xwikiorg.configuration.heading=Supported versions
 </content>
   <object>
     <name>DocApp.Code.XWikiOrgTranslations</name>

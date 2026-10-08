@@ -35,8 +35,8 @@ public interface DocumentationManager
 {
     /**
      * @param document the document on which to perform the documentation analysis
-     *
+     * @return true if the violations of the document changed, in which case the document has been saved
      * @throws IndexException if an error occurs while indexing the document when it's executing synchronously
      */
-    void analyse(XWikiDocument document) throws IndexException;
+    boolean analyse(XWikiDocument document) throws IndexException;
 }

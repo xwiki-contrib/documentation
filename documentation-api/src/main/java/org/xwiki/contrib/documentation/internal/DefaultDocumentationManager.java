@@ -71,7 +71,7 @@ public class DefaultDocumentationManager implements DocumentationManager
     private Provider<XWikiContext> xcontextProvider;
 
     @Override
-    public void analyse(XWikiDocument document) throws IndexException
+    public boolean analyse(XWikiDocument document) throws IndexException
     {
         ComponentManager cm = this.componentManagerProvider.get();
         try {
@@ -94,6 +94,7 @@ public class DefaultDocumentationManager implements DocumentationManager
                 document.setAuthor(SuperAdminUserReference.INSTANCE);
                 xcontext.getWiki().saveDocument(document, "Documentation analysis", true, xcontext);
             }
+            return hasChanges;
         } catch (Exception e) {
             throw new IndexException(String.format(
                 "Failed to perform documentation content validation for [%s]", document.getDocumentReference()), e);
