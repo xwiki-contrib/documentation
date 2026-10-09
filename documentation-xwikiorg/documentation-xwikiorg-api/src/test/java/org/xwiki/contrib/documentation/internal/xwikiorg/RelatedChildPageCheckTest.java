@@ -120,38 +120,38 @@ class RelatedChildPageCheckTest
     void checkWhenRelatedLinksToNestedChildPage() throws Exception
     {
         assertChildPageViolation("documentation.xs.user.like.sub.WebHome", getChecker().check(
-            createDocument("* [[Sub (for User)>>doc:documentation.xs.user.like.sub.WebHome]]")));
+            createDocument("* [[Sub (for Users)>>doc:documentation.xs.user.like.sub.WebHome]]")));
     }
 
     @Test
     void checkWhenRelatedLinksToTerminalChildPage() throws Exception
     {
         assertChildPageViolation("documentation.xs.user.like.page", getChecker().check(
-            createDocument("* [[Page (for User)>>doc:documentation.xs.user.like.page]]")));
+            createDocument("* [[Page (for Users)>>doc:documentation.xs.user.like.page]]")));
     }
 
     @Test
     void checkWhenRelatedLinksToChildPageWithRelativeReference() throws Exception
     {
         // The child page doesn't exist so the relative reference resolves to the nested child page.
-        assertChildPageViolation("sub", getChecker().check(createDocument("* [[Sub (for User)>>sub]]")));
+        assertChildPageViolation("sub", getChecker().check(createDocument("* [[Sub (for Users)>>sub]]")));
     }
 
     @Test
     void checkWhenRelatedLinksToChildPageWithPageReference() throws Exception
     {
         assertChildPageViolation("documentation/xs/user/like/sub", getChecker().check(
-            createDocument("* [[Sub (for User)>>page:documentation/xs/user/like/sub]]")));
+            createDocument("* [[Sub (for Users)>>page:documentation/xs/user/like/sub]]")));
     }
 
     @Test
     void checkWhenRelatedLinksToNonChildPages() throws Exception
     {
         XWikiDocument document = createDocument(String.join("\n",
-            "* [[Deep (for User)>>doc:documentation.xs.user.like.sub.deep.WebHome]]",
-            "* [[Other (for User)>>doc:documentation.xs.user.other.WebHome]]",
-            "* [[Other page (for User)>>doc:documentation.xs.user.other-page]]",
-            "* [[Like (for User)>>doc:documentation.xs.user.like.WebHome]]",
+            "* [[Deep (for Users)>>doc:documentation.xs.user.like.sub.deep.WebHome]]",
+            "* [[Other (for Users)>>doc:documentation.xs.user.other.WebHome]]",
+            "* [[Other page (for Users)>>doc:documentation.xs.user.other-page]]",
+            "* [[Like (for Users)>>doc:documentation.xs.user.like.WebHome]]",
             "* [[Root>>doc:Main.WebHome]]",
             "* [[XWiki>>https://www.xwiki.org]]"));
 
@@ -162,7 +162,7 @@ class RelatedChildPageCheckTest
     void checkWhenRelatedLinksToChildPageWithSpaceReference() throws Exception
     {
         assertChildPageViolation("documentation.xs.user.like.sub", getChecker().check(
-            createDocument("* [[Sub (for User)>>space:documentation.xs.user.like.sub]]")));
+            createDocument("* [[Sub (for Users)>>space:documentation.xs.user.like.sub]]")));
     }
 
     @Test
@@ -205,7 +205,7 @@ class RelatedChildPageCheckTest
         doReturn(macro).when(macroManager).getMacro(new MacroId("info"));
 
         XWikiDocument document = createDocument(
-            "{{info}}\n[[Sub (for User)>>doc:documentation.xs.user.like.sub.WebHome]]\n{{/info}}");
+            "{{info}}\n[[Sub (for Users)>>doc:documentation.xs.user.like.sub.WebHome]]\n{{/info}}");
 
         assertChildPageViolation("documentation.xs.user.like.sub.WebHome", getChecker().check(document));
     }

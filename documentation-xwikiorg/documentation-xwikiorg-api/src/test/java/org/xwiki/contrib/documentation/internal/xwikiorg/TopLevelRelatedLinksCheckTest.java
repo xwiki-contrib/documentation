@@ -79,9 +79,9 @@ class TopLevelRelatedLinksCheckTest
     private static final DocumentReference USER_LIKE = topLevelReference("xs", "user", "like");
 
     private static final String ADMIN_LIKE_LINK =
-        "* [[Like (for Administrator)>>doc:documentation.xs.admin.like.WebHome]]";
+        "* [[Like (for Administrators)>>doc:documentation.xs.admin.like.WebHome]]";
 
-    private static final String DEV_LIKE_LINK = "* [[Like (for Developer)>>doc:documentation.xs.dev.like.WebHome]]";
+    private static final String DEV_LIKE_LINK = "* [[Like (for Developers)>>doc:documentation.xs.dev.like.WebHome]]";
 
     @InjectMockitoOldcore
     private MockitoOldcore oldcore;
@@ -140,7 +140,7 @@ class TopLevelRelatedLinksCheckTest
 
         assertEquals(0, check(USER_LIKE, ADMIN_LIKE_LINK, DEV_LIKE_LINK).size());
         // A relative page reference resolves to the same page.
-        assertEquals(0, check(USER_LIKE, "* [[Like (for Administrator)>>page:../../admin/like]]",
+        assertEquals(0, check(USER_LIKE, "* [[Like (for Administrators)>>page:../../admin/like]]",
             DEV_LIKE_LINK).size());
     }
 
@@ -186,7 +186,7 @@ class TopLevelRelatedLinksCheckTest
         saveDocument(topLevelReference("xs", "admin", "like"));
 
         List<DocumentationViolation> violations = check(USER_LIKE,
-            "* [[Like (for Administrator)>>doc:documentation.extensions.admin.like.WebHome]]",
+            "* [[Like (for Administrators)>>doc:documentation.extensions.admin.like.WebHome]]",
             "* [[Like attachment>>attach:documentation.xs.admin.like.WebHome@like.png]]",
             "* [[Like>>https://www.xwiki.org/xwiki/bin/view/documentation/xs/admin/like/]]");
 

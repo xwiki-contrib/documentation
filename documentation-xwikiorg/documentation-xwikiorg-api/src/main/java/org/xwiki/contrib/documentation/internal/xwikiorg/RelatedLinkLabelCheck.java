@@ -53,7 +53,7 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * Verify that the labels of the links of the Related field that hold a target qualifier follow the
  * {@code <exact page title> (for <target>)} format, where the title is the exact title of the linked page and the
- * target is the audience of the linked page (User, Administrator or Developer). When the title of the linked page
+ * target is the audience of the linked page (Users, Administrators or Developers). When the title of the linked page
  * already ends with its target qualifier, the label is that title.
  *
  * @version $Id$
@@ -69,7 +69,7 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
     private static final String TARGET_PREFIX = "(for ";
 
     private static final Map<String, String> TARGETS =
-        Map.of("user", "User", "administrator", "Administrator", "developer", "Developer");
+        Map.of("user", "Users", "administrator", "Administrators", "developer", "Developers");
 
     @Inject
     private EntityReferenceResolver<ResourceReference> resourceReferenceResolver;
@@ -109,7 +109,7 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
             if (!expectedLabel.equals(label)) {
                 violations.add(new DocumentationViolation(
                     "Related link labels must follow the format '<exact page title> (for <target>)', where the "
-                        + "title and the target (User, Administrator or Developer) match the linked page.",
+                        + "title and the target (Users, Administrators or Developers) match the linked page.",
                     String.format("Label: [%s], Expected: [%s]", label, expectedLabel),
                     DocumentationViolationSeverity.WARNING));
             }
@@ -120,7 +120,7 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
     {
         String targetQualifier = TARGET_PREFIX + target + ')';
         // A title can already end with the target qualifier, to disambiguate it from same-topic pages for other
-        // targets (e.g. "All Bundled Rendering Macros (for User)"), in which case the title is the full label.
+        // targets (e.g. "All Bundled Rendering Macros (for Users)"), in which case the title is the full label.
         if (title.endsWith(targetQualifier)) {
             return title;
         }
@@ -196,6 +196,6 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
                 }
             }
         }
-        return defaultTarget != null ? defaultTarget : "User|Administrator|Developer";
+        return defaultTarget != null ? defaultTarget : "Users|Administrators|Developers";
     }
 }
