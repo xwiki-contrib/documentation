@@ -1,0 +1,1337 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.6" reference="DocApp.Code.SCMMacro" locale="">
+  <web>DocApp.Code</web>
+  <name>SCMMacro</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>SCM Macro</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>= Examples =
+
+{{code language="none"}}
+{{scm/}}
+
+{{scm project="xwiki-rendering"/}}
+
+{{scm project="xwiki-commons" path="xwiki-commons-core/pom.xml"/}}
+
+{{scm path="xwiki-platform-core/pom.xml"/}}
+
+{{scm branch="stable-17.10.x" path="xwiki-platform-core/pom.xml"/}}
+
+{{scm user="xwiki-contrib" project="documentation" path="pom.xml"}}With **label**{{/scm}}
+
+{{scm path="xwiki-platform-core/pom.xml" raw="true"/}}
+{{/code}}
+
+Results in:
+
+{{scm/}}
+
+{{scm project="xwiki-rendering"/}}
+
+{{scm project="xwiki-commons" path="xwiki-commons-core/pom.xml"/}}
+
+{{scm path="xwiki-platform-core/pom.xml"/}}
+
+{{scm branch="stable-17.10.x" path="xwiki-platform-core/pom.xml"/}}
+
+{{scm user="xwiki-contrib" project="documentation" path="pom.xml"}}With **label**{{/scm}}
+
+{{scm path="xwiki-platform-core/pom.xml" raw="true"/}}</content>
+  <object>
+    <name>DocApp.Code.SCMMacro</name>
+    <number>0</number>
+    <className>XWiki.WikiMacroClass</className>
+    <guid>b9f18f36-8911-4dd1-9dff-a67a1cd98f9d</guid>
+    <class>
+      <name>XWiki.WikiMacroClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <async_cached>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>async_cached</name>
+        <number>15</number>
+        <prettyName>Cached</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </async_cached>
+      <async_context>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>async_context</name>
+        <number>16</number>
+        <prettyName>Context elements</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>, </separator>
+        <separators>|, </separators>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <values>action=Action|doc.reference=Document|doc.revision|icon.theme=Icon theme|locale=Language|rendering.defaultsyntax=Default syntax|rendering.restricted=Restricted|rendering.targetsyntax=Target syntax|request.base=Request base URL|request.cookies|request.headers|request.parameters=Request parameters|request.remoteAddr|request.session|request.url=Request URL|request.wiki=Request wiki|sheet|user=User|wiki=Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </async_context>
+      <async_enabled>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>async_enabled</name>
+        <number>14</number>
+        <prettyName>Asynchronous rendering</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </async_enabled>
+      <code>
+        <disabled>0</disabled>
+        <editor>Text</editor>
+        <name>code</name>
+        <number>10</number>
+        <prettyName>Macro code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentDescription>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>contentDescription</name>
+        <number>9</number>
+        <prettyName>Content description (Not applicable for "No content" type)</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </contentDescription>
+      <contentJavaType>
+        <cache>0</cache>
+        <defaultValue>Unknown</defaultValue>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>contentJavaType</name>
+        <number>12</number>
+        <prettyName>Content java type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Unknown|Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentJavaType>
+      <contentOrder>
+        <disabled>0</disabled>
+        <name>contentOrder</name>
+        <number>13</number>
+        <numberType>integer</numberType>
+        <prettyName>Content order</prettyName>
+        <size>10</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </contentOrder>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>8</number>
+        <prettyName>Macro content type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Optional|Mandatory|No content</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <defaultCategories>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>defaultCategories</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Default categories</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </defaultCategories>
+      <description>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>description</name>
+        <number>3</number>
+        <prettyName>Macro description</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <executionIsolated>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>executionIsolated</name>
+        <number>17</number>
+        <prettyName>Execution isolated</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </executionIsolated>
+      <id>
+        <disabled>0</disabled>
+        <name>id</name>
+        <number>1</number>
+        <prettyName>Macro id</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </id>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Macro name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <priority>
+        <disabled>0</disabled>
+        <name>priority</name>
+        <number>11</number>
+        <numberType>integer</numberType>
+        <prettyName>Priority</prettyName>
+        <size>10</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </priority>
+      <supportsInlineMode>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>supportsInlineMode</name>
+        <number>5</number>
+        <prettyName>Supports inline mode</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </supportsInlineMode>
+      <visibility>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>visibility</name>
+        <number>6</number>
+        <prettyName>Macro visibility</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Current User|Current Wiki|Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </visibility>
+    </class>
+    <property>
+      <async_cached>0</async_cached>
+    </property>
+    <property>
+      <async_context/>
+    </property>
+    <property>
+      <async_enabled>0</async_enabled>
+    </property>
+    <property>
+      <code>{{velocity}}
+#set ($user = "$!wikimacro.parameters.user")
+#if ($user == '')
+  #set ($user = 'xwiki')
+#end
+#set ($project = "$!wikimacro.parameters.project")
+#set ($branch = "$!wikimacro.parameters.branch")
+#set ($path = "$!wikimacro.parameters.path")
+#set ($path = $path.replaceAll('^/+', ''))
+#set ($raw = false)
+#if ("$!wikimacro.parameters.raw" == 'true')
+  #set ($raw = true)
+#end
+## A branch or a path points inside a repository, so it needs a project, and a path also needs a branch.
+#if ($project == '' &amp;&amp; ($branch != '' || $path != ''))
+  #set ($project = 'xwiki-platform')
+#end
+#if ($branch == '' &amp;&amp; $path != '')
+  #set ($branch = 'master')
+#end
+#if ($raw)
+  #set ($url = "https://raw.githubusercontent.com/$user")
+#else
+  #set ($url = "https://github.com/$user")
+#end
+#if ($project != '')
+  #set ($url = "$url/$project")
+#end
+#if ($branch != '')
+  #if ($raw)
+    #set ($url = "$url/$branch")
+  #else
+    ## GitHub redirects "tree" to "blob" when the path is a file, so "tree" works for both files and directories.
+    #set ($url = "$url/tree/$branch")
+  #end
+#end
+#if ($path != '')
+  #set ($url = "$url/$path")
+#end
+## Escape the sequences that would end the link reference early.
+#set ($reference = $url.replace('~', '~~').replace('&gt;&gt;', '~&gt;~&gt;').replace('||', '~|~|').replace(']]', '~]~]'))
+#if ("$!wikimacro.content" != '')
+[[$wikimacro.content&gt;&gt;$reference]]##
+#else
+[[$reference]]##
+#end
+{{/velocity}}</code>
+    </property>
+    <property>
+      <contentDescription>The label of the link, in wiki syntax. Defaults to the URL.</contentDescription>
+    </property>
+    <property>
+      <contentJavaType/>
+    </property>
+    <property>
+      <contentOrder/>
+    </property>
+    <property>
+      <contentType>Optional</contentType>
+    </property>
+    <property>
+      <defaultCategories>Navigation</defaultCategories>
+    </property>
+    <property>
+      <description>Links to a repository, a branch, a directory or a file of a GitHub organization, "xwiki" by default.</description>
+    </property>
+    <property>
+      <executionIsolated>0</executionIsolated>
+    </property>
+    <property>
+      <id>scm</id>
+    </property>
+    <property>
+      <name>SCM</name>
+    </property>
+    <property>
+      <priority/>
+    </property>
+    <property>
+      <supportsInlineMode>1</supportsInlineMode>
+    </property>
+    <property>
+      <visibility>Global</visibility>
+    </property>
+  </object>
+  <object>
+    <name>DocApp.Code.SCMMacro</name>
+    <number>0</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>7f88626e-8b91-4465-b9ae-e4691a5bd1b3</guid>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advanced>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>advanced</name>
+        <number>9</number>
+        <prettyName>Parameter advanced</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advanced>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <deprecated>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>deprecated</name>
+        <number>10</number>
+        <prettyName>Parameter deprecated</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </deprecated>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <feature>
+        <disabled>0</disabled>
+        <name>feature</name>
+        <number>6</number>
+        <prettyName>Parameter feature</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </feature>
+      <featureMandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>featureMandatory</name>
+        <number>11</number>
+        <prettyName>Parameter feature mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </featureMandatory>
+      <group>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>group</name>
+        <number>7</number>
+        <picker>1</picker>
+        <prettyName>Parameter group property</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </group>
+      <hidden>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>hidden</name>
+        <number>8</number>
+        <prettyName>Parameter hidden</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hidden>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <order>
+        <disabled>0</disabled>
+        <name>order</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>Parameter order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </order>
+      <type>
+        <cache>0</cache>
+        <defaultValue>Unknown</defaultValue>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>1</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>type</name>
+        <number>5</number>
+        <picker>1</picker>
+        <prettyName>Parameter type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Unknown|Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </type>
+    </class>
+    <property>
+      <advanced/>
+    </property>
+    <property>
+      <defaultValue>xwiki</defaultValue>
+    </property>
+    <property>
+      <deprecated/>
+    </property>
+    <property>
+      <description>The GitHub organization or user that owns the repository, e.g. "xwiki-contrib".</description>
+    </property>
+    <property>
+      <feature/>
+    </property>
+    <property>
+      <featureMandatory/>
+    </property>
+    <property>
+      <group/>
+    </property>
+    <property>
+      <hidden/>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>user</name>
+    </property>
+    <property>
+      <order/>
+    </property>
+    <property>
+      <type/>
+    </property>
+  </object>
+  <object>
+    <name>DocApp.Code.SCMMacro</name>
+    <number>1</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>f9938744-55c4-4cb3-aa5c-a6e8aae4b335</guid>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advanced>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>advanced</name>
+        <number>9</number>
+        <prettyName>Parameter advanced</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advanced>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <deprecated>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>deprecated</name>
+        <number>10</number>
+        <prettyName>Parameter deprecated</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </deprecated>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <feature>
+        <disabled>0</disabled>
+        <name>feature</name>
+        <number>6</number>
+        <prettyName>Parameter feature</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </feature>
+      <featureMandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>featureMandatory</name>
+        <number>11</number>
+        <prettyName>Parameter feature mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </featureMandatory>
+      <group>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>group</name>
+        <number>7</number>
+        <picker>1</picker>
+        <prettyName>Parameter group property</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </group>
+      <hidden>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>hidden</name>
+        <number>8</number>
+        <prettyName>Parameter hidden</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hidden>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <order>
+        <disabled>0</disabled>
+        <name>order</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>Parameter order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </order>
+      <type>
+        <cache>0</cache>
+        <defaultValue>Unknown</defaultValue>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>1</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>type</name>
+        <number>5</number>
+        <picker>1</picker>
+        <prettyName>Parameter type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Unknown|Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </type>
+    </class>
+    <property>
+      <advanced/>
+    </property>
+    <property>
+      <defaultValue/>
+    </property>
+    <property>
+      <deprecated/>
+    </property>
+    <property>
+      <description>The name of the repository, e.g. "xwiki-commons". Defaults to "xwiki-platform" when a branch or a path is set. Without a project, branch and path, the link points to the organization.</description>
+    </property>
+    <property>
+      <feature/>
+    </property>
+    <property>
+      <featureMandatory/>
+    </property>
+    <property>
+      <group/>
+    </property>
+    <property>
+      <hidden/>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>project</name>
+    </property>
+    <property>
+      <order/>
+    </property>
+    <property>
+      <type/>
+    </property>
+  </object>
+  <object>
+    <name>DocApp.Code.SCMMacro</name>
+    <number>2</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>9a6f22b6-af7f-43ab-8e47-a06085ec85ee</guid>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advanced>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>advanced</name>
+        <number>9</number>
+        <prettyName>Parameter advanced</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advanced>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <deprecated>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>deprecated</name>
+        <number>10</number>
+        <prettyName>Parameter deprecated</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </deprecated>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <feature>
+        <disabled>0</disabled>
+        <name>feature</name>
+        <number>6</number>
+        <prettyName>Parameter feature</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </feature>
+      <featureMandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>featureMandatory</name>
+        <number>11</number>
+        <prettyName>Parameter feature mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </featureMandatory>
+      <group>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>group</name>
+        <number>7</number>
+        <picker>1</picker>
+        <prettyName>Parameter group property</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </group>
+      <hidden>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>hidden</name>
+        <number>8</number>
+        <prettyName>Parameter hidden</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hidden>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <order>
+        <disabled>0</disabled>
+        <name>order</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>Parameter order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </order>
+      <type>
+        <cache>0</cache>
+        <defaultValue>Unknown</defaultValue>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>1</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>type</name>
+        <number>5</number>
+        <picker>1</picker>
+        <prettyName>Parameter type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Unknown|Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </type>
+    </class>
+    <property>
+      <advanced/>
+    </property>
+    <property>
+      <defaultValue/>
+    </property>
+    <property>
+      <deprecated/>
+    </property>
+    <property>
+      <description>The branch, tag or commit, e.g. "stable-17.10.x". Defaults to "master" when a path is set.</description>
+    </property>
+    <property>
+      <feature/>
+    </property>
+    <property>
+      <featureMandatory/>
+    </property>
+    <property>
+      <group/>
+    </property>
+    <property>
+      <hidden/>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>branch</name>
+    </property>
+    <property>
+      <order/>
+    </property>
+    <property>
+      <type/>
+    </property>
+  </object>
+  <object>
+    <name>DocApp.Code.SCMMacro</name>
+    <number>3</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>7458c4b2-ab4c-4983-a894-633208026c75</guid>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advanced>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>advanced</name>
+        <number>9</number>
+        <prettyName>Parameter advanced</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advanced>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <deprecated>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>deprecated</name>
+        <number>10</number>
+        <prettyName>Parameter deprecated</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </deprecated>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <feature>
+        <disabled>0</disabled>
+        <name>feature</name>
+        <number>6</number>
+        <prettyName>Parameter feature</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </feature>
+      <featureMandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>featureMandatory</name>
+        <number>11</number>
+        <prettyName>Parameter feature mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </featureMandatory>
+      <group>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>group</name>
+        <number>7</number>
+        <picker>1</picker>
+        <prettyName>Parameter group property</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </group>
+      <hidden>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>hidden</name>
+        <number>8</number>
+        <prettyName>Parameter hidden</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hidden>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <order>
+        <disabled>0</disabled>
+        <name>order</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>Parameter order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </order>
+      <type>
+        <cache>0</cache>
+        <defaultValue>Unknown</defaultValue>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>1</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>type</name>
+        <number>5</number>
+        <picker>1</picker>
+        <prettyName>Parameter type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Unknown|Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </type>
+    </class>
+    <property>
+      <advanced/>
+    </property>
+    <property>
+      <defaultValue/>
+    </property>
+    <property>
+      <deprecated/>
+    </property>
+    <property>
+      <description>The path of the file or directory in the repository, e.g. "xwiki-platform-core/pom.xml".</description>
+    </property>
+    <property>
+      <feature/>
+    </property>
+    <property>
+      <featureMandatory/>
+    </property>
+    <property>
+      <group/>
+    </property>
+    <property>
+      <hidden/>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>path</name>
+    </property>
+    <property>
+      <order/>
+    </property>
+    <property>
+      <type/>
+    </property>
+  </object>
+  <object>
+    <name>DocApp.Code.SCMMacro</name>
+    <number>4</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>eef70107-9f48-4b07-948b-b7ca170bf0e8</guid>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advanced>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>advanced</name>
+        <number>9</number>
+        <prettyName>Parameter advanced</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advanced>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <deprecated>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>deprecated</name>
+        <number>10</number>
+        <prettyName>Parameter deprecated</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </deprecated>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <feature>
+        <disabled>0</disabled>
+        <name>feature</name>
+        <number>6</number>
+        <prettyName>Parameter feature</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </feature>
+      <featureMandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>featureMandatory</name>
+        <number>11</number>
+        <prettyName>Parameter feature mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </featureMandatory>
+      <group>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>group</name>
+        <number>7</number>
+        <picker>1</picker>
+        <prettyName>Parameter group property</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </group>
+      <hidden>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>hidden</name>
+        <number>8</number>
+        <prettyName>Parameter hidden</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hidden>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <order>
+        <disabled>0</disabled>
+        <name>order</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>Parameter order property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </order>
+      <type>
+        <cache>0</cache>
+        <defaultValue>Unknown</defaultValue>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText>allowed</freeText>
+        <largeStorage>1</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>type</name>
+        <number>5</number>
+        <picker>1</picker>
+        <prettyName>Parameter type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Unknown|Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </type>
+    </class>
+    <property>
+      <advanced/>
+    </property>
+    <property>
+      <defaultValue>false</defaultValue>
+    </property>
+    <property>
+      <deprecated/>
+    </property>
+    <property>
+      <description>When true, links to the raw content of the file instead of its page on GitHub.</description>
+    </property>
+    <property>
+      <feature/>
+    </property>
+    <property>
+      <featureMandatory/>
+    </property>
+    <property>
+      <group/>
+    </property>
+    <property>
+      <hidden/>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>raw</name>
+    </property>
+    <property>
+      <order/>
+    </property>
+    <property>
+      <type>java.lang.Boolean</type>
+    </property>
+  </object>
+</xwikidoc>
