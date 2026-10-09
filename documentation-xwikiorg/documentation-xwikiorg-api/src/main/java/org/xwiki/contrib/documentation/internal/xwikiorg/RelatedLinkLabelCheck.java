@@ -53,7 +53,8 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * Verify that the labels of the links of the Related field that hold a target qualifier follow the
  * {@code <exact page title> (for <target>)} format, where the title is the exact title of the linked page and the
- * target is the audience of the linked page (User, Administrator or Developer).
+ * target is the audience of the linked page (User, Administrator or Developer). When the title of the linked page
+ * already ends with its target qualifier, the label is that title.
  *
  * @version $Id$
  * @since 1.15
@@ -104,7 +105,7 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
             XWikiDocument linkedDocument = getLinkedDocument(linkBlock.getReference(), documentReference);
             String expectedTitle = getTitle(linkedDocument, labelTitle);
             String expectedTarget = getTarget(linkedDocument, labelTarget);
-            String expectedLabel = String.format("%s (for %s)", expectedTitle, expectedTarget);
+            String expectedLabel = getExpectedLabel(expectedTitle, expectedTarget);
             if (!expectedLabel.equals(label)) {
                 violations.add(new DocumentationViolation(
                     "Related link labels must follow the format '<exact page title> (for <target>)', where the "
@@ -113,6 +114,17 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
                     DocumentationViolationSeverity.WARNING));
             }
         }
+    }
+
+    private String getExpectedLabel(String title, String target)
+    {
+        String targetQualifier = TARGET_PREFIX + target + ')';
+        // A title can already end with the target qualifier, to disambiguate it from same-topic pages for other
+        // targets (e.g. "All Bundled Rendering Macros (for User)"), in which case the title is the full label.
+        if (title.endsWith(targetQualifier)) {
+            return title;
+        }
+        return String.format("%s %s", title, targetQualifier);
     }
 
     private String getLabelTarget(String targetQualifier)

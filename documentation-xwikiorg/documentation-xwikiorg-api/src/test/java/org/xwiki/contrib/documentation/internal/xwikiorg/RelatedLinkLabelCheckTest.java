@@ -153,6 +153,22 @@ class RelatedLinkLabelCheckTest
     }
 
     @Test
+    void checkWhenTitleAlreadyEndsWithTargetQualifier() throws Exception
+    {
+        saveDocument(new DocumentReference(WIKI, List.of("documentation", "xs", "user", "macros"), "WebHome"),
+            "All Macros (for User)", "user");
+        saveDocument(new DocumentReference(WIKI, List.of("documentation", "xs", "dev", "macros"), "WebHome"),
+            "All Macros (for User)", "developer");
+
+        assertEquals(0, check("* [[All Macros (for User)>>doc:documentation.xs.user.macros.WebHome]]").size());
+        assertLabelViolation("All Macros (for User) (for User)", "All Macros (for User)",
+            check("* [[All Macros (for User) (for User)>>doc:documentation.xs.user.macros.WebHome]]"));
+        // The qualifier of the title doesn't match the target of the linked page, so it's not a target qualifier.
+        assertLabelViolation("All Macros (for User)", "All Macros (for User) (for Developer)",
+            check("* [[All Macros (for User)>>doc:documentation.xs.dev.macros.WebHome]]"));
+    }
+
+    @Test
     void checkWhenLabelHasNoTargetQualifier() throws Exception
     {
         assertEquals(0, check(
