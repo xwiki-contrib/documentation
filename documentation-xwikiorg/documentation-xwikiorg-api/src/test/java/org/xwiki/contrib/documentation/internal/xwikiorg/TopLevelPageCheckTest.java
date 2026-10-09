@@ -137,12 +137,12 @@ class TopLevelPageCheckTest
     void checkWhenTopLevelPageBreaksAllRules()
     {
         List<DocumentationViolation> violations =
-            this.check.check(createTopLevelDocument("reference", "Office Importer (for Administrator)"));
+            this.check.check(createTopLevelDocument("reference", "Office Importer (for Administrators)"));
 
         assertEquals(3, violations.size());
         assertViolation(TYPE_MESSAGE, "Type: [reference]", violations.get(0));
-        assertViolation(WORDS_MESSAGE, "Page title: [Office Importer (for Administrator)]", violations.get(1));
-        assertViolation(QUALIFIER_MESSAGE, "Page title: [Office Importer (for Administrator)]", violations.get(2));
+        assertViolation(WORDS_MESSAGE, "Page title: [Office Importer (for Administrators)]", violations.get(1));
+        assertViolation(QUALIFIER_MESSAGE, "Page title: [Office Importer (for Administrators)]", violations.get(2));
     }
 
     @Test

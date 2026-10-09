@@ -72,7 +72,7 @@ class RelatedLinkLabelCheckTest
     private static final String WIKI = "xwiki";
 
     private static final String VIOLATION_MESSAGE = "Related link labels must follow the format "
-        + "'<exact page title> (for <target>)', where the title and the target (User, Administrator or Developer) "
+        + "'<exact page title> (for <target>)', where the title and the target (Users, Administrators or Developers) "
         + "match the linked page.";
 
     private static final DocumentReference LIKE_REFERENCE =
@@ -148,24 +148,24 @@ class RelatedLinkLabelCheckTest
     void checkWhenLabelsAreValid() throws Exception
     {
         assertEquals(0, check(
-            "* [[Like (for User)>>doc:documentation.xs.user.like.WebHome]]",
-            "* [[Office Importer (for Administrator)>>doc:documentation.xs.admin.office-importer.WebHome]]").size());
+            "* [[Like (for Users)>>doc:documentation.xs.user.like.WebHome]]",
+            "* [[Office Importer (for Administrators)>>doc:documentation.xs.admin.office-importer.WebHome]]").size());
     }
 
     @Test
     void checkWhenTitleAlreadyEndsWithTargetQualifier() throws Exception
     {
         saveDocument(new DocumentReference(WIKI, List.of("documentation", "xs", "user", "macros"), "WebHome"),
-            "All Macros (for User)", "user");
+            "All Macros (for Users)", "user");
         saveDocument(new DocumentReference(WIKI, List.of("documentation", "xs", "dev", "macros"), "WebHome"),
-            "All Macros (for User)", "developer");
+            "All Macros (for Users)", "developer");
 
-        assertEquals(0, check("* [[All Macros (for User)>>doc:documentation.xs.user.macros.WebHome]]").size());
-        assertLabelViolation("All Macros (for User) (for User)", "All Macros (for User)",
-            check("* [[All Macros (for User) (for User)>>doc:documentation.xs.user.macros.WebHome]]"));
+        assertEquals(0, check("* [[All Macros (for Users)>>doc:documentation.xs.user.macros.WebHome]]").size());
+        assertLabelViolation("All Macros (for Users) (for Users)", "All Macros (for Users)",
+            check("* [[All Macros (for Users) (for Users)>>doc:documentation.xs.user.macros.WebHome]]"));
         // The qualifier of the title doesn't match the target of the linked page, so it's not a target qualifier.
-        assertLabelViolation("All Macros (for User)", "All Macros (for User) (for Developer)",
-            check("* [[All Macros (for User)>>doc:documentation.xs.dev.macros.WebHome]]"));
+        assertLabelViolation("All Macros (for Users)", "All Macros (for Users) (for Developers)",
+            check("* [[All Macros (for Users)>>doc:documentation.xs.dev.macros.WebHome]]"));
     }
 
     @Test
@@ -179,36 +179,36 @@ class RelatedLinkLabelCheckTest
     @Test
     void checkWhenTitleCapitalizationDiffers() throws Exception
     {
-        assertLabelViolation("Office importer (for Administrator)", "Office Importer (for Administrator)",
-            check("* [[Office importer (for Administrator)>>doc:documentation.xs.admin.office-importer.WebHome]]"));
+        assertLabelViolation("Office importer (for Administrators)", "Office Importer (for Administrators)",
+            check("* [[Office importer (for Administrators)>>doc:documentation.xs.admin.office-importer.WebHome]]"));
     }
 
     @Test
     void checkWhenTargetIsNotAnAllowedValue() throws Exception
     {
-        assertLabelViolation("Like (for users)", "Like (for User)",
+        assertLabelViolation("Like (for users)", "Like (for Users)",
             check("* [[Like (for users)>>doc:documentation.xs.user.like.WebHome]]"));
     }
 
     @Test
     void checkWhenTargetDoesNotMatchLinkedPage() throws Exception
     {
-        assertLabelViolation("Office Importer (for User)", "Office Importer (for Administrator)",
-            check("* [[Office Importer (for User)>>doc:documentation.xs.admin.office-importer.WebHome]]"));
+        assertLabelViolation("Office Importer (for Users)", "Office Importer (for Administrators)",
+            check("* [[Office Importer (for Users)>>doc:documentation.xs.admin.office-importer.WebHome]]"));
     }
 
     @Test
     void checkWhenTextFollowsTargetQualifier() throws Exception
     {
-        assertLabelViolation("Like (for User) page", "Like (for User)",
-            check("* [[Like (for User) page>>doc:documentation.xs.user.like.WebHome]]"));
+        assertLabelViolation("Like (for Users) page", "Like (for Users)",
+            check("* [[Like (for Users) page>>doc:documentation.xs.user.like.WebHome]]"));
     }
 
     @Test
     void checkWhenLinkedPageDoesNotExist() throws Exception
     {
-        assertEquals(0, check("* [[Missing (for Developer)>>doc:documentation.xs.dev.missing.WebHome]]").size());
-        assertLabelViolation("Missing (for Dev)", "Missing (for User|Administrator|Developer)",
+        assertEquals(0, check("* [[Missing (for Developers)>>doc:documentation.xs.dev.missing.WebHome]]").size());
+        assertLabelViolation("Missing (for Dev)", "Missing (for Users|Administrators|Developers)",
             check("* [[Missing (for Dev)>>doc:documentation.xs.dev.missing.WebHome]]"));
     }
 
@@ -218,18 +218,18 @@ class RelatedLinkLabelCheckTest
         saveDocument(new DocumentReference(WIKI, "Main", "Other"), "Other page", null);
         saveDocument(new DocumentReference(WIKI, "Main", "Untitled"), "", "developer");
 
-        assertEquals(0, check("* [[Other page (for Developer)>>doc:Main.Other]]").size());
-        assertEquals(0, check("* [[Anything (for Developer)>>doc:Main.Untitled]]").size());
-        assertLabelViolation("Other (for Developer)", "Other page (for Developer)",
-            check("* [[Other (for Developer)>>doc:Main.Other]]"));
-        assertLabelViolation("Anything (for User)", "Anything (for Developer)",
-            check("* [[Anything (for User)>>doc:Main.Untitled]]"));
+        assertEquals(0, check("* [[Other page (for Developers)>>doc:Main.Other]]").size());
+        assertEquals(0, check("* [[Anything (for Developers)>>doc:Main.Untitled]]").size());
+        assertLabelViolation("Other (for Developers)", "Other page (for Developers)",
+            check("* [[Other (for Developers)>>doc:Main.Other]]"));
+        assertLabelViolation("Anything (for Users)", "Anything (for Developers)",
+            check("* [[Anything (for Users)>>doc:Main.Untitled]]"));
     }
 
     @Test
     void checkWhenLinkIsExternal() throws Exception
     {
-        assertEquals(0, check("* [[XWiki (for User)>>https://www.xwiki.org]]").size());
+        assertEquals(0, check("* [[XWiki (for Users)>>https://www.xwiki.org]]").size());
     }
 
     @Test
@@ -251,8 +251,8 @@ class RelatedLinkLabelCheckTest
         when(macro.getDescriptor()).thenReturn(descriptor);
         doReturn(macro).when(macroManager).getMacro(new MacroId("info"));
 
-        assertLabelViolation("like (for User)", "Like (for User)",
-            check("{{info}}\n[[like (for User)>>doc:documentation.xs.user.like.WebHome]]\n{{/info}}"));
+        assertLabelViolation("like (for Users)", "Like (for Users)",
+            check("{{info}}\n[[like (for Users)>>doc:documentation.xs.user.like.WebHome]]\n{{/info}}"));
     }
 
     @Test
@@ -263,7 +263,7 @@ class RelatedLinkLabelCheckTest
         when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean()))
             .thenThrow(new MacroExecutionException("parse failed"));
 
-        assertEquals(0, check("[[like (for User)>>doc:documentation.xs.user.like.WebHome]]").size());
+        assertEquals(0, check("[[like (for Users)>>doc:documentation.xs.user.like.WebHome]]").size());
         assertEquals("Failed to parse the Related content. Ignoring Related Link Label check inside it. "
             + "Root error cause: [MacroExecutionException: parse failed]", this.logCapture.getMessage(0));
     }
@@ -274,7 +274,7 @@ class RelatedLinkLabelCheckTest
         doThrow(new XWikiException(0, 0, "load failed")).when(this.oldcore.getSpyXWiki())
             .getDocument(eq(LIKE_REFERENCE), any(XWikiContext.class));
 
-        assertLabelViolation("like (for Dev)", "like (for User|Administrator|Developer)",
+        assertLabelViolation("like (for Dev)", "like (for Users|Administrators|Developers)",
             check("[[like (for Dev)>>doc:documentation.xs.user.like.WebHome]]"));
         assertEquals("Failed to load the linked document [xwiki:documentation.xs.user.like.WebHome]. Ignoring its "
             + "title and target in the Related Link Label check. Root error cause: [XWikiException: Error number 0 "
