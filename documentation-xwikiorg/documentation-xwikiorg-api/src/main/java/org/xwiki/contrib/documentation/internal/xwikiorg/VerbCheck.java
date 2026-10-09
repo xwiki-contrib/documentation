@@ -22,6 +22,7 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -55,6 +56,15 @@ public class VerbCheck implements DocumentationCheck
 {
     private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
         new LocalDocumentReference(List.of("DocApp", "Code"), "DocumentationClass");
+
+    /**
+     * Words ending in "ing" that name an XWiki domain concept (a noun), not a task phrased with a verb, when they
+     * start the title or page name of a Reference or Explanation page, such as "Rendering Macros" (the macros of
+     * XWiki Rendering) or "Logging Configuration". They are still reported for How-To and Tutorial pages, which must
+     * start with an imperative verb.
+     */
+    private static final Set<String> NOUN_ING_WORDS = Set.of("rendering", "logging", "caching", "indexing",
+        "versioning", "clustering", "theming", "licensing", "monitoring", "scheduling", "networking");
 
     private static final String PAGE_TITLE_CONTEXT = "Page title: [%s]";
 
@@ -116,7 +126,7 @@ public class VerbCheck implements DocumentationCheck
         if (mustStartWithVerb && isNotImperativeVerb(firstWord)) {
             violations.add(new DocumentationViolation(HOWTO_TUTORIAL_TITLE_MSG,
                 String.format(PAGE_TITLE_CONTEXT, title), DocumentationViolationSeverity.WARNING));
-        } else if (!mustStartWithVerb && isVerbForm(firstWord)) {
+        } else if (!mustStartWithVerb && isVerbFormAndNotNoun(firstWord)) {
             violations.add(new DocumentationViolation(REF_EXPLANATION_TITLE_MSG,
                 String.format(PAGE_TITLE_CONTEXT, title), DocumentationViolationSeverity.WARNING));
         }
@@ -132,7 +142,7 @@ public class VerbCheck implements DocumentationCheck
         if (mustStartWithVerb && isNotImperativeVerb(firstSegment)) {
             violations.add(new DocumentationViolation(HOWTO_TUTORIAL_NAME_MSG,
                 String.format(PAGE_NAME_CONTEXT, pageName), DocumentationViolationSeverity.WARNING));
-        } else if (!mustStartWithVerb && isVerbForm(firstSegment)) {
+        } else if (!mustStartWithVerb && isVerbFormAndNotNoun(firstSegment)) {
             violations.add(new DocumentationViolation(REF_EXPLANATION_NAME_MSG,
                 String.format(PAGE_NAME_CONTEXT, pageName), DocumentationViolationSeverity.WARNING));
         }
@@ -141,6 +151,11 @@ public class VerbCheck implements DocumentationCheck
     private boolean isNotImperativeVerb(String word)
     {
         return isVerbForm(word) || KebabNameValidator.STOP_WORDS.contains(word);
+    }
+
+    private boolean isVerbFormAndNotNoun(String word)
+    {
+        return isVerbForm(word) && !NOUN_ING_WORDS.contains(word);
     }
 
     private boolean isVerbForm(String word)
