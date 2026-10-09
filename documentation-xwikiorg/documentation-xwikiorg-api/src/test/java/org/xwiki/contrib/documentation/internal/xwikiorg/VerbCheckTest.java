@@ -217,6 +217,20 @@ class VerbCheckTest
         assertEquals(2, violations.size());
     }
 
+    @Test
+    void checkWhenReferenceStartsWithNounEndingInIng()
+    {
+        assertEquals(0,
+            this.check.check(createDocument("Rendering Macros", "rendering-macros", "reference")).size());
+    }
+
+    @Test
+    void checkWhenHowToStartsWithNounEndingInIng()
+    {
+        // The nouns accepted for Reference and Explanation pages are still not imperative verbs.
+        assertEquals(2, this.check.check(createDocument("Rendering Macros", "rendering-macros", "howto")).size());
+    }
+
     // --- Non-terminal pages: the page name is the last space name, not "WebHome" ---
 
     @Test
