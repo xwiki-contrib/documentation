@@ -164,6 +164,64 @@
     </property>
     <property>
       <content>{{velocity}}
+#macro (displayViolationContext $violation)
+  #set ($violationContext = $violation.getValue('context'))
+  #if ("$!violationContext" != '')
+  &lt;dd&gt;&lt;span class="monospace" style="white-space: pre-wrap"&gt;$escapetool.xml($violationContext)&lt;/span&gt;&lt;/dd&gt;
+  #end
+#end
+## The title of a list of violations, which folds or unfolds it.
+#macro (violationsTitle $listId $label $expanded)
+  &lt;dt class="documentation-violations-title"&gt;
+    &lt;label&gt;
+      &lt;a role="button" class="documentation-violations-toggle" data-toggle="collapse" href="#$listId"
+          aria-expanded="$expanded" aria-controls="$listId"&gt;
+        ## A single caret, rotated by the stylesheet when the list is folded.
+        &lt;span class="documentation-violations-caret"&gt;$services.icon.renderHTML('caret-down')&lt;/span&gt;
+        $escapetool.xml($label)
+      &lt;/a&gt;
+    &lt;/label&gt;
+  &lt;/dt&gt;
+#end
+## Opens a form to mark the passed violation as a false positive, with an optional reason, or reinstates it.
+#macro (violationActionForm $violation $violationAction)
+  #set ($violationFormId = "documentationViolation${violation.number}")
+  #set ($actionLabel = $services.localization.render("docapp.ui.review.falsePositive.$violationAction"))
+  #if ($violationAction == 'markFalsePositive')
+  ## The reason is only asked once the user chooses to mark the violation.
+  &lt;button type="button" class="btn btn-default btn-xs documentation-violation-toggle" data-toggle="collapse"
+    data-target="#$violationFormId" aria-expanded="false" aria-controls="$violationFormId"&gt;$escapetool.xml($actionLabel)&lt;/button&gt;
+  #end
+  &lt;form id="$violationFormId" method="post"
+      class="documentation-violation-action#if ($violationAction == 'markFalsePositive') collapse#end"
+      action="$escapetool.xml($xwiki.getURL('DocApp.Code.DocumentationViolationService'))"&gt;
+    &lt;input type="hidden" name="form_token" value="$!escapetool.xml($services.csrf.token)"/&gt;
+    &lt;input type="hidden" name="page" value="$escapetool.xml($services.model.serialize($doc.documentReference, 'default'))"/&gt;
+    &lt;input type="hidden" name="number" value="$violation.number"/&gt;
+    &lt;input type="hidden" name="violationAction" value="$violationAction"/&gt;
+    #if ($violationAction == 'markFalsePositive')
+    &lt;label for="${violationFormId}Reason"&gt;$escapetool.xml($services.localization.render(
+      'docapp.ui.review.falsePositive.reason'))&lt;/label&gt;
+    &lt;input type="text" id="${violationFormId}Reason" name="reason" class="form-control input-sm"/&gt;
+    ## The rule of the violation may not apply to a whole part of the documentation: allow to mark its violations in
+    ## the pages located under the current page or under one of its ancestors.
+    &lt;label for="${violationFormId}Scope"&gt;$escapetool.xml($services.localization.render(
+      'docapp.ui.review.falsePositive.scope'))&lt;/label&gt;
+    &lt;select id="${violationFormId}Scope" name="scope" class="form-control input-sm"&gt;
+      &lt;option value=""&gt;$escapetool.xml($services.localization.render(
+        'docapp.ui.review.falsePositive.scope.page'))&lt;/option&gt;
+      #foreach ($scopeOption in $falsePositiveScopes)
+      &lt;option value="$escapetool.xml($scopeOption.value)"&gt;$escapetool.xml($scopeOption.label)&lt;/option&gt;
+      #end
+    &lt;/select&gt;
+    &lt;button type="submit" class="btn btn-primary btn-xs"&gt;$escapetool.xml($actionLabel)&lt;/button&gt;
+    &lt;button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#$violationFormId"&gt;
+      $escapetool.xml($services.localization.render('cancel'))&lt;/button&gt;
+    #else
+    &lt;button type="submit" class="btn btn-default btn-xs"&gt;$escapetool.xml($actionLabel)&lt;/button&gt;
+    #end
+  &lt;/form&gt;
+#end
 {{html clean="false"}}
 #set ($reviewObj = $doc.getObject('DocApp.Code.DocumentationReviewClass'))
 #set ($hasReviewInfo = false)
@@ -195,9 +253,37 @@
         &lt;dd&gt;$datetool.format('dd/MM/yyyy', $lastReviewedDate)&lt;/dd&gt;
         #end
         #if ($hasEdit)
-        #set ($violations = $doc.getObjects('DocApp.Code.DocumentationViolationClass'))
-        &lt;dt&gt;&lt;label&gt;$escapetool.xml($services.localization.render('docapp.ui.review.violations'))&lt;/label&gt;&lt;/dt&gt;
-        &lt;dd&gt;
+        ## The violations marked as false positives are listed apart, since they're not reported anymore.
+        #set ($violations = [])
+        #set ($falsePositives = [])
+        #foreach ($violation in $doc.getObjects('DocApp.Code.DocumentationViolationClass'))
+          #if ("$!violation.getValue('falsePositive')" == '1')
+            #set ($discard = $falsePositives.add($violation))
+          #else
+            #set ($discard = $violations.add($violation))
+          #end
+        #end
+        #set ($canMarkFalsePositives = $services.documentation.canMarkFalsePositives())
+        ## The parts of the documentation in which the rule of a violation can be marked as not applying: the current
+        ## page, when it's a nested page, and its ancestors, the closest first.
+        #set ($falsePositiveScopes = [])
+        #if ($canMarkFalsePositives)
+          #foreach ($scopeReference in $services.documentation.getFalsePositiveScopes($doc.documentReference))
+            #if ($scopeReference.equals($doc.documentReference))
+              #set ($scopeLabel = $services.localization.render('docapp.ui.review.falsePositive.scope.current'))
+            #else
+              #set ($scopeLabel = $services.localization.render('docapp.ui.review.falsePositive.scope.under',
+                [$xwiki.getDocument($scopeReference).plainTitle]))
+            #end
+            #set ($discard = $falsePositiveScopes.add({
+              'value': $services.model.serialize($scopeReference, 'default'),
+              'label': $scopeLabel
+            }))
+          #end
+        #end
+        #violationsTitle('documentationViolations',
+          $services.localization.render('docapp.ui.review.violations', [$violations.size()]), true)
+        &lt;dd id="documentationViolations" class="collapse in"&gt;
           #if ($violations.isEmpty())
           #success("$escapetool.xml($services.localization.render('docapp.ui.review.violation-list.empty'))")
           #else
@@ -213,14 +299,38 @@
                 $escapetool.xml($messageContent)
               #end
             &lt;/dt&gt;
-            #set ($violationContext = $violation.getValue('context'))
-            #if ($!violationContext != '')
-            &lt;dd&gt;&lt;span class="monospace" style="white-space: pre-wrap"&gt;$escapetool.xml($violationContext)&lt;/span&gt;&lt;/dd&gt;
+            #displayViolationContext($violation)
+            #if ($canMarkFalsePositives)
+            &lt;dd class="documentation-violation-actions"&gt;#violationActionForm($violation, 'markFalsePositive')&lt;/dd&gt;
             #end
             #end
           &lt;/dl&gt;
           #end
         &lt;/dd&gt;
+        #if (!$falsePositives.isEmpty())
+        ## Folded, since the violations marked as false positives aren't reported.
+        #violationsTitle('documentationFalsePositives',
+          $services.localization.render('docapp.ui.review.falsePositives', [$falsePositives.size()]), false)
+        &lt;dd id="documentationFalsePositives" class="collapse"&gt;
+          &lt;dl class="documentation-false-positives"&gt;
+            #foreach ($violation in $falsePositives)
+            &lt;dt&gt;#inlineInfo($escapetool.xml($violation.getValue('message')))&lt;/dt&gt;
+            #displayViolationContext($violation)
+            #set ($falsePositiveDate = $violation.getValue('falsePositiveDate'))
+            &lt;dd class="xHint"&gt;$escapetool.xml($services.localization.render('docapp.ui.review.falsePositive.markedBy',
+              [$xwiki.getPlainUserName($!violation.getValue('falsePositiveBy')),
+              "#if ($falsePositiveDate)$datetool.format('dd/MM/yyyy', $falsePositiveDate)#end"]))&lt;/dd&gt;
+            #set ($falsePositiveReason = $violation.getValue('falsePositiveReason'))
+            #if ("$!falsePositiveReason" != '')
+            &lt;dd&gt;$escapetool.xml($falsePositiveReason)&lt;/dd&gt;
+            #end
+            #if ($canMarkFalsePositives)
+            &lt;dd class="documentation-violation-actions"&gt;#violationActionForm($violation, 'unmarkFalsePositive')&lt;/dd&gt;
+            #end
+            #end
+          &lt;/dl&gt;
+        &lt;/dd&gt;
+        #end
         #end
       &lt;/dl&gt;
     &lt;/div&gt;
@@ -251,7 +361,7 @@ title=Documentation
 name=docreview
 shortcut=v
 order=10
-itemnumber=#if($hasEdit &amp;&amp; !$doc.getObjects('DocApp.Code.DocumentationViolationClass').isEmpty())$doc.getObjects('DocApp.Code.DocumentationViolationClass').size()#{end}</parameters>
+itemnumber=#set($__n=0)#foreach($__v in $doc.getObjects('DocApp.Code.DocumentationViolationClass'))#if("$!__v.getValue('falsePositive')" != '1')#set($__n=$__n+1)#end#end#if($hasEdit &amp;&amp; $__n &gt; 0)$__n#{else}-1#{end}</parameters>
     </property>
     <property>
       <scope>wiki</scope>

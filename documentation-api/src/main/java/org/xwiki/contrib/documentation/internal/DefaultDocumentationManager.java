@@ -20,7 +20,11 @@
 package org.xwiki.contrib.documentation.internal;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,7 +38,6 @@ import org.xwiki.contrib.documentation.DocumentationManager;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.index.IndexException;
 import org.xwiki.index.TaskManager;
-import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.user.SuperAdminUserReference;
 
 import com.xpn.xwiki.XWikiContext;
@@ -52,10 +55,14 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class DefaultDocumentationManager implements DocumentationManager
 {
-    private static final List<String> SPACES = List.of("DocApp", "Code");
+    /**
+     * The comment of the saves done by the analysis, which don't trigger a new analysis.
+     */
+    public static final String ANALYSIS_COMMENT = "Documentation analysis";
 
-    private static final LocalDocumentReference VIOLATION_CLASS_REFERENCE =
-        new LocalDocumentReference(SPACES, "DocumentationViolationClass");
+    private static final String CHECK = "check";
+
+    private static final String FALSE_POSITIVE = "falsePositive";
 
     private static final String MESSAGE = "message";
 
@@ -75,12 +82,14 @@ public class DefaultDocumentationManager implements DocumentationManager
     {
         ComponentManager cm = this.componentManagerProvider.get();
         try {
-            // Step 1: Call the various checkers
+            // Step 1: Call the various checkers, remembering which check reported each violation.
             XWikiContext xcontext = this.xcontextProvider.get();
-            List<DocumentationCheck> checkers = cm.getInstanceList(DocumentationCheck.class);
-            List<DocumentationViolation> violations = new ArrayList<>();
-            for (DocumentationCheck checker : checkers) {
-                violations.addAll(checker.check(document));
+            Map<String, DocumentationCheck> checkers = cm.getInstanceMap(DocumentationCheck.class);
+            List<CheckedViolation> violations = new ArrayList<>();
+            for (Map.Entry<String, DocumentationCheck> checker : checkers.entrySet()) {
+                for (DocumentationViolation violation : checker.getValue().check(document)) {
+                    violations.add(new CheckedViolation(checker.getKey(), violation));
+                }
             }
 
             // Step 2: Save new violations when they don't already exist + remove violations that were stored but don't
@@ -92,7 +101,7 @@ public class DefaultDocumentationManager implements DocumentationManager
                 // Save as superadmin, representing the system user, to indicate that the changes are not from the
                 // current author but by the system.
                 document.setAuthor(SuperAdminUserReference.INSTANCE);
-                xcontext.getWiki().saveDocument(document, "Documentation analysis", true, xcontext);
+                xcontext.getWiki().saveDocument(document, ANALYSIS_COMMENT, true, xcontext);
             }
             return hasChanges;
         } catch (Exception e) {
@@ -101,73 +110,99 @@ public class DefaultDocumentationManager implements DocumentationManager
         }
     }
 
-    private boolean saveAndDeleteXObjects(XWikiDocument document, List<DocumentationViolation> violations,
+    /**
+     * Matches each violation found with at most one stored violation xobject, so that a stored violation keeps its
+     * xobject, and thus its false positive mark, for as long as it's reported. A violation matches the xobject holding
+     * the same message, context and severity, or else the xobject holding the same check and context, which then gets
+     * the new message and severity: this way a false positive mark survives a check rewording its message or changing
+     * its severity.
+     */
+    private boolean saveAndDeleteXObjects(XWikiDocument document, List<CheckedViolation> violations,
         XWikiContext xcontext) throws XWikiException
     {
         boolean hasChanges = false;
-        List<BaseObject> existingViolationObjects = new ArrayList<>(document.getXObjects(VIOLATION_CLASS_REFERENCE));
+        // Removed xobjects are kept as null entries.
+        List<BaseObject> unmatchedObjects = new ArrayList<>(document.getXObjects(
+            DocumentationPages.VIOLATION_CLASS_REFERENCE).stream().filter(Objects::nonNull).toList());
 
-        // Remove all existing violations that don't exist anymore.
-        for (BaseObject existingViolationObject : existingViolationObjects) {
-            // If we don't find the violation in the new list, remove it.
-            if (existingViolationObject != null && !exists(existingViolationObject, violations)) {
-                document.removeXObject(existingViolationObject);
+        List<CheckedViolation> unmatchedViolations = new ArrayList<>();
+        for (CheckedViolation violation : violations) {
+            BaseObject object = removeFirst(unmatchedObjects, o -> isSameViolation(o, violation));
+            if (object == null) {
+                unmatchedViolations.add(violation);
+            } else if (!violation.check().equals(object.getStringValue(CHECK))
+                || object.safeget(FALSE_POSITIVE) == null)
+            {
+                // The violation was stored before the check and the false positive mark were recorded.
+                object.set(CHECK, violation.check(), xcontext);
+                object.setIntValue(FALSE_POSITIVE, object.getIntValue(FALSE_POSITIVE));
                 hasChanges = true;
             }
         }
 
-        // Add all new violations that don't already exist.'
-        for (DocumentationViolation violation : violations) {
-            // If we don't already have this violation as an xobject, add it.
-            if (!exists(violation, existingViolationObjects)) {
-                BaseObject object = document.newXObject(VIOLATION_CLASS_REFERENCE, xcontext);
-                object.set(MESSAGE, violation.getViolationMessage(), xcontext);
-                object.set(CONTEXT, violation.getViolationContext(), xcontext);
-                object.set(SEVERITY, violation.getViolationSeverity().toString(), xcontext);
-                hasChanges = true;
+        for (CheckedViolation violation : unmatchedViolations) {
+            BaseObject object = removeFirst(unmatchedObjects, o -> isSameCheckAndContext(o, violation));
+            if (object == null) {
+                object = document.newXObject(DocumentationPages.VIOLATION_CLASS_REFERENCE, xcontext);
+                object.set(CHECK, violation.check(), xcontext);
+                object.set(CONTEXT, violation.violation().getViolationContext(), xcontext);
+                // Always stored, so that the violations can be listed depending on whether they're false positives.
+                object.setIntValue(FALSE_POSITIVE, 0);
             }
+            object.set(MESSAGE, violation.violation().getViolationMessage(), xcontext);
+            object.set(SEVERITY, violation.violation().getViolationSeverity().toString(), xcontext);
+            hasChanges = true;
+        }
+
+        // Remove all the stored violations that don't exist anymore.
+        for (BaseObject object : unmatchedObjects) {
+            document.removeXObject(object);
+            hasChanges = true;
         }
 
         return hasChanges;
     }
 
-    private boolean exists(BaseObject existingViolationObject, List<DocumentationViolation> violations)
+    private BaseObject removeFirst(List<BaseObject> objects, Predicate<BaseObject> predicate)
     {
-        boolean exists = false;
-        for (DocumentationViolation violation : violations) {
-            if (isEqual(existingViolationObject, violation)) {
-                exists = true;
-                break;
+        Iterator<BaseObject> iterator = objects.iterator();
+        while (iterator.hasNext()) {
+            BaseObject object = iterator.next();
+            if (predicate.test(object)) {
+                iterator.remove();
+                return object;
             }
         }
-        return exists;
+        return null;
     }
 
-    private boolean exists(DocumentationViolation violation, List<BaseObject> existingViolationObjects)
+    private boolean isSameViolation(BaseObject object, CheckedViolation violation)
     {
-        boolean exists = false;
-        for (BaseObject existingViolationObject : existingViolationObjects) {
-            if (isEqual(existingViolationObject, violation)) {
-                exists = true;
-                break;
-            }
-        }
-        return exists;
+        // A violation stored before the check was recorded has no check.
+        String check = object.getStringValue(CHECK);
+        return (check.isEmpty() || check.equals(violation.check())) && hasSameContent(object, violation.violation());
     }
 
-    private boolean isEqual(BaseObject existingViolationObject, DocumentationViolation violation)
+    private boolean hasSameContent(BaseObject object, DocumentationViolation violation)
     {
-        boolean result;
-        if (existingViolationObject == null) {
-            result = false;
-        } else {
-            String message = existingViolationObject.getStringValue(MESSAGE);
-            String context = existingViolationObject.getStringValue(CONTEXT);
-            String severity = existingViolationObject.getStringValue(SEVERITY);
-            result = violation.getViolationMessage().equals(message)
-                && violation.getViolationContext().equals(context)
-                && violation.getViolationSeverity().toString().equals(severity);
-        }
-        return result;
+        return violation.getViolationMessage().equals(object.getStringValue(MESSAGE))
+            && violation.getViolationContext().equals(object.getStringValue(CONTEXT))
+            && violation.getViolationSeverity().toString().equals(object.getStringValue(SEVERITY));
+    }
+
+    private boolean isSameCheckAndContext(BaseObject object, CheckedViolation violation)
+    {
+        return violation.check().equals(object.getStringValue(CHECK))
+            && violation.violation().getViolationContext().equals(object.getStringValue(CONTEXT));
+    }
+
+    /**
+     * A violation along with the hint of the check that reported it.
+     *
+     * @param check the hint of the check that reported the violation
+     * @param violation the violation
+     */
+    private record CheckedViolation(String check, DocumentationViolation violation)
+    {
     }
 }

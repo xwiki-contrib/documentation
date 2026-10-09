@@ -46,6 +46,20 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <check>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Identifier of the check that reported the violation</hint>
+      <name>check</name>
+      <number>4</number>
+      <picker>1</picker>
+      <prettyName>Check</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </check>
     <context>
       <customDisplay/>
       <disabled>0</disabled>
@@ -60,6 +74,80 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </context>
+    <falsePositive>
+      <customDisplay/>
+      <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <hint>Whether an administrator has marked the violation as a false positive, in which case it's not reported</hint>
+      <name>falsePositive</name>
+      <number>5</number>
+      <prettyName>False Positive</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </falsePositive>
+    <falsePositiveBy>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText/>
+      <hint>Who marked the violation as a false positive</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>falsePositiveBy</name>
+      <number>6</number>
+      <picker>1</picker>
+      <prettyName>Marked By</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>20</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <usesList>0</usesList>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+    </falsePositiveBy>
+    <falsePositiveDate>
+      <customDisplay/>
+      <dateFormat>dd/MM/yyyy HH:mm:ss</dateFormat>
+      <disabled>0</disabled>
+      <emptyIsToday>0</emptyIsToday>
+      <hint>When the violation was marked as a false positive</hint>
+      <name>falsePositiveDate</name>
+      <number>7</number>
+      <picker>1</picker>
+      <prettyName>Marked On</prettyName>
+      <size>20</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+    </falsePositiveDate>
+    <falsePositiveReason>
+      <contenttype>PureText</contenttype>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>PureText</editor>
+      <hint>Why the violation is a false positive</hint>
+      <name>falsePositiveReason</name>
+      <number>8</number>
+      <picker>0</picker>
+      <prettyName>Reason</prettyName>
+      <restricted>0</restricted>
+      <rows>3</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </falsePositiveReason>
     <message>
       <customDisplay/>
       <disabled>0</disabled>

@@ -3,3 +3,4 @@ org.xwiki.contrib.documentation.internal.DefaultDocumentationManager
 org.xwiki.contrib.documentation.internal.ImageMacroRefactoring
 org.xwiki.contrib.documentation.script.DocumentationScriptService
 org.xwiki.contrib.documentation.internal.CheckAllPagesJob
+org.xwiki.contrib.documentation.internal.FalsePositives

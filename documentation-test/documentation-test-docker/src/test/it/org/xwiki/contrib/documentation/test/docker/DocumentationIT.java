@@ -20,6 +20,7 @@
 package org.xwiki.contrib.documentation.test.docker;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -420,6 +421,101 @@ class DocumentationIT
         // Without content, the label is the URL.
         assertEquals("https://github.com/xwiki/xwiki-rendering", viewPage.getContentLinkLabels().get(1));
         assertEquals("a label", viewPage.getContentLinkLabels().get(3));
+    }
+
+    @Test
+    @Order(14)
+    void marksViolationsAsFalsePositives(TestUtils setup) throws Exception
+    {
+        // A page whose only violation is a warning: an Image macro missing its "alt" parameter.
+        List<String> falsePositiveSpace = space("false-positive");
+        DocumentReference falsePositivePage = new DocumentReference("xwiki", falsePositiveSpace, "WebHome");
+        setup.deletePage(falsePositivePage, true);
+        setup.createPage(falsePositivePage, "{{image reference=\"foo.png\"/}}", "Image false positive",
+            "xwiki/2.1");
+        setup.addObject(falsePositivePage, DOC_CLASS, "type", "reference");
+
+        // Marking the violation as a false positive stops reporting it.
+        setup.gotoPage(falsePositivePage);
+        DocumentationViewPage viewPage = new DocumentationViewPage().openDocumentationTab()
+            .markViolationAsFalsePositive(0, "Decorative image");
+        assertFalse(viewPage.hasWarningValidationBox(), "A violation marked as a false positive shouldn't be reported");
+        String tabContent = viewPage.getDocumentationTabContent();
+        assertTrue(tabContent.contains("Violations marked as false positives (1)"),
+            "The Documentation tab should list the violation marked as a false positive, but got:\n" + tabContent);
+
+        // Saving the page again keeps the violation marked, since its check still reports it.
+        WikiEditPage editPage = WikiEditPage.gotoPage(falsePositivePage);
+        editPage.setContent("{{image reference=\"foo.png\"/}}\n\nSome text.");
+        editPage.clickSaveAndView();
+        assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
+            "The violation should stay marked as a false positive once the page is saved again");
+
+        // Reinstating the violation reports it again.
+        viewPage = new DocumentationViewPage().openDocumentationTab().reinstateViolation(0);
+        assertTrue(viewPage.hasWarningValidationBox(), "A reinstated violation should be reported again");
+
+        // The violations of the same rule in the pages located under a page can be marked from the violation of that
+        // page.
+        DocumentReference childPage = createImagePage(setup, space("false-positive", "image-child"), "Image child");
+        setup.gotoPage(falsePositivePage);
+        viewPage = new DocumentationViewPage().openDocumentationTab()
+            .markViolationAsFalsePositive(0, "Decorative images", "This page and all the pages under it");
+        assertFalse(viewPage.hasWarningValidationBox(), "The violation of the page should be marked");
+        setup.gotoPage(childPage);
+        assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
+            "The violation of the page located under the page should be marked too");
+
+        // They can also be marked from the Administration, which lists the violations of a page and of the pages
+        // located under it, grouped by rule.
+        DocumentReference otherChildPage =
+            createImagePage(setup, space("false-positive", "image-sibling"), "Image sibling");
+        DocumentationAdministrationSectionPage section =
+            DocumentationAdministrationSectionPage.gotoPage().showViolations("Image false positive");
+        String imageAltMessage = "Missing 'alt' parameter usage in the Image macro.";
+        List<String> groupMessages = section.getViolationGroupMessages();
+        assertTrue(groupMessages.contains(imageAltMessage),
+            "The violation of the other page should be listed, but got:\n" + groupMessages);
+        section = section.markFalsePositives(groupMessages.indexOf(imageAltMessage), "Decorative images");
+        String message = section.getMarkFalsePositivesMessage();
+        assertTrue(message.contains("Violations marked as false positives: 1."),
+            "The violation of the other page should be marked, but got:\n" + message);
+        assertFalse(section.getViolationGroupMessages().contains(imageAltMessage),
+            "No violation of the rule should be left to mark");
+        setup.gotoPage(otherChildPage);
+        assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
+            "The violations marked from the Administration shouldn't be reported");
+
+        // The violations marked as false positives are listed apart from the reported ones.
+        String pageName = "documentation-it.false-positive.WebHome";
+        assertTrue(getViolationResults(setup, "only").contains(pageName),
+            "The violations marked as false positives should list the page");
+        assertFalse(getViolationResults(setup, "exclude").contains(pageName),
+            "The reported violations shouldn't list the page");
+    }
+
+    /**
+     * Creates a documentation page whose only violation is a warning: an Image macro missing its "alt" parameter.
+     */
+    private static DocumentReference createImagePage(TestUtils setup, List<String> space, String title)
+    {
+        DocumentReference reference = new DocumentReference("xwiki", space, "WebHome");
+        setup.deletePage(reference, true);
+        setup.createPage(reference, "{{image reference=\"foo.png\"/}}", title, "xwiki/2.1");
+        setup.addObject(reference, DOC_CLASS, "type", "reference");
+        return reference;
+    }
+
+    /**
+     * @param falsePositives "only" to get the violations marked as false positives, "exclude" to get the others
+     * @return the JSON results of the Live Data listing the documentation violations
+     */
+    private static String getViolationResults(TestUtils setup, String falsePositives) throws Exception
+    {
+        return setup.executeAndGetBodyAsString(
+            new DocumentReference("xwiki", List.of("DocApp", "Code"), "DocumentationLiveTableResults"),
+            Map.of("outputSyntax", "plain", "classname", "DocApp.Code.DocumentationViolationClass", "collist",
+                "message", "offset", "1", "limit", "1000", "reqNo", "1", "falsePositives", falsePositives));
     }
 
     private static void setOldestSupportedVersion(String version)

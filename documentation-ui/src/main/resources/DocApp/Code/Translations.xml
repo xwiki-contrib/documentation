@@ -53,7 +53,7 @@ docapp.more.textWithHighlights=To find more about the current topic, you can sea
 docapp.more.textWithoutHighlights=To find more about the current topic, you can search or use the table below and filter the columns to narrow your choices.
 docapp.ui.review.lastReviewers=Last Reviewers
 docapp.ui.review.lastReviewedDate=Last Review Date
-docapp.ui.review.violations=Violations
+docapp.ui.review.violations=Violations ({0})
 admin.documentation=Documentation
 admin.documentation.description=Configure the checks of the documentation quality.
 docapp.checkAllPages.heading=Check all pages
@@ -67,6 +67,25 @@ docapp.checkAllPages.finish.canceled=The check of the documentation pages has be
 docapp.checkAllPages.lastRun.success=All documentation pages have been checked.
 docapp.checkAllPages.summary=Checked {0} documentation pages: {1} updated, {2} failed.
 docapp.checkAllPages.notFound=No check of the documentation pages was found.
+docapp.ui.review.falsePositives=Violations marked as false positives ({0})
+docapp.ui.review.falsePositive.markedBy=Marked as a false positive by {0} on {1}.
+docapp.ui.review.falsePositive.reason=Reason
+docapp.ui.review.falsePositive.scope=Mark it in
+docapp.ui.review.falsePositive.scope.page=This page only
+docapp.ui.review.falsePositive.scope.current=This page and all the pages under it
+docapp.ui.review.falsePositive.scope.under={0} and all the pages under it
+docapp.ui.review.falsePositive.markFalsePositive=Mark as false positive
+docapp.ui.review.falsePositive.unmarkFalsePositive=Reinstate
+docapp.markFalsePositives.heading=Mark violations as false positives
+docapp.markFalsePositives.hint=Mark as false positives the violations of a rule that doesn't apply to a part of the documentation. Pick a page to list the violations reported in it and in the pages located under it, grouped by rule. The violations marked as false positives aren't reported anymore, as long as their check keeps reporting them.
+docapp.markFalsePositives.page=Page
+docapp.markFalsePositives.page.hint=The page whose violations to list, along with the violations of the pages located under it.
+docapp.markFalsePositives.show=Show the violations
+docapp.markFalsePositives.none=No violation, not already marked as a false positive, was found in [{0}] or in the pages located under it.
+docapp.markFalsePositives.group.count={0,choice,1#1 violation|1&lt;{0} violations} in {1,choice,1#1 page|1&lt;{1} pages}
+docapp.markFalsePositives.group.more={0,choice,1#Show 1 more page|1&lt;Show {0} more pages}
+docapp.markFalsePositives.submit={0,choice,1#Mark this violation as a false positive|1&lt;Mark these {0} violations as false positives}
+docapp.markFalsePositives.done=Violations marked as false positives: {0}.
 </content>
   <object>
     <name>DocApp.Code.Translations</name>

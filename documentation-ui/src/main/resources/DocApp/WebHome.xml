@@ -56,8 +56,16 @@
 
 {{liveData
   id="allDeveloperExplanationsPages"
-  properties="doc.title,message,context,severity"
+  properties="doc.title,message,context,severity,check"
   source="liveTable"
-  sourceParameters="className=DocApp.Code.DocumentationViolationClass&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;translationPrefix=docapp."/}}
+  sourceParameters="className=DocApp.Code.DocumentationViolationClass&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;translationPrefix=docapp.&amp;falsePositives=exclude"/}}
+
+= Documentation Violations Marked as False Positives =
+
+{{liveData
+  id="documentationFalsePositives"
+  properties="doc.title,message,context,check,falsePositiveReason,falsePositiveBy,falsePositiveDate"
+  source="liveTable"
+  sourceParameters="className=DocApp.Code.DocumentationViolationClass&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;translationPrefix=docapp.&amp;falsePositives=only"/}}
 </content>
 </xwikidoc>

@@ -43,6 +43,7 @@ import com.xpn.xwiki.test.junit5.mockito.OldcoreTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -79,6 +80,8 @@ class DefaultDocumentationManagerTest
         violationClass.addTextField("message", "Message", 100);
         violationClass.addTextField("context", "Context", 100);
         violationClass.addStaticListField("severity");
+        violationClass.addTextField("check", "Check", 100);
+        violationClass.addBooleanField("falsePositive", "False Positive", "checkbox");
         violationClassDocument.setXClass(violationClass);
         this.oldcore.getSpyXWiki().saveDocument(violationClassDocument, this.oldcore.getXWikiContext());
 
@@ -104,11 +107,120 @@ class DefaultDocumentationManagerTest
         assertEquals("context", objects.get(0).getStringValue("context"));
         assertEquals("Error", objects.get(0).getStringValue("severity"));
 
+        assertEquals("test", objects.get(0).getStringValue("check"));
+        assertNotNull(objects.get(0).safeget("falsePositive"));
+
         // Verify the save message
         assertEquals("Documentation analysis", this.document.getComment());
 
         // Verify the xobject number
         assertEquals(0, objects.get(0).getNumber());
+    }
+
+    /**
+     * Verify that a violation stored before the check was recorded gets the check of the violation it matches.
+     */
+    @Test
+    void analyzeWhenExistingViolationHasNoCheck() throws Exception
+    {
+        DocumentationCheck check = this.componentManager.registerMockComponent(DocumentationCheck.class, "test");
+        when(check.check(this.document)).thenReturn(Collections.singletonList(
+            new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
+
+        addViolationObject("message", "context", "Error");
+
+        assertTrue(this.manager.analyse(this.document));
+
+        List<BaseObject> objects = this.document.getXObjects(VIOLATION_CLASS_REFERENCE);
+        assertEquals(1, objects.size());
+        assertEquals("test", objects.get(0).getStringValue("check"));
+        assertNotNull(objects.get(0).safeget("falsePositive"));
+        assertEquals(0, objects.get(0).getNumber());
+    }
+
+    /**
+     * Verify that a violation marked as a false positive keeps its xobject, and thus its mark, when its check reports
+     * it again with a different message and severity.
+     */
+    @Test
+    void analyzeWhenFalsePositiveReportedWithDifferentMessage() throws Exception
+    {
+        DocumentationCheck check = this.componentManager.registerMockComponent(DocumentationCheck.class, "test");
+        when(check.check(this.document)).thenReturn(Collections.singletonList(
+            new DocumentationViolation("new message", "context", DocumentationViolationSeverity.WARNING)));
+
+        BaseObject violationObject = addViolationObject("message", "context", "Error");
+        violationObject.setStringValue("check", "test");
+        violationObject.setIntValue("falsePositive", 1);
+
+        assertTrue(this.manager.analyse(this.document));
+
+        List<BaseObject> objects = this.document.getXObjects(VIOLATION_CLASS_REFERENCE);
+        assertEquals(1, objects.size());
+        assertEquals("new message", objects.get(0).getStringValue("message"));
+        assertEquals("Warning", objects.get(0).getStringValue("severity"));
+        assertEquals(1, objects.get(0).getIntValue("falsePositive"));
+    }
+
+    /**
+     * Verify that a violation marked as a false positive and reported again is left untouched.
+     */
+    @Test
+    void analyzeWhenFalsePositiveReportedAgain() throws Exception
+    {
+        DocumentationCheck check = this.componentManager.registerMockComponent(DocumentationCheck.class, "test");
+        when(check.check(this.document)).thenReturn(Collections.singletonList(
+            new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
+
+        BaseObject violationObject = addViolationObject("message", "context", "Error");
+        violationObject.setStringValue("check", "test");
+        violationObject.setIntValue("falsePositive", 1);
+
+        assertFalse(this.manager.analyse(this.document));
+        assertEquals(1, this.document.getXObjects(VIOLATION_CLASS_REFERENCE).get(0).getIntValue("falsePositive"));
+    }
+
+    /**
+     * Verify that a violation of another check with the same context doesn't take over the xobject of a violation
+     * marked as a false positive, and that this xobject is removed since its check doesn't report it anymore.
+     */
+    @Test
+    void analyzeWhenFalsePositiveNotReportedAnymore() throws Exception
+    {
+        DocumentationCheck check = this.componentManager.registerMockComponent(DocumentationCheck.class, "other");
+        when(check.check(this.document)).thenReturn(Collections.singletonList(
+            new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
+
+        BaseObject violationObject = addViolationObject("message", "context", "Error");
+        violationObject.setStringValue("check", "test");
+        violationObject.setIntValue("falsePositive", 1);
+
+        assertTrue(this.manager.analyse(this.document));
+
+        List<BaseObject> objects = this.document.getXObjects(VIOLATION_CLASS_REFERENCE);
+        assertEquals(2, objects.size());
+        assertNull(objects.get(0));
+        assertEquals("other", objects.get(1).getStringValue("check"));
+        assertEquals(0, objects.get(1).getIntValue("falsePositive"));
+    }
+
+    /**
+     * Verify that two identical violations are stored as two xobjects.
+     */
+    @Test
+    void analyzeWhenIdenticalViolations() throws Exception
+    {
+        DocumentationViolation violation =
+            new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR);
+        DocumentationCheck check = this.componentManager.registerMockComponent(DocumentationCheck.class, "test");
+        when(check.check(this.document)).thenReturn(List.of(violation, violation));
+
+        BaseObject violationObject = addViolationObject("message", "context", "Error");
+        violationObject.setStringValue("check", "test");
+
+        assertTrue(this.manager.analyse(this.document));
+
+        assertEquals(2, this.document.getXObjects(VIOLATION_CLASS_REFERENCE).size());
     }
 
     /**
@@ -158,7 +270,9 @@ class DefaultDocumentationManagerTest
             new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
 
         // Add an existing violation xobject.
-        addViolationObject("message", "context", "Error");
+        BaseObject violationObject = addViolationObject("message", "context", "Error");
+        violationObject.setStringValue("check", "test");
+        violationObject.setIntValue("falsePositive", 0);
 
         assertFalse(this.manager.analyse(this.document));
 
