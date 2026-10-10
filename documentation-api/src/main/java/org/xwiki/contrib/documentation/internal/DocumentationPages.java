@@ -40,11 +40,19 @@ public final class DocumentationPages
      */
     public static final String APPLICATION_SPACE = "DocApp";
 
+    private static final List<String> CODE_SPACES = List.of(APPLICATION_SPACE, "Code");
+
     /**
      * The xclass marking a page as a documentation page.
      */
     public static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
-        new LocalDocumentReference(List.of(APPLICATION_SPACE, "Code"), "DocumentationClass");
+        new LocalDocumentReference(CODE_SPACES, "DocumentationClass");
+
+    /**
+     * The xclass of the violations stored in a documentation page.
+     */
+    public static final LocalDocumentReference VIOLATION_CLASS_REFERENCE =
+        new LocalDocumentReference(CODE_SPACES, "DocumentationViolationClass");
 
     private DocumentationPages()
     {

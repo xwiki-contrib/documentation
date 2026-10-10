@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.xwiki.test.ui.po.ViewPage;
 
 /**
@@ -51,6 +53,16 @@ public class DocumentationViewPage extends ViewPage
      * for the asynchronous tab load to complete and to read the listed violation messages.
      */
     private static final By TAB_CONTENT = By.id("documentationcontent");
+
+    private static final By VIOLATION_ACTIONS =
+        By.cssSelector(".documentation-validation-results .documentation-violation-actions");
+
+    private static final By FALSE_POSITIVES_TOGGLE = By.cssSelector("a[href='#documentationFalsePositives']");
+
+    private static final By FALSE_POSITIVE_ACTIONS =
+        By.cssSelector(".documentation-false-positives .documentation-violation-actions");
+
+    private static final By SUBMIT_BUTTON = By.cssSelector("button[type='submit']");
 
     private static final By ERROR_BOX = By.cssSelector("#xwikicontent .box.errormessage");
 
@@ -126,6 +138,69 @@ public class DocumentationViewPage extends ViewPage
         getDriver().waitUntilElementIsVisible(TAB_PANE);
         getDriver().waitUntilElementIsVisible(TAB_CONTENT);
         return this;
+    }
+
+    /**
+     * Marks a violation listed in the "Documentation" docextra tab as a false positive (must call
+     * {@link #openDocumentationTab()} first), and waits for the page to be reloaded.
+     *
+     * @param index the index of the violation among the reported ones, starting at 0
+     * @param reason why the violation is a false positive
+     * @return the reloaded page, with its "Documentation" docextra tab opened
+     */
+    public DocumentationViewPage markViolationAsFalsePositive(int index, String reason)
+    {
+        return markViolationAsFalsePositive(index, reason, null);
+    }
+
+    /**
+     * Marks a violation listed in the "Documentation" docextra tab as a false positive, along with the violations of
+     * the same rule in a part of the documentation (must call {@link #openDocumentationTab()} first), and waits for the
+     * page to be reloaded.
+     *
+     * @param index the index of the violation among the reported ones, starting at 0
+     * @param reason why the violation is a false positive
+     * @param scope the label of the part of the documentation in which to mark the violations of the same rule (e.g.
+     *     "This page and all the pages under it"), or {@code null} to mark the violation of the current page only
+     * @return the reloaded page, with its "Documentation" docextra tab opened
+     */
+    public DocumentationViewPage markViolationAsFalsePositive(int index, String reason, String scope)
+    {
+        WebElement actions = getDriver().findElements(VIOLATION_ACTIONS).get(index);
+        // The reason is only asked once the violation is chosen to be marked.
+        actions.findElement(By.className("documentation-violation-toggle")).click();
+        WebElement reasonInput = actions.findElement(By.name("reason"));
+        getDriver().waitUntilCondition(ExpectedConditions.visibilityOf(reasonInput));
+        reasonInput.sendKeys(reason);
+        if (scope != null) {
+            new Select(actions.findElement(By.name("scope"))).selectByVisibleText(scope);
+        }
+        return submitAndReload(actions.findElement(By.tagName("form")));
+    }
+
+    /**
+     * Reinstates a violation listed as a false positive in the "Documentation" docextra tab (must call
+     * {@link #openDocumentationTab()} first), and waits for the page to be reloaded.
+     *
+     * @param index the index of the violation among the ones marked as false positives, starting at 0
+     * @return the reloaded page, with its "Documentation" docextra tab opened
+     */
+    public DocumentationViewPage reinstateViolation(int index)
+    {
+        // The violations marked as false positives are collapsed.
+        getDriver().findElement(FALSE_POSITIVES_TOGGLE).click();
+        WebElement form = getDriver().findElements(FALSE_POSITIVE_ACTIONS).get(index).findElement(By.tagName("form"));
+        getDriver().waitUntilCondition(ExpectedConditions.visibilityOf(form));
+        return submitAndReload(form);
+    }
+
+    private DocumentationViewPage submitAndReload(WebElement form)
+    {
+        form.findElement(SUBMIT_BUTTON).click();
+        // The submission redirects to the page, with the "Documentation" docextra tab opened.
+        getDriver().waitUntilCondition(ExpectedConditions.stalenessOf(form));
+        getDriver().waitUntilElementIsVisible(TAB_CONTENT);
+        return new DocumentationViewPage();
     }
 
     /**

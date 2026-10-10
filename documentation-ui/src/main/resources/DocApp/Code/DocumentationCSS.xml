@@ -160,6 +160,29 @@ span.documentation-badge:hover {
   text-decoration: none;
   background-color: var(--brand-info);
 }
+
+/* The violations of the Documentation tab. */
+#documentationcontent .documentation-violations-title + dd + .documentation-violations-title {
+  margin-top: 1em;
+}
+
+#documentationcontent .documentation-violations-caret {
+  display: inline-block;
+  transition: transform 200ms ease-in-out;
+}
+
+#documentationcontent .documentation-violations-toggle[aria-expanded="false"] .documentation-violations-caret {
+  transform: rotate(-90deg);
+}
+
+#documentationcontent .documentation-violation-action .form-control {
+  margin: .5em 0;
+}
+
+/* The form to mark a violation as a false positive has its own submit button. */
+#documentationcontent .documentation-violation-toggle[aria-expanded="true"] {
+  display: none;
+}
 </code>
     </property>
     <property>

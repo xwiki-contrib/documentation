@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>API to validate documentation pages</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.93</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.94</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Documentation Application API</xwiki.extension.name>
     <!-- The extension's category -->

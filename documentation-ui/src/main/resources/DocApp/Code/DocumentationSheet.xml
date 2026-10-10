@@ -42,11 +42,14 @@
 #end
 #set ($violations = $doc.getObjects('DocApp.Code.DocumentationViolationClass'))
 #set ($violationsSeverity = 0)
+## The violations marked as false positives aren't reported.
 #foreach ($violation in $violations)
-  #if($violation.getValue('severity') == 'Error')
-    #set ($violationsSeverity = 2)
-  #elseif ($violation.getValue('severity') == 'Warning' &amp;&amp; $violationsSeverity &lt; 2)
-    #set ($violationsSeverity = 1)
+  #if ("$!violation.getValue('falsePositive')" != '1')
+    #if($violation.getValue('severity') == 'Error')
+      #set ($violationsSeverity = 2)
+    #elseif ($violation.getValue('severity') == 'Warning' &amp;&amp; $violationsSeverity &lt; 2)
+      #set ($violationsSeverity = 1)
+    #end
   #end
 #end
 #if ($hasEdit &amp;&amp; $violationsSeverity == 2)

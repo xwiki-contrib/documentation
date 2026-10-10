@@ -50,6 +50,12 @@
     #set ($discard = $services.documentation.checkAllPages())##
   #elseif ($request.checkAllPagesAction == 'cancel')##
     #set ($discard = $services.documentation.cancelCheckAllPages())##
+  #elseif ($request.checkAllPagesAction == 'markFalsePositives' &amp;&amp; "$!request.falsePositivesPage" != '')##
+    ## The page picker submits the reference of the page, relative to the current page.
+    #set ($markedCount = $services.documentation.markFalsePositives($request.check, $request.message,
+      $services.model.resolveDocument($request.falsePositivesPage), $request.reason))##
+    ## Display the remaining violations of the page, and how many have been marked.
+    #set ($sectionURL = "${sectionURL}&amp;falsePositivesPage=$escapetool.url($request.falsePositivesPage)&amp;markedFalsePositives=$!markedCount")##
   #end##
   ## Redirect so that reloading the page doesn't post the action again.
   $response.sendRedirect($sectionURL)
@@ -92,6 +98,96 @@
         $checkAllPagesStatus.failedCount]))&lt;/p&gt;
     #end
     #displayJobStatusLog($checkAllPagesStatus, true)
+  &lt;/div&gt;
+#end
+{{/html}}
+
+== $services.rendering.escape($services.localization.render('docapp.markFalsePositives.heading'), 'xwiki/2.1') ==
+
+{{html clean="false"}}
+#if ("$!request.markedFalsePositives" != '')
+  &lt;div class="docapp-mark-false-positives-done"&gt;
+    #success($escapetool.xml($services.localization.render('docapp.markFalsePositives.done',
+      [$request.markedFalsePositives])))
+  &lt;/div&gt;
+#end
+## First pick the page whose violations to list, along with the violations of the pages located under it.
+&lt;form class="xform docapp-false-positives-page" method="get"
+    action="$escapetool.xml($xwiki.getURL('XWiki.XWikiPreferences', 'admin'))"&gt;
+  &lt;p class="xHint"&gt;$escapetool.xml($services.localization.render('docapp.markFalsePositives.hint'))&lt;/p&gt;
+  &lt;input type="hidden" name="editor" value="globaladmin"/&gt;
+  &lt;input type="hidden" name="section" value="documentation"/&gt;
+  &lt;dl&gt;
+    &lt;dt&gt;
+      &lt;label for="docappFalsePositivesPage"&gt;$escapetool.xml($services.localization.render(
+        'docapp.markFalsePositives.page'))&lt;/label&gt;
+      &lt;span class="xHint"&gt;$escapetool.xml($services.localization.render('docapp.markFalsePositives.page.hint'))&lt;/span&gt;
+    &lt;/dt&gt;
+    &lt;dd&gt;
+      #pagePicker({
+        'id': 'docappFalsePositivesPage',
+        'name': 'falsePositivesPage',
+        'required': 'required',
+        'value': "$!request.falsePositivesPage"
+      })
+    &lt;/dd&gt;
+  &lt;/dl&gt;
+  &lt;button type="submit" class="btn btn-default"&gt;$escapetool.xml($services.localization.render(
+    'docapp.markFalsePositives.show'))&lt;/button&gt;
+&lt;/form&gt;
+## Then mark the violations of a rule at once.
+#if ("$!request.falsePositivesPage" != '')
+  #set ($falsePositivesPageReference = $services.model.resolveDocument($request.falsePositivesPage))
+  #set ($violationGroups = $services.documentation.getViolationGroups($falsePositivesPageReference))
+  &lt;div class="docapp-violation-groups"&gt;
+  #if ($violationGroups.isEmpty())
+    #info($escapetool.xml($services.localization.render('docapp.markFalsePositives.none',
+      [$xwiki.getDocument($falsePositivesPageReference).plainTitle])))
+  #end
+  #foreach ($violationGroup in $violationGroups)
+    #set ($groupId = "docappViolationGroup$foreach.count")
+    &lt;div class="docapp-violation-group"&gt;
+      &lt;p class="docapp-violation-group-message"&gt;
+        #if ($violationGroup.severity == 'Error')
+          #inlineError($escapetool.xml($violationGroup.message))
+        #else
+          #inlineWarning($escapetool.xml($violationGroup.message))
+        #end
+      &lt;/p&gt;
+      &lt;p class="xHint"&gt;$escapetool.xml($services.localization.render('docapp.markFalsePositives.group.count',
+        [$violationGroup.violationCount, $violationGroup.pages.size()]))&lt;/p&gt;
+      ## The first pages are listed, the others are folded.
+      &lt;ul class="docapp-violation-group-pages"&gt;
+        #foreach ($violationPage in $violationGroup.pages)
+          #if ($foreach.count == 6)
+            &lt;/ul&gt;
+            &lt;a role="button" class="docapp-violation-group-toggle" data-toggle="collapse" href="#${groupId}Pages"
+                aria-expanded="false" aria-controls="${groupId}Pages"&gt;
+              $escapetool.xml($services.localization.render('docapp.markFalsePositives.group.more',
+                [$mathtool.sub($violationGroup.pages.size(), 5)]))
+            &lt;/a&gt;
+            &lt;ul id="${groupId}Pages" class="docapp-violation-group-pages collapse"&gt;
+          #end
+          &lt;li&gt;&lt;a href="$escapetool.xml($xwiki.getURL($violationPage))"&gt;$escapetool.xml(
+            $xwiki.getDocument($violationPage).plainTitle)&lt;/a&gt;&lt;/li&gt;
+        #end
+      &lt;/ul&gt;
+      &lt;form class="docapp-mark-false-positives" method="post"
+          action="$escapetool.xml($xwiki.getURL('XWiki.XWikiPreferences', 'admin', 'editor=globaladmin&amp;section=documentation'))"&gt;
+        &lt;input type="hidden" name="form_token" value="$!escapetool.xml($services.csrf.token)"/&gt;
+        &lt;input type="hidden" name="falsePositivesPage" value="$escapetool.xml($request.falsePositivesPage)"/&gt;
+        &lt;input type="hidden" name="check" value="$escapetool.xml($violationGroup.check)"/&gt;
+        &lt;input type="hidden" name="message" value="$escapetool.xml($violationGroup.message)"/&gt;
+        &lt;label for="${groupId}Reason"&gt;$escapetool.xml($services.localization.render(
+          'docapp.ui.review.falsePositive.reason'))&lt;/label&gt;
+        &lt;input type="text" id="${groupId}Reason" name="reason" class="form-control input-sm"/&gt;
+        &lt;button type="submit" name="checkAllPagesAction" value="markFalsePositives" class="btn btn-primary btn-sm"&gt;
+          $escapetool.xml($services.localization.render('docapp.markFalsePositives.submit',
+            [$violationGroup.violationCount]))
+        &lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  #end
   &lt;/div&gt;
 #end
 {{/html}}
@@ -467,6 +563,25 @@
    does, since each contribution displays its own heading. */
 #admin-page-content &gt; h2.wikigeneratedheader {
   display: none;
+}
+
+/* The violations of a page, grouped by rule, to mark as false positives. */
+.docapp-violation-groups {
+  margin-top: 1.5em;
+}
+
+.docapp-violation-group {
+  margin-bottom: 1.5em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ddd;
+}
+
+.docapp-violation-group-pages {
+  margin-bottom: .5em;
+}
+
+.docapp-mark-false-positives .form-control {
+  margin: .5em 0;
 }</code>
     </property>
     <property>

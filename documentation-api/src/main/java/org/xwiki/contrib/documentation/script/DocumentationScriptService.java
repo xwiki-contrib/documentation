@@ -26,11 +26,15 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.concurrent.ContextStoreManager;
+import org.xwiki.contrib.documentation.DocumentationException;
 import org.xwiki.contrib.documentation.DocumentationManager;
+import org.xwiki.contrib.documentation.DocumentationViolationGroup;
 import org.xwiki.contrib.documentation.internal.CheckAllPagesJob;
+import org.xwiki.contrib.documentation.internal.FalsePositives;
 import org.xwiki.index.IndexException;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Job;
@@ -39,6 +43,7 @@ import org.xwiki.job.JobExecutor;
 import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.event.status.CancelableJobStatus;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.security.authorization.AccessDeniedException;
@@ -83,6 +88,11 @@ public class DocumentationScriptService implements ScriptService
 
     @Inject
     private Provider<XWikiContext> xcontextProvider;
+
+    @Inject
+    private FalsePositives falsePositives;
+
+
 
     /**
      * @param document the document on which to perform the documentation analysis
@@ -167,6 +177,114 @@ public class DocumentationScriptService implements ScriptService
         List<String> jobId = CheckAllPagesJob.getJobId(getCurrentWikiReference().getName());
         Job job = this.jobExecutor.getJob(jobId);
         return job != null ? job.getStatus() : this.jobStatusStore.getJobStatus(jobId);
+    }
+
+    /**
+     * @return true if the current user can mark the violations of the documentation pages of the current wiki as false
+     *     positives, i.e. has the Admin right on it
+     * @since 1.16
+     */
+    public boolean canMarkFalsePositives()
+    {
+        return this.authorization.hasAccess(Right.ADMIN, getCurrentWikiReference());
+    }
+
+    /**
+     * Marks a violation of a documentation page as a false positive, so that it's not reported anymore, for as long as
+     * the check reports it.
+     *
+     * @param reference the documentation page holding the violation
+     * @param number the number of the violation xobject
+     * @param reason why the violation is a false positive, optional
+     * @return true if the violation has been marked, false if there's no such violation or if it's already marked
+     * @throws AccessDeniedException if the current user doesn't have the Admin right on the wiki of the page
+     * @throws DocumentationException if the page fails to be loaded or saved
+     * @since 1.16
+     */
+    public boolean markFalsePositive(DocumentReference reference, int number, String reason)
+        throws AccessDeniedException, DocumentationException
+    {
+        this.authorization.checkAccess(Right.ADMIN, reference.getWikiReference());
+        return this.falsePositives.mark(reference, number, reason);
+    }
+
+    /**
+     * Reinstates a violation of a documentation page that was marked as a false positive, so that it's reported
+     * again.
+     *
+     * @param reference the documentation page holding the violation
+     * @param number the number of the violation xobject
+     * @return true if the violation has been reinstated, false if there's no such violation or if it isn't marked
+     * @throws AccessDeniedException if the current user doesn't have the Admin right on the wiki of the page
+     * @throws DocumentationException if the page fails to be loaded or saved
+     * @since 1.16
+     */
+    public boolean unmarkFalsePositive(DocumentReference reference, int number)
+        throws AccessDeniedException, DocumentationException
+    {
+        this.authorization.checkAccess(Right.ADMIN, reference.getWikiReference());
+        return this.falsePositives.unmark(reference, number);
+    }
+
+    /**
+     * @param page a documentation page
+     * @return the pages in which the violations of a rule reported in the passed page can be marked as false positives
+     *     along with the violations of the pages located under them (see
+     *     {@link #markFalsePositives(String, String, DocumentReference, String)}): the passed page when it's a nested
+     *     page, then the nested pages it's located under, the closest first
+     * @since 1.16
+     */
+    public List<DocumentReference> getFalsePositiveScopes(DocumentReference page)
+    {
+        return this.falsePositives.getScopes(page);
+    }
+
+    /**
+     * Groups the violations not marked as false positives of a documentation page and, when it's a nested page, of the
+     * pages located under it, by rule, i.e. by check and message, so that the violations of a rule that doesn't apply
+     * to a whole part of the documentation can be marked at once with
+     * {@link #markFalsePositives(String, String, DocumentReference, String)}.
+     *
+     * @param page the page whose violations to group, along with the violations of the pages located under it when
+     *     it's a nested page
+     * @return the groups of violations, the ones with the most violations first
+     * @throws AccessDeniedException if the current user doesn't have the Admin right on the wiki of the page
+     * @throws DocumentationException if the pages fail to be found or loaded
+     * @since 1.16
+     */
+    public List<DocumentationViolationGroup> getViolationGroups(DocumentReference page)
+        throws AccessDeniedException, DocumentationException
+    {
+        this.authorization.checkAccess(Right.ADMIN, page.getWikiReference());
+        return this.falsePositives.getGroups(page);
+    }
+
+    /**
+     * Marks as false positives the violations of a rule, i.e. reported by a check with a message, in a documentation
+     * page and, when it's a nested page, in the pages located under it. Useful when a rule doesn't apply to a whole
+     * part of the documentation.
+     *
+     * @param check the hint of the check that reported the violations to mark (see
+     *     {@link DocumentationViolationGroup#getCheck()})
+     * @param message the message of the violations to mark
+     * @param page the page whose violations to mark, along with the violations of the pages located under it when it's
+     *     a nested page
+     * @param reason why the violations are false positives, optional
+     * @return the number of violations marked
+     * @throws AccessDeniedException if the current user doesn't have the Admin right on the wiki of the page
+     * @throws DocumentationException if the pages fail to be found, loaded or saved
+     * @throws IllegalArgumentException if the check, the message or the page is missing
+     * @since 1.16
+     */
+    public int markFalsePositives(String check, String message, DocumentReference page, String reason)
+        throws AccessDeniedException, DocumentationException
+    {
+        if (check == null || StringUtils.isBlank(message) || page == null) {
+            throw new IllegalArgumentException(
+                "The check, the message and the page of the violations to mark are needed");
+        }
+        this.authorization.checkAccess(Right.ADMIN, page.getWikiReference());
+        return this.falsePositives.markAll(check, message, page, reason);
     }
 
     private WikiReference getCurrentWikiReference()

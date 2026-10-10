@@ -47,11 +47,23 @@
   #set ($extra = "$extra AND doc.fullName &lt;&gt; :docapp_currentdoc")
   #set ($discard = $params.put('docapp_currentdoc', "$!request.current"))
 #end
+## Only list the documentation violations reported, or only the ones marked as false positives, if asked.
+#set ($falsePositiveFrom = '')
+#if ("$!request.falsePositives" == 'exclude' || "$!request.falsePositives" == 'only')
+  #set ($falsePositiveFrom = ', IntegerProperty fp')
+  #set ($extra = "$extra AND fp.id.id = obj.id AND fp.id.name = :docapp_falsepositive AND fp.value = :docapp_falsepositive_value")
+  #set ($discard = $params.put('docapp_falsepositive', 'falsePositive'))
+  #if ($request.falsePositives == 'only')
+    #set ($discard = $params.put('docapp_falsepositive_value', 1))
+  #else
+    #set ($discard = $params.put('docapp_falsepositive_value', 0))
+  #end
+#end
 ## Use filterLocation since addLivetableLocationFilter is buggy when called several times (it'll add the
 ## same HQL binding name every time it's called! See https://jira.xwiki.org/browse/XWIKI-17463).
 ## Also note that we don't call addLocationFilter since we use a Map for $params.
 #filterLocation($extra, $params, $!request.location, 'locationFilterValue1')
-#gridresultwithfilter("$!request.classname" $request.collist.split(',') '' "${extra}" $params)
+#gridresultwithfilter("$!request.classname" $request.collist.split(',') $falsePositiveFrom "${extra}" $params)
 {{/velocity}}
 </content>
 </xwikidoc>

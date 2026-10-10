@@ -74,7 +74,9 @@ public class DocumentationEventListener extends AbstractEventListener
         // 1) Only validate documentation pages (see DocumentationPages#isAnalysable)
         // 2) Protection for infinite recursion: don't trigger the analysis when the save is done by the Documentation
         //    checker. We identify this by the save message.
-        if (DocumentationPages.isAnalysable(document) && !"Documentation analysis".equals(document.getComment())) {
+        if (DocumentationPages.isAnalysable(document)
+            && !DefaultDocumentationManager.ANALYSIS_COMMENT.equals(document.getComment()))
+        {
             try {
                 this.manager.analyse(document);
             } catch (IndexException e) {

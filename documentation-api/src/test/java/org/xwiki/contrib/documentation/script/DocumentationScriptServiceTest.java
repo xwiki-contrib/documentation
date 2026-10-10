@@ -31,6 +31,8 @@ import org.mockito.ArgumentCaptor;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.concurrent.ContextStoreManager;
 import org.xwiki.contrib.documentation.DocumentationManager;
+import org.xwiki.contrib.documentation.DocumentationViolationGroup;
+import org.xwiki.contrib.documentation.internal.FalsePositives;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobException;
@@ -39,6 +41,7 @@ import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.CancelableJobStatus;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.security.authorization.AccessDeniedException;
 import org.xwiki.security.authorization.ContextualAuthorizationManager;
@@ -63,7 +66,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -75,6 +80,8 @@ import static org.mockito.Mockito.when;
 class DocumentationScriptServiceTest
 {
     private static final WikiReference WIKI_REFERENCE = new WikiReference("wiki");
+
+    private static final DocumentReference PAGE_REFERENCE = new DocumentReference("wiki", "documentation", "Page");
 
     private static final List<String> JOB_ID = List.of("documentation", "checkAllPages", "wiki");
 
@@ -98,6 +105,10 @@ class DocumentationScriptServiceTest
 
     @MockComponent
     private Provider<XWikiContext> xcontextProvider;
+
+    @MockComponent
+    private FalsePositives falsePositives;
+
 
     @BeforeEach
     void setUp()
@@ -248,6 +259,79 @@ class DocumentationScriptServiceTest
     void getCheckAllPagesStatusWhenNeverRun()
     {
         assertNull(this.scriptService.getCheckAllPagesStatus());
+    }
+
+    @Test
+    void canMarkFalsePositives()
+    {
+        when(this.authorization.hasAccess(Right.ADMIN, WIKI_REFERENCE)).thenReturn(true);
+
+        assertTrue(this.scriptService.canMarkFalsePositives());
+    }
+
+    @Test
+    void markAndUnmarkFalsePositive() throws Exception
+    {
+        when(this.falsePositives.mark(PAGE_REFERENCE, 2, "reason")).thenReturn(true);
+        when(this.falsePositives.unmark(PAGE_REFERENCE, 2)).thenReturn(true);
+
+        assertTrue(this.scriptService.markFalsePositive(PAGE_REFERENCE, 2, "reason"));
+        assertTrue(this.scriptService.unmarkFalsePositive(PAGE_REFERENCE, 2));
+
+        verify(this.authorization, times(2)).checkAccess(Right.ADMIN, WIKI_REFERENCE);
+    }
+
+    @Test
+    void markAndUnmarkFalsePositiveWhenNotAdmin() throws Exception
+    {
+        doThrow(AccessDeniedException.class).when(this.authorization).checkAccess(Right.ADMIN, WIKI_REFERENCE);
+
+        assertThrows(AccessDeniedException.class, () -> this.scriptService.markFalsePositive(PAGE_REFERENCE, 2, null));
+        assertThrows(AccessDeniedException.class, () -> this.scriptService.unmarkFalsePositive(PAGE_REFERENCE, 2));
+        assertThrows(AccessDeniedException.class,
+            () -> this.scriptService.markFalsePositives("technicalId", "message", PAGE_REFERENCE, null));
+        assertThrows(AccessDeniedException.class, () -> this.scriptService.getViolationGroups(PAGE_REFERENCE));
+
+        verifyNoInteractions(this.falsePositives);
+    }
+
+    @Test
+    void getFalsePositiveScopes()
+    {
+        List<DocumentReference> scopes = List.of(PAGE_REFERENCE);
+        when(this.falsePositives.getScopes(PAGE_REFERENCE)).thenReturn(scopes);
+
+        assertSame(scopes, this.scriptService.getFalsePositiveScopes(PAGE_REFERENCE));
+    }
+
+    @Test
+    void getViolationGroups() throws Exception
+    {
+        List<DocumentationViolationGroup> groups = List.of(new DocumentationViolationGroup("verb", "message", "Error"));
+        when(this.falsePositives.getGroups(PAGE_REFERENCE)).thenReturn(groups);
+
+        assertSame(groups, this.scriptService.getViolationGroups(PAGE_REFERENCE));
+    }
+
+    @Test
+    void markFalsePositives() throws Exception
+    {
+        when(this.falsePositives.markAll("technicalId", "message", PAGE_REFERENCE, "reason")).thenReturn(3);
+
+        assertEquals(3, this.scriptService.markFalsePositives("technicalId", "message", PAGE_REFERENCE, "reason"));
+    }
+
+    @Test
+    void markFalsePositivesWhenMissingArguments()
+    {
+        assertThrows(IllegalArgumentException.class,
+            () -> this.scriptService.markFalsePositives("technicalId", "message", null, null));
+        assertThrows(IllegalArgumentException.class,
+            () -> this.scriptService.markFalsePositives(null, "message", PAGE_REFERENCE, null));
+        assertThrows(IllegalArgumentException.class,
+            () -> this.scriptService.markFalsePositives("technicalId", " ", PAGE_REFERENCE, null));
+
+        verifyNoInteractions(this.falsePositives);
     }
 
     private CancelableJobStatus mockCancelableJob(JobStatus.State state)
