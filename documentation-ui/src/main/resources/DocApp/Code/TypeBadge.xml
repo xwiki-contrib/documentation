@@ -172,7 +172,7 @@
   #if ("$!type" != '')
     #getTargetSpaceReference($targetSpaceReference)
     ## Look for a Type page that uses the current page naming strategy
-    #set ($transformedType = $services.modelvalidation.manager.entityReferenceNameStrategy.transform($type))
+    #set ($transformedType = $services.modelvalidation.transformName($type))
     #set ($typeReference = $services.model.createSpaceReference($transformedType, $targetSpaceReference))
     #set ($typeDocReference = $services.model.resolveDocument('', $typeReference))
     #if ($xwiki.exists($typeDocReference))
