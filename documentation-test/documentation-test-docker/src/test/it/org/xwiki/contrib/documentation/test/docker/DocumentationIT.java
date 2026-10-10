@@ -95,18 +95,21 @@ class DocumentationIT
         setup.loginAsSuperAdmin();
 
         // Violation scenario page: an Image macro missing its "alt" parameter is a single WARNING to start with. The
-        // ordered tests below then edit this same page (raw image syntax -> ERROR, then fixed -> no violation).
+        // ordered tests below then edit this same page (raw image syntax -> ERROR, then fixed -> no violation). The
+        // Image macro has a "size" parameter since, otherwise, it displays its own error box in the page content.
         setup.deletePage(page(VIOLATION_PAGE));
-        setup.createPage(page(VIOLATION_PAGE), "{{image reference=\"foo.png\"/}}", "Image sample", "xwiki/2.1");
+        setup.createPage(page(VIOLATION_PAGE), "{{image reference=\"foo.png\" size=\"small\"/}}", "Image sample",
+            "xwiki/2.1");
         setup.addObject(page(VIOLATION_PAGE), DOC_CLASS, "type", "reference");
 
-        // Structure + navigation page: a How-To with FAQ and Related sections and two documentation children, so that
-        // both the sheet structure and the "More" navigation section can be asserted on a single page.
+        // Structure + navigation page: a How-To with headings in its content and FAQ, a Related section and two
+        // documentation children, so that the sheet structure, its table of contents and the "More" navigation section
+        // can be asserted on a single page.
         setup.deletePage(GUIDE_REFERENCE, true);
-        setup.createPage(GUIDE_SPACE, "WebHome", "", "Guide", "xwiki/2.1");
+        setup.createPage(GUIDE_SPACE, "WebHome", "== MyContentHeading ==\n\nMyContentText", "Guide", "xwiki/2.1");
         setup.addObject(GUIDE_REFERENCE, DOC_CLASS,
             "type", "howto",
-            "faq", "MyFaqAnswerText",
+            "faq", "== MyFaqQuestion ==\n\nMyFaqAnswerText",
             "related", "MyRelatedText");
         createChild(setup, "child-a", "Child A", "howto");
         createChild(setup, "child-b", "Child B", "reference");
@@ -141,12 +144,17 @@ class DocumentationIT
         String content = viewPage.getContent();
 
         // The sheet renders the type-specific heading and the FAQ/Related sections from the DocumentationClass object
-        // properties (not from the document body, which the sheet does not display).
+        // properties.
         assertTrue(content.contains("Steps"), "Missing the type-specific 'Steps' heading in:\n" + content);
         assertTrue(content.contains("FAQ"), "Missing the 'FAQ' section heading in:\n" + content);
         assertTrue(content.contains("MyFaqAnswerText"), "Missing the FAQ content in:\n" + content);
         assertTrue(content.contains("Related"), "Missing the 'Related' section heading in:\n" + content);
         assertTrue(content.contains("MyRelatedText"), "Missing the Related content in:\n" + content);
+
+        // The table of contents lists the headings of the page content and FAQ, next to the ones of the sheet.
+        List<String> tocEntries = viewPage.getTableOfContentsEntries();
+        assertTrue(tocEntries.containsAll(List.of("Steps", "MyContentHeading", "FAQ", "MyFaqQuestion")),
+            "Missing headings in the table of contents: " + tocEntries);
 
         // The "More" navigation section (heading + search form) is rendered once the page has documentation children.
         // The children themselves are listed by an asynchronous Live Data table, not asserted here to keep the test
@@ -195,7 +203,7 @@ class DocumentationIT
     {
         // Fixing the content (a proper Image macro with an alt parameter) makes the analysis remove the violations.
         WikiEditPage editPage = WikiEditPage.gotoPage(page(VIOLATION_PAGE));
-        editPage.setContent("{{image reference=\"foo.png\" alt=\"A foo\"/}}");
+        editPage.setContent("{{image reference=\"foo.png\" size=\"small\" alt=\"A foo\"/}}");
         editPage.clickSaveAndView();
 
         setup.gotoPage(page(VIOLATION_PAGE));

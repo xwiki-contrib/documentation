@@ -78,6 +78,8 @@ public class DocumentationViewPage extends ViewPage
 
     private static final By CONTENT_LINK = By.cssSelector("#xwikicontent a[href]");
 
+    private static final By TABLE_OF_CONTENTS_ENTRY = By.cssSelector("#xwikicontent .floatinginfobox .wikitoc a");
+
     /**
      * @return true if the on-page "at least one error" validation box is displayed
      */
@@ -237,6 +239,16 @@ public class DocumentationViewPage extends ViewPage
     public List<String> getContentLinkLabels()
     {
         return getDriver().findElementsWithoutWaiting(CONTENT_LINK).stream()
+            .map(WebElement::getText)
+            .toList();
+    }
+
+    /**
+     * @return the labels of the entries of the table of contents displayed at the top of the page, in document order
+     */
+    public List<String> getTableOfContentsEntries()
+    {
+        return getDriver().findElementsWithoutWaiting(TABLE_OF_CONTENTS_ENTRY).stream()
             .map(WebElement::getText)
             .toList();
     }
