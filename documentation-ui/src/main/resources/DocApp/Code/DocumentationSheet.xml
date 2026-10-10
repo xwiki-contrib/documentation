@@ -125,8 +125,17 @@
 ## reselect the DocumentationClass object to make sure the content/FAQ/Highlights/Related fields are displayed
 ## from it.
 $doc.use('DocApp.Code.DocumentationClass')
+## In view mode, the content and the FAQ are displayed by the documentationContent macro, which keeps their headings
+## visible to the TOC above ($doc.display() renders them as HTML, hiding their headings), while still executing them
+## with the rights of their own author.
 #if (!$uixExecuted)
-  $doc.display('content')
+  #if ($xcontext.action == 'edit')
+    $doc.display('content')
+  #else
+
+    {{documentationContent field="content"/}}
+
+  #end
 #end
 ## Display the FAQ section if it's not empty
 #if ($hasFAQ || $xcontext.action == 'edit')
@@ -137,8 +146,12 @@ $doc.use('DocApp.Code.DocumentationClass')
     * Only for topics specific to the page and that should be not widely visible and findable from filtering from the top level of the documentation.
     * Maximum of 1-2 sentences. Longer text should be put in a dedicated page.
 
+    $doc.display('faq')
+  #else
+
+    {{documentationContent field="faq"/}}
+
   #end
-  $doc.display('faq')
 #end
 #if ($xcontext.action == 'edit')
   = Highlights =
