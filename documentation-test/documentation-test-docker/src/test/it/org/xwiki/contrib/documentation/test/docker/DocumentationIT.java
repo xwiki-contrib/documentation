@@ -31,9 +31,12 @@ import org.openqa.selenium.By;
 import org.xwiki.administration.test.po.AdministrationSectionPage;
 import org.xwiki.contrib.documentation.test.po.DocumentationAdministrationSectionPage;
 import org.xwiki.contrib.documentation.test.po.DocumentationHomePage;
+import org.xwiki.contrib.documentation.test.po.DocumentationEditPage;
 import org.xwiki.contrib.documentation.test.po.DocumentationViewPage;
 import org.xwiki.livedata.test.po.TableLayoutElement;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.repository.test.SolrTestUtils;
+import org.xwiki.test.docker.junit5.TestConfiguration;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.ui.TestUtils;
 import org.xwiki.test.ui.po.CopyOrRenameOrDeleteStatusPage;
@@ -562,6 +565,52 @@ class DocumentationIT
         String tabContent = new DocumentationViewPage().openDocumentationTab().getDocumentationTabContent();
         assertTrue(tabContent.contains("Page name must follow the kebab-case naming convention"),
             "The renamed page should be analysed under its new name, but got:\n" + tabContent);
+    }
+
+    @Test
+    @Order(17)
+    void reusesContentFragments(TestUtils setup, TestConfiguration testConfiguration) throws Exception
+    {
+        // A content fragment, held by a documentation page which displays it too, is created from the edit form of the
+        // page.
+        DocumentReference ownerPage = page("fragment-owner");
+        setup.deletePage(ownerPage);
+        setup.createPage(ownerPage, "{{fragment name=\"shared-info\"/}}", "Fragment owner", "xwiki/2.1");
+        setup.addObject(ownerPage, DOC_CLASS, "type", "reference");
+        DocumentationViewPage viewPage = DocumentationEditPage.gotoPage(ownerPage)
+            .addContentFragment("shared-info", "== MySharedHeading ==\n\nMySharedFragmentText")
+            .clickSaveAndView();
+        assertFalse(viewPage.hasRenderingError(), "The content fragment should be displayed without error");
+        assertTrue(viewPage.getContent().contains("MySharedFragmentText"),
+            "Missing the content fragment in:\n" + viewPage.getContent());
+        // Its headings are listed by the table of contents.
+        List<String> tocEntries = viewPage.getTableOfContentsEntries();
+        assertTrue(tocEntries.contains("MySharedHeading"),
+            "Missing the content fragment heading in the table of contents: " + tocEntries);
+
+        // Another page displays it, referencing the page holding it relatively.
+        DocumentReference userPage = page("fragment-user");
+        setup.deletePage(userPage);
+        setup.createPage(userPage, "{{fragment reference=\"fragment-owner\" name=\"shared-info\"/}}",
+            "Fragment user", "xwiki/2.1");
+        setup.gotoPage(userPage);
+        viewPage = new DocumentationViewPage();
+        assertFalse(viewPage.hasRenderingError(), "The content fragment should be displayed without error");
+        assertTrue(viewPage.getContent().contains("MySharedFragmentText"),
+            "Missing the content fragment in:\n" + viewPage.getContent());
+
+        // The edit form lists the pages using the content fragment, found from the backlinks of the page holding it,
+        // which are stored once the page using it is indexed. Reach the wiki through the servlet engine address, which
+        // the test (unlike the browser) can resolve whatever the servlet engine.
+        new SolrTestUtils(setup, testConfiguration.getServletEngine()).waitEmptyQueue();
+        DocumentationEditPage editPage = DocumentationEditPage.gotoPage(ownerPage);
+        assertEquals(List.of("Fragment owner", "Fragment user"), editPage.getContentFragmentUsages("shared-info"));
+
+        // Once removed, the pages using it display an error.
+        editPage.removeContentFragment("shared-info").clickSaveAndView();
+        setup.gotoPage(userPage);
+        assertTrue(new DocumentationViewPage().hasRenderingError(),
+            "Using a removed content fragment should display an error");
     }
 
     /**

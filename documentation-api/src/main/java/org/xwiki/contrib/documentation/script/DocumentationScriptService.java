@@ -34,6 +34,7 @@ import org.xwiki.contrib.documentation.DocumentationException;
 import org.xwiki.contrib.documentation.DocumentationManager;
 import org.xwiki.contrib.documentation.DocumentationViolationGroup;
 import org.xwiki.contrib.documentation.internal.CheckAllPagesJob;
+import org.xwiki.contrib.documentation.internal.ContentFragments;
 import org.xwiki.contrib.documentation.internal.FalsePositives;
 import org.xwiki.index.IndexException;
 import org.xwiki.job.DefaultRequest;
@@ -92,6 +93,9 @@ public class DocumentationScriptService implements ScriptService
 
     @Inject
     private FalsePositives falsePositives;
+
+    @Inject
+    private ContentFragments contentFragments;
 
 
 
@@ -297,6 +301,23 @@ public class DocumentationScriptService implements ScriptService
         }
         this.authorization.checkAccess(Right.ADMIN, page.getWikiReference());
         return this.falsePositives.markAll(check, message, page, reason);
+    }
+
+    /**
+     * Finds the pages using a content fragment (with the {@code fragment} macro), so that the authors of the content
+     * fragment know which pages their changes affect.
+     *
+     * @param page the page holding the content fragment
+     * @param name the name of the content fragment
+     * @return the pages using the content fragment that the current user can view, including the page holding it when
+     *     it uses it
+     * @throws DocumentationException if the pages fail to be loaded
+     * @since 1.18
+     */
+    public List<DocumentReference> getContentFragmentUsages(DocumentReference page, String name)
+        throws DocumentationException
+    {
+        return this.contentFragments.getUsages(page, name);
     }
 
     private WikiReference getCurrentWikiReference()

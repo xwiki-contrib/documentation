@@ -86,6 +86,21 @@ docapp.markFalsePositives.group.count={0,choice,1#1 violation|1&lt;{0} violation
 docapp.markFalsePositives.group.more={0,choice,1#Show 1 more page|1&lt;Show {0} more pages}
 docapp.markFalsePositives.submit={0,choice,1#Mark this violation as a false positive|1&lt;Mark these {0} violations as false positives}
 docapp.markFalsePositives.done=Violations marked as false positives: {0}.
+docapp.fragments.title=Content Fragments
+docapp.fragments.hint=Content fragments hold small content (e.g. an info box) that several pages display with the fragment macro, without having to create a page only to hold that content. Changing a content fragment changes all the pages using it, which are listed below it.
+docapp.fragments.legend=Content fragment "{0}"
+docapp.fragments.legend.new=New content fragment
+docapp.fragments.name=Name
+docapp.fragments.name.hint=Unique in the page, in lowercase words separated by hyphens, e.g. hidden-page-info.
+docapp.fragments.description=Description
+docapp.fragments.description.hint=What the content fragment is about, for the authors of the pages using it.
+docapp.fragments.content=Content
+docapp.fragments.usage=Display it with:
+docapp.fragments.usedIn=Used in:
+docapp.fragments.notUsed=Not used by any page yet.
+docapp.fragments.remove=Remove this content fragment when saving the page
+docapp.fragments.removeNew=Remove
+docapp.fragments.add=Add a content fragment
 </content>
   <object>
     <name>DocApp.Code.Translations</name>

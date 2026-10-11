@@ -74,6 +74,13 @@
       <version>${platform.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- To wait for the indexing of the backlinks listing the pages using a content fragment. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-search-test-utils</artifactId>
+      <version>${platform.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-test-docker</artifactId>

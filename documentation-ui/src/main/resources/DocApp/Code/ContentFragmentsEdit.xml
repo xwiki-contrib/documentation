@@ -1,0 +1,246 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.6" reference="DocApp.Code.ContentFragmentsEdit" locale="">
+  <web>DocApp.Code</web>
+  <name>ContentFragmentsEdit</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Content Fragments Edit</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+## Edit form of the content fragments held by the documentation page being edited (included by
+## DocApp.Code.DocumentationSheet in edit mode). The content fragments are DocApp.Code.ContentFragmentClass objects,
+## created and removed by the save action through the "objectPolicy" and "deletedObjects" request parameters.
+#set ($fragmentClass = 'DocApp.Code.ContentFragmentClass')
+#set ($fragments = $doc.getObjects($fragmentClass))
+#set ($nextNumber = 0)
+#foreach ($fragment in $fragments)
+  #if ($fragment.number &gt;= $nextNumber)
+    #set ($nextNumber = $fragment.number + 1)
+  #end
+#end
+#set ($localReference = $services.model.serialize($doc.documentReference, 'local'))
+## Escapes a value for HTML, along with the curly brackets, so that a value containing wiki syntax (such as the end
+## of the html macro) can't be interpreted as wiki syntax by the html macro wrapping the fields.
+#macro (docappEscape $text)$!escapetool.xml($text).replace('{', '&amp;#123;')#end
+#macro (docappFragmentFields $number $name $description $content)
+  #set ($prefix = "${fragmentClass}_${number}_")
+  &lt;fieldset class="docapp-fragment"&gt;
+    &lt;legend&gt;#if ("$!name" != '')#docappEscape($services.localization.render('docapp.fragments.legend', [$name]))#else$escapetool.xml($services.localization.render('docapp.fragments.legend.new'))#end&lt;/legend&gt;
+    &lt;dl&gt;
+      &lt;dt&gt;
+        &lt;label for="${prefix}name"&gt;$escapetool.xml($services.localization.render('docapp.fragments.name'))&lt;/label&gt;
+        &lt;span class="xHint"&gt;$escapetool.xml($services.localization.render('docapp.fragments.name.hint'))&lt;/span&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        &lt;input type="text" id="${prefix}name" name="${prefix}name" value="#docappEscape($name)" size="40"
+          required="required" pattern="[a-z0-9]+(-[a-z0-9]+)*" /&gt;
+      &lt;/dd&gt;
+      &lt;dt&gt;
+        &lt;label for="${prefix}description"&gt;$escapetool.xml($services.localization.render('docapp.fragments.description'))&lt;/label&gt;
+        &lt;span class="xHint"&gt;$escapetool.xml($services.localization.render('docapp.fragments.description.hint'))&lt;/span&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        &lt;input type="text" id="${prefix}description" name="${prefix}description" value="#docappEscape($description)" size="80" /&gt;
+      &lt;/dd&gt;
+      &lt;dt&gt;
+        &lt;label for="${prefix}content"&gt;$escapetool.xml($services.localization.render('docapp.fragments.content'))&lt;/label&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        &lt;textarea id="${prefix}content" name="${prefix}content" rows="5" cols="80"&gt;#docappEscape($content)&lt;/textarea&gt;
+      &lt;/dd&gt;
+    &lt;/dl&gt;
+    #if ("$!name" != '')
+      &lt;p&gt;
+        $escapetool.xml($services.localization.render('docapp.fragments.usage'))
+        #set ($usageSyntax = '{{fragment reference="' + $localReference + '" name="' + $name + '"/}}')
+        &lt;code&gt;#docappEscape($usageSyntax)&lt;/code&gt;
+      &lt;/p&gt;
+      #set ($usages = $services.documentation.getContentFragmentUsages($doc.documentReference, $name))
+      #if ($usages.isEmpty())
+        &lt;p&gt;$escapetool.xml($services.localization.render('docapp.fragments.notUsed'))&lt;/p&gt;
+      #else
+        &lt;p&gt;$escapetool.xml($services.localization.render('docapp.fragments.usedIn'))&lt;/p&gt;
+        &lt;ul class="docapp-fragment-usages"&gt;
+          #foreach ($usage in $usages)
+            &lt;li&gt;&lt;a href="$xwiki.getURL($usage)"&gt;#docappEscape($xwiki.getDocument($usage).plainTitle)&lt;/a&gt;&lt;/li&gt;
+          #end
+        &lt;/ul&gt;
+      #end
+      &lt;p&gt;
+        &lt;label&gt;
+          &lt;input type="checkbox" name="deletedObjects" value="${fragmentClass}_${number}" /&gt;
+          $escapetool.xml($services.localization.render('docapp.fragments.remove'))
+        &lt;/label&gt;
+      &lt;/p&gt;
+    #else
+      &lt;p&gt;
+        &lt;button type="button" class="btn btn-default docapp-fragment-remove"&gt;$escapetool.xml($services.localization.render('docapp.fragments.removeNew'))&lt;/button&gt;
+      &lt;/p&gt;
+    #end
+  &lt;/fieldset&gt;
+#end
+#set ($discard = $xwiki.jsx.use('DocApp.Code.ContentFragmentsEdit'))
+= $services.rendering.escape($services.localization.render('docapp.fragments.title'), 'xwiki/2.1') =
+$services.rendering.escape($services.localization.render('docapp.fragments.hint'), 'xwiki/2.1')
+
+{{html clean="false"}}
+&lt;div class="docapp-fragments xform" data-next-number="$nextNumber"&gt;
+  #foreach ($fragment in $fragments)
+    #docappFragmentFields($fragment.number $fragment.getValue('name') $fragment.getValue('description') $fragment.getValue('content'))
+  #end
+  ## The fields of a new content fragment, added by the "Add" button. The save action creates the object from them.
+  &lt;template class="docapp-fragment-template"&gt;
+    &lt;input type="hidden" name="objectPolicy" value="updateOrCreate" /&gt;
+    #docappFragmentFields('__number__' '' '' '')
+  &lt;/template&gt;
+  &lt;p&gt;
+    &lt;button type="button" class="btn btn-default docapp-fragment-add"&gt;$escapetool.xml($services.localization.render('docapp.fragments.add'))&lt;/button&gt;
+  &lt;/p&gt;
+&lt;/div&gt;
+{{/html}}
+{{/velocity}}</content>
+  <object>
+    <name>DocApp.Code.ContentFragmentsEdit</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>6f0e3c1a-2b7d-4d8e-9a51-3c4f5e6a7b8d</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>require(['jquery'], function($) {
+  // Adds the fields of a new content fragment, numbered after the existing ones, so that the save action creates the
+  // object holding it.
+  $(document).on('click', '.docapp-fragment-add', function() {
+    var container = $(this).closest('.docapp-fragments');
+    var number = parseInt(container.attr('data-next-number'), 10);
+    container.attr('data-next-number', number + 1);
+    var fields = container.children('template.docapp-fragment-template').html().replace(/__number__/g, number);
+    $(fields).insertBefore($(this).parent()).find('input[type="text"]').first().trigger('focus');
+  });
+  // Removes the fields of a content fragment that hasn't been saved yet.
+  $(document).on('click', '.docapp-fragment-remove', function() {
+    $(this).closest('.docapp-fragment').remove();
+  });
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

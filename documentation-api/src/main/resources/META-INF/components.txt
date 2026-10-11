@@ -13,3 +13,7 @@ org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataConfiguratio
 org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataPropertyDescriptorStore
 org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataEntryStore
 org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataQueryHelper
+org.xwiki.contrib.documentation.internal.DocumentationPropertyDisplayer
+org.xwiki.contrib.documentation.internal.ContentFragments
+org.xwiki.contrib.documentation.internal.ContentFragmentMacro
+org.xwiki.contrib.documentation.internal.ContentFragmentMacroRefactoring
