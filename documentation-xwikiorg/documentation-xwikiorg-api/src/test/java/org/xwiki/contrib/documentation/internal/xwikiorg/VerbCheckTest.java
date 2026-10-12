@@ -222,6 +222,7 @@ class VerbCheckTest
     {
         assertEquals(0,
             this.check.check(createDocument("Rendering Macros", "rendering-macros", "reference")).size());
+        assertEquals(0, this.check.check(createDocument("Warning Macro", "warning-macro", "reference")).size());
     }
 
     @Test

@@ -60,11 +60,11 @@ public class VerbCheck implements DocumentationCheck
     /**
      * Words ending in "ing" that name an XWiki domain concept (a noun), not a task phrased with a verb, when they
      * start the title or page name of a Reference or Explanation page, such as "Rendering Macros" (the macros of
-     * XWiki Rendering) or "Logging Configuration". They are still reported for How-To and Tutorial pages, which must
-     * start with an imperative verb.
+     * XWiki Rendering), "Logging Configuration" or "Warning Macro" (the documentation of the Warning macro). They are
+     * still reported for How-To and Tutorial pages, which must start with an imperative verb.
      */
     private static final Set<String> NOUN_ING_WORDS = Set.of("rendering", "logging", "caching", "indexing",
-        "versioning", "clustering", "theming", "licensing", "monitoring", "scheduling", "networking");
+        "versioning", "clustering", "theming", "licensing", "monitoring", "scheduling", "networking", "warning");
 
     private static final String PAGE_TITLE_CONTEXT = "Page title: [%s]";
 
