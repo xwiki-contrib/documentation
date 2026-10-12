@@ -28,6 +28,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationViolation;
@@ -53,8 +54,8 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * Verify that the labels of the links of the Related field that hold a target qualifier follow the
  * {@code <exact page title> (for <target>)} format, where the title is the exact title of the linked page and the
- * target is the audience of the linked page (User, Administrator or Developer). When the title of the linked page
- * already ends with its target qualifier, the label is that title.
+ * target is the audience of the linked page (Users, Administrators or Developers). When the title of the linked
+ * page already ends with its target qualifier, in its plural or singular form, the label is that title.
  *
  * @version $Id$
  * @since 1.15
@@ -69,7 +70,7 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
     private static final String TARGET_PREFIX = "(for ";
 
     private static final Map<String, String> TARGETS =
-        Map.of("user", "User", "administrator", "Administrator", "developer", "Developer");
+        Map.of("user", "Users", "administrator", "Administrators", "developer", "Developers");
 
     @Inject
     private EntityReferenceResolver<ResourceReference> resourceReferenceResolver;
@@ -109,7 +110,7 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
             if (!expectedLabel.equals(label)) {
                 violations.add(new DocumentationViolation(
                     "Related link labels must follow the format '<exact page title> (for <target>)', where the "
-                        + "title and the target (User, Administrator or Developer) match the linked page.",
+                        + "title and the target (Users, Administrators or Developers) match the linked page.",
                     String.format("Label: [%s], Expected: [%s]", label, expectedLabel),
                     DocumentationViolationSeverity.WARNING));
             }
@@ -120,8 +121,11 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
     {
         String targetQualifier = TARGET_PREFIX + target + ')';
         // A title can already end with the target qualifier, to disambiguate it from same-topic pages for other
-        // targets (e.g. "All Bundled Rendering Macros (for User)"), in which case the title is the full label.
-        if (title.endsWith(targetQualifier)) {
+        // targets (e.g. "All the Pages on the Wiki (for Administrators)"), in which case the title is the full label.
+        // Some titles use the singular form of the target in their qualifier (e.g. "All Bundled Rendering Macros
+        // (for User)"), which still makes them the full label.
+        String singularTargetQualifier = TARGET_PREFIX + Strings.CS.removeEnd(target, "s") + ')';
+        if (title.endsWith(targetQualifier) || title.endsWith(singularTargetQualifier)) {
             return title;
         }
         return String.format("%s %s", title, targetQualifier);
@@ -196,6 +200,6 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
                 }
             }
         }
-        return defaultTarget != null ? defaultTarget : "User|Administrator|Developer";
+        return defaultTarget != null ? defaultTarget : "Users|Administrators|Developers";
     }
 }
