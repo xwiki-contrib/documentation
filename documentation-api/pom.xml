@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>API to validate documentation pages</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.95</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.97</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Documentation Application API</xwiki.extension.name>
     <!-- The extension's category -->
@@ -70,6 +70,12 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-security-authorization-api</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <!-- Provides the Live Data source listing the documentation violations. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-livedata-api</artifactId>
       <version>${platform.version}</version>
     </dependency>
     <!-- Test Dependencies -->

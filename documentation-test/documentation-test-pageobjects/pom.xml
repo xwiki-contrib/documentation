@@ -43,5 +43,11 @@
       <artifactId>xwiki-platform-administration-test-pageobjects</artifactId>
       <version>${platform.version}</version>
     </dependency>
+    <!-- The Documentation Application home page lists the documentation violations in Live Data. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-livedata-test-pageobjects</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
   </dependencies>
 </project>
