@@ -20,7 +20,6 @@
 package org.xwiki.contrib.documentation.test.docker;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +30,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
 import org.xwiki.administration.test.po.AdministrationSectionPage;
 import org.xwiki.contrib.documentation.test.po.DocumentationAdministrationSectionPage;
+import org.xwiki.contrib.documentation.test.po.DocumentationHomePage;
 import org.xwiki.contrib.documentation.test.po.DocumentationViewPage;
+import org.xwiki.livedata.test.po.TableLayoutElement;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.ui.TestUtils;
@@ -84,6 +85,12 @@ class DocumentationIT
      * The page holding a version macro older than the oldest supported version, once that version is configured.
      */
     private static final String VERSION_PAGE = "version-sample";
+
+    private static final String PAGE_TITLE_COLUMN = "Page Title";
+
+    private static final String CHECK_COLUMN = "Check";
+
+    private static final String SEVERITY_COLUMN = "Severity";
 
     private static final List<String> GUIDE_SPACE = space("guide");
 
@@ -494,12 +501,41 @@ class DocumentationIT
         assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
             "The violations marked from the Administration shouldn't be reported");
 
-        // The violations marked as false positives are listed apart from the reported ones.
-        String pageName = "documentation-it.false-positive.WebHome";
-        assertTrue(getViolationResults(setup, "only").contains(pageName),
-            "The violations marked as false positives should list the page");
-        assertFalse(getViolationResults(setup, "exclude").contains(pageName),
-            "The reported violations shouldn't list the page");
+        // The violations marked as false positives are listed apart from the reported ones, with why they were
+        // marked.
+        DocumentationHomePage homePage = DocumentationHomePage.gotoPage();
+        TableLayoutElement falsePositives = homePage.getFalsePositives();
+        falsePositives.filterColumn(PAGE_TITLE_COLUMN, "Image false positive");
+        assertEquals(1, falsePositives.countRows());
+        falsePositives.assertRow("Reason", "Decorative images");
+        TableLayoutElement violations = homePage.getViolations();
+        violations.filterColumn(PAGE_TITLE_COLUMN, "Image false positive");
+        assertEquals(0, violations.getTotalEntries());
+    }
+
+    @Test
+    @Order(15)
+    void listsEachViolationOfAPageOnItsOwnRow(TestUtils setup)
+    {
+        // A page with two violations of different severities: a title containing a documentation-type word (an
+        // error) and an Image macro missing its "alt" parameter (a warning).
+        DocumentReference reference = page("image-title");
+        setup.deletePage(reference);
+        setup.createPage(reference, "{{image reference=\"foo.png\"/}}", "Image reference", "xwiki/2.1");
+        setup.addObject(reference, DOC_CLASS, "type", "reference");
+
+        // Each row displays its own violation, so that the column filters apply to what is displayed.
+        TableLayoutElement violations = DocumentationHomePage.gotoPage().getViolations();
+        violations.filterColumn(PAGE_TITLE_COLUMN, "Image reference");
+        violations.filterColumn(CHECK_COLUMN, "imageMacroAlt");
+        assertEquals(1, violations.countRows());
+        violations.assertRow(SEVERITY_COLUMN, "Warning");
+        violations.assertRow("Violation Message", "Missing 'alt' parameter usage in the Image macro.");
+        violations.filterColumn(CHECK_COLUMN, "pageTitle");
+        assertEquals(1, violations.countRows());
+        violations.assertRow(SEVERITY_COLUMN, "Error");
+        violations.assertRow("Violation Message",
+            "Page title must not contain documentation-type words (explanation, howto, reference, tutorial).");
     }
 
     /**
@@ -512,18 +548,6 @@ class DocumentationIT
         setup.createPage(reference, "{{image reference=\"foo.png\"/}}", title, "xwiki/2.1");
         setup.addObject(reference, DOC_CLASS, "type", "reference");
         return reference;
-    }
-
-    /**
-     * @param falsePositives "only" to get the violations marked as false positives, "exclude" to get the others
-     * @return the JSON results of the Live Data listing the documentation violations
-     */
-    private static String getViolationResults(TestUtils setup, String falsePositives) throws Exception
-    {
-        return setup.executeAndGetBodyAsString(
-            new DocumentReference("xwiki", List.of("DocApp", "Code"), "DocumentationLiveTableResults"),
-            Map.of("outputSyntax", "plain", "classname", "DocApp.Code.DocumentationViolationClass", "collist",
-                "message", "offset", "1", "limit", "1000", "reqNo", "1", "falsePositives", falsePositives));
     }
 
     private static void setOldestSupportedVersion(String version)
