@@ -239,9 +239,10 @@
     #set ($discard = $exclusions.add($exclusionReference.type.lowerCase + ':'
       + $services.model.serialize($exclusionReference, 'local')))
   #end
-  #set ($exclusions = $stringtool.join($exclusions, ','))
+  ## Escape special characters in macro parameter values.
+  #set ($exclusions = $stringtool.join($exclusions, ',').replaceAll('([~"])', '~$1'))
   #set ($rootReference = $services.model.resolveDocument('', $targetSpaceReference))
-  #set ($rootString = $services.model.serialize($rootReference, 'default'))
+  #set ($rootString = $services.model.serialize($rootReference, 'default').replaceAll('([~"])', '~$1'))
   {{documentTree root="document:$rootString" showTranslations="false" showAttachments="false" compact="true" openTo="document:$openToDoc" exclusions="$exclusions" /}}
   #panelfooter()
 #end
