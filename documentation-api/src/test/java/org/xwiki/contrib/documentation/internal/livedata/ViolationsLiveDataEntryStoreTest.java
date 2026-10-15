@@ -118,13 +118,12 @@ class ViolationsLiveDataEntryStoreTest
         when(this.xwiki.getPlainUserName(USER_REFERENCE, this.xcontext)).thenReturn("User Name");
         when(this.xwiki.getURL(USER_REFERENCE, "view", this.xcontext)).thenReturn("/view/user");
         LiveDataQuery query = new LiveDataQuery();
-        when(this.queryHelper.count(query)).thenReturn(12L);
         when(this.queryHelper.getViolations(query))
             .thenReturn(List.of(new Object[] {PAGE_NAME, 0}, new Object[] {PAGE_NAME, 2}));
 
         LiveData liveData = this.entryStore.get(query);
 
-        assertEquals(12L, liveData.getCount());
+        assertEquals(2L, liveData.getCount());
         assertEquals(List.of(
             Map.of("id", PAGE_NAME + "/0", "doc.viewable", true, "doc.title", "Install", "doc.url", "/view/install",
                 "message", "Page title message", "context", "Page title message context", "severity", "Error",
@@ -157,9 +156,33 @@ class ViolationsLiveDataEntryStoreTest
         LiveDataQuery query = new LiveDataQuery();
         when(this.queryHelper.getViolations(query)).thenReturn(List.<Object[]>of(new Object[] {PAGE_NAME, 0}));
 
-        assertEquals(List.of(Map.of("id", PAGE_NAME + "/0", "doc.viewable", false)),
-            this.entryStore.get(query).getEntries());
+        // The entry doesn't hold the identifier, which holds the page name.
+        assertEquals(List.of(Map.of("doc.viewable", false)), this.entryStore.get(query).getEntries());
         assertEquals(Optional.empty(), this.entryStore.get(PAGE_NAME + "/0"));
+    }
+
+    @Test
+    void getPaginatesTheViolations() throws Exception
+    {
+        mockViolation(1, "Second", "Error", "check");
+        mockViolation(2, "Third", "Error", "check");
+        LiveDataQuery query = new LiveDataQuery();
+        query.setOffset(1L);
+        query.setLimit(2);
+        when(this.queryHelper.getViolations(query)).thenReturn(List.of(new Object[] {PAGE_NAME, 0},
+            new Object[] {PAGE_NAME, 1}, new Object[] {PAGE_NAME, 2}, new Object[] {PAGE_NAME, 3}));
+
+        LiveData liveData = this.entryStore.get(query);
+
+        assertEquals(4L, liveData.getCount());
+        assertEquals(List.of(PAGE_NAME + "/1", PAGE_NAME + "/2"),
+            liveData.getEntries().stream().map(entry -> entry.get("id")).toList());
+
+        // An offset beyond the last violation.
+        query.setOffset(10L);
+        liveData = this.entryStore.get(query);
+        assertEquals(4L, liveData.getCount());
+        assertTrue(liveData.getEntries().isEmpty());
     }
 
     @Test
@@ -176,7 +199,7 @@ class ViolationsLiveDataEntryStoreTest
     {
         LiveDataQuery query = new LiveDataQuery();
         QueryException exception = new QueryException("error", null, null);
-        when(this.queryHelper.count(query)).thenThrow(exception);
+        when(this.queryHelper.getViolations(query)).thenThrow(exception);
 
         LiveDataException liveDataException = assertThrows(LiveDataException.class, () -> this.entryStore.get(query));
 

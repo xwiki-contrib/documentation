@@ -30,17 +30,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.contrib.documentation.internal.DocumentationPages;
 import org.xwiki.livedata.LiveDataQuery;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryFilter;
 import org.xwiki.query.QueryManager;
 import org.xwiki.query.QueryParameter;
+import org.xwiki.security.authorization.ContextualAuthorizationManager;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_SELF;
 import static org.mockito.Mockito.mock;
@@ -83,6 +87,13 @@ class ViolationsLiveDataQueryHelperTest
     @Named("local")
     private EntityReferenceSerializer<String> localSerializer;
 
+    @MockComponent
+    @Named("current")
+    private DocumentReferenceResolver<String> resolver;
+
+    @MockComponent
+    private ContextualAuthorizationManager authorization;
+
     private final QueryFilter hiddenFilter = mock(QueryFilter.class);
 
     private final QueryParameter parameter = mock(QueryParameter.class, RETURNS_SELF);
@@ -95,31 +106,48 @@ class ViolationsLiveDataQueryHelperTest
     }
 
     @Test
-    void count() throws Exception
-    {
-        Query query = mockQuery("select count(obj.id) " + FROM + WHERE);
-        when(query.execute()).thenReturn(List.of(3L));
-
-        assertEquals(3L, this.queryHelper.count(new LiveDataQuery()));
-
-        verify(query).bindValue("className", CLASS_NAME);
-        verify(query).addFilter(this.hiddenFilter);
-    }
-
-    @Test
     void getViolationsWithoutFilterNorSort() throws Exception
     {
         Query query = mockQuery(SELECT + FROM + WHERE + ORDER_BY);
-        List<Object> results = List.of(new Object[] {"Space.Page", 1});
-        when(query.execute()).thenReturn(results);
+        Object[] first = new Object[] {"Space.Page", 1};
+        Object[] second = new Object[] {"Space.Page", 2};
+        when(query.execute()).thenReturn(List.of(first, second));
+        DocumentReference reference = new DocumentReference("wiki", "Space", "Page");
+        when(this.resolver.resolve("Space.Page")).thenReturn(reference);
+        when(this.authorization.hasAccess(Right.VIEW, reference)).thenReturn(true);
         LiveDataQuery liveDataQuery = new LiveDataQuery();
         liveDataQuery.setOffset(15L);
         liveDataQuery.setLimit(30);
 
-        assertSame(results, this.queryHelper.getViolations(liveDataQuery));
+        assertEquals(List.of(first, second), this.queryHelper.getViolations(liveDataQuery));
 
-        verify(query).setOffset(15);
-        verify(query).setLimit(30);
+        verify(query).bindValue("className", CLASS_NAME);
+        verify(query).addFilter(this.hiddenFilter);
+        // The violations are paginated once the ones of the pages that can't be viewed are excluded.
+        verify(query, never()).setOffset(anyInt());
+        verify(query, never()).setLimit(anyInt());
+    }
+
+    @Test
+    void getViolationsOnlyListsTheViolationsOfViewablePages() throws Exception
+    {
+        Query query = mockQuery(SELECT + FROM + WHERE + ORDER_BY);
+        Object[] viewable1 = new Object[] {"Space.Viewable", 0};
+        Object[] notViewable1 = new Object[] {"Space.NotViewable", 0};
+        Object[] notViewable2 = new Object[] {"Space.NotViewable", 1};
+        Object[] viewable2 = new Object[] {"Space.Viewable", 1};
+        when(query.execute()).thenReturn(List.of(viewable1, notViewable1, notViewable2, viewable2));
+        DocumentReference viewableReference = new DocumentReference("wiki", "Space", "Viewable");
+        DocumentReference notViewableReference = new DocumentReference("wiki", "Space", "NotViewable");
+        when(this.resolver.resolve("Space.Viewable")).thenReturn(viewableReference);
+        when(this.resolver.resolve("Space.NotViewable")).thenReturn(notViewableReference);
+        when(this.authorization.hasAccess(Right.VIEW, viewableReference)).thenReturn(true);
+
+        assertEquals(List.of(viewable1, viewable2), this.queryHelper.getViolations(new LiveDataQuery()));
+
+        // The rights are checked once per page.
+        verify(this.authorization).hasAccess(Right.VIEW, viewableReference);
+        verify(this.authorization).hasAccess(Right.VIEW, notViewableReference);
     }
 
     @Test
