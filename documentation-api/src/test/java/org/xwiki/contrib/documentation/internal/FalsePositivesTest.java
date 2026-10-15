@@ -30,6 +30,9 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.user.CurrentUserReference;
+import org.xwiki.user.UserReference;
+import org.xwiki.user.UserReferenceResolver;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -65,6 +68,9 @@ class FalsePositivesTest
 
     private static final DocumentReference USER_REFERENCE = new DocumentReference("wiki", "XWiki", "User");
 
+    private static final DocumentReference PAGE_AUTHOR_REFERENCE =
+        new DocumentReference("wiki", "XWiki", "PageAuthor");
+
     private static final DocumentReference PAGE_REFERENCE =
         new DocumentReference("wiki", List.of("documentation", "install"), "WebHome");
 
@@ -83,6 +89,11 @@ class FalsePositivesTest
     @MockComponent
     private QueryManager queryManager;
 
+    @MockComponent
+    private UserReferenceResolver<CurrentUserReference> currentUserReferenceResolver;
+
+    private final UserReference currentUserReference = mock(UserReference.class);
+
     private XWikiContext xcontext;
 
     @BeforeEach
@@ -91,6 +102,8 @@ class FalsePositivesTest
         this.xcontext = this.oldcore.getXWikiContext();
         this.xcontext.setWikiId(WIKI_REFERENCE.getName());
         this.xcontext.setUserReference(USER_REFERENCE);
+        when(this.currentUserReferenceResolver.resolve(CurrentUserReference.INSTANCE))
+            .thenReturn(this.currentUserReference);
 
         XWikiDocument violationClassDocument = new XWikiDocument(VIOLATION_CLASS_REFERENCE);
         BaseClass violationClass = violationClassDocument.getXClass();
@@ -119,7 +132,7 @@ class FalsePositivesTest
         assertEquals(0, getViolations(PAGE_REFERENCE).get(0).getIntValue("falsePositive"));
         XWikiDocument document = this.oldcore.getSpyXWiki().getDocument(PAGE_REFERENCE, this.xcontext);
         assertEquals("Marked a documentation violation as a false positive", document.getComment());
-        assertEquals(USER_REFERENCE, document.getAuthorReference());
+        assertAuthors(document);
 
         // Already marked.
         assertFalse(this.falsePositives.mark(PAGE_REFERENCE, 1, null));
@@ -131,6 +144,8 @@ class FalsePositivesTest
         assertEquals("", violation.getLargeStringValue("falsePositiveBy"));
         assertNull(violation.getDateValue("falsePositiveDate"));
         assertEquals("", violation.getLargeStringValue("falsePositiveReason"));
+
+        assertAuthors(this.oldcore.getSpyXWiki().getDocument(PAGE_REFERENCE, this.xcontext));
 
         // Not marked anymore.
         assertFalse(this.falsePositives.unmark(PAGE_REFERENCE, 1));
@@ -218,6 +233,7 @@ class FalsePositivesTest
         assertEquals(1, violations.get(2).getIntValue("falsePositive"));
         assertEquals("Marked documentation violations as false positives",
             this.oldcore.getSpyXWiki().getDocument(PAGE_REFERENCE, this.xcontext).getComment());
+        assertAuthors(this.oldcore.getSpyXWiki().getDocument(CHILD_PAGE_REFERENCE, this.xcontext));
         assertEquals(1, getViolations(CHILD_PAGE_REFERENCE).get(0).getIntValue("falsePositive"));
         // The other page isn't located under the passed page.
         assertEquals(0, getViolations(OTHER_PAGE_REFERENCE).get(0).getIntValue("falsePositive"));
@@ -234,6 +250,17 @@ class FalsePositivesTest
         when(query.execute()).thenReturn(List.of(pageNames));
     }
 
+    /**
+     * Verify that only the original metadata author is set to the user who marked or unmarked the violations, and that
+     * the other authors of the page are kept.
+     */
+    private void assertAuthors(XWikiDocument document)
+    {
+        assertEquals(this.currentUserReference, document.getAuthors().getOriginalMetadataAuthor());
+        assertEquals(PAGE_AUTHOR_REFERENCE, document.getAuthorReference());
+        assertEquals(PAGE_AUTHOR_REFERENCE, document.getContentAuthorReference());
+    }
+
     private void savePage(DocumentReference reference, String... checks) throws Exception
     {
         XWikiDocument document = new XWikiDocument(reference);
@@ -243,6 +270,8 @@ class FalsePositivesTest
             violation.setStringValue("check", check);
             violation.setStringValue("severity", "Warning");
         }
+        document.setAuthorReference(PAGE_AUTHOR_REFERENCE);
+        document.setContentAuthorReference(PAGE_AUTHOR_REFERENCE);
         this.oldcore.getSpyXWiki().saveDocument(document, this.xcontext);
     }
 
