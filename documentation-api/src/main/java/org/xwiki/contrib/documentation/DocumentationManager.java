@@ -35,7 +35,9 @@ public interface DocumentationManager
 {
     /**
      * @param document the document on which to perform the documentation analysis
-     * @return true if the violations of the document changed, in which case the document has been saved
+     * @return true if the violations of the document changed, in which case the document has been saved, false if
+     *     they didn't or if the document is not a documentation page to analyse (i.e. it doesn't hold a
+     *     {@code DocApp.Code.DocumentationClass} xobject or it's located in the application space)
      * @throws IndexException if an error occurs while indexing the document when it's executing synchronously
      */
     boolean analyse(XWikiDocument document) throws IndexException;

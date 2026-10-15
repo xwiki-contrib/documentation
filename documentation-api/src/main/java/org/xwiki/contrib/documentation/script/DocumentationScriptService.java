@@ -96,11 +96,17 @@ public class DocumentationScriptService implements ScriptService
 
     /**
      * @param document the document on which to perform the documentation analysis
-     * @return true if the violations of the document changed, in which case the document has been saved
+     * @return true if the violations of the document changed, in which case the document has been saved, false if
+     *     they didn't, if the document is not a documentation page or if the current user doesn't have the Edit right
+     *     on it
      * @throws IndexException if an error occurs while indexing the document when it's executing synchronously
      */
     public boolean analyse(XWikiDocument document) throws IndexException
     {
+        // The analysis saves the document when its violations changed.
+        if (document == null || !this.authorization.hasAccess(Right.EDIT, document.getDocumentReference())) {
+            return false;
+        }
         return this.manager.analyse(document);
     }
 

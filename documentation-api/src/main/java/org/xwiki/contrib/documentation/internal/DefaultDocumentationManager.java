@@ -80,6 +80,11 @@ public class DefaultDocumentationManager implements DocumentationManager
     @Override
     public boolean analyse(XWikiDocument document) throws IndexException
     {
+        // Only documentation pages hold violations.
+        if (!DocumentationPages.isAnalysable(document)) {
+            return false;
+        }
+
         ComponentManager cm = this.componentManagerProvider.get();
         try {
             // Step 1: Call the various checkers, remembering which check reported each violation.
