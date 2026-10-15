@@ -172,10 +172,16 @@
   #if ("$!target" != '')
     #getTargetSpaceReference($targetSpaceReference)
     #set ($targetDocReference = $services.model.resolveDocument('', $targetSpaceReference))
+    ## Escape the target since it's displayed as wiki syntax.
+    #set ($syntax = $services.rendering.resolveSyntax('xwiki/2.1'))
+    #set ($targetLabel = $services.rendering.escape($stringtool.capitalize($target), $syntax))
     #if ($xwiki.exists($targetDocReference))
-      (% class='documentation-badge' %)[[$stringtool.capitalize($target)&gt;&gt;$services.model.serialize($targetDocReference)]](%%)
+      ## Escape the sequences that would end the link reference early.
+      #set ($targetLinkReference = $services.model.serialize($targetDocReference).replace('~', '~~').replace('&gt;&gt;', '~&gt;~&gt;').replace('||', '~|~|').replace(']]', '~]~]'))
+      ## A link label is unescaped once more when it's parsed, so it's escaped twice.
+      (% class='documentation-badge' %)[[$services.rendering.escape($targetLabel, $syntax)&gt;&gt;$targetLinkReference]](%%)
     #else
-      (% class='documentation-badge' %)$stringtool.capitalize($target)(%%)
+      (% class='documentation-badge' %)$targetLabel(%%)
     #end
   #end
 #end

@@ -175,10 +175,16 @@
     #set ($transformedType = $services.modelvalidation.transformName($type))
     #set ($typeReference = $services.model.createSpaceReference($transformedType, $targetSpaceReference))
     #set ($typeDocReference = $services.model.resolveDocument('', $typeReference))
+    ## Escape the type since it's displayed as wiki syntax.
+    #set ($syntax = $services.rendering.resolveSyntax('xwiki/2.1'))
+    #set ($typeLabel = $services.rendering.escape($stringtool.capitalize($type), $syntax))
     #if ($xwiki.exists($typeDocReference))
-      (% class='documentation-badge' %)[[$stringtool.capitalize($type)&gt;&gt;$services.model.serialize($typeDocReference)]](%%)
+      ## Escape the sequences that would end the link reference early.
+      #set ($typeLinkReference = $services.model.serialize($typeDocReference).replace('~', '~~').replace('&gt;&gt;', '~&gt;~&gt;').replace('||', '~|~|').replace(']]', '~]~]'))
+      ## A link label is unescaped once more when it's parsed, so it's escaped twice.
+      (% class='documentation-badge' %)[[$services.rendering.escape($typeLabel, $syntax)&gt;&gt;$typeLinkReference]](%%)
     #else
-      (% class='documentation-badge' %)$stringtool.capitalize($type)(%%)
+      (% class='documentation-badge' %)$typeLabel(%%)
     #end
   #end
 #end
