@@ -273,7 +273,11 @@
     </property>
     <property type="LargeString">
       <code>{{velocity}}
-#set ($image = $xcontext.macro.params.reference)
+## The parameters are written in the wiki syntax generated below, so they're escaped for it.
+#set ($syntax = $services.rendering.resolveSyntax('xwiki/2.1'))
+## Escape the sequences that would end the image reference early.
+#set ($image = "$!xcontext.macro.params.reference")
+#set ($image = $image.replace('~', '~~').replace('||', '~|~|').replace(']]', '~]~]'))
 ## TODO: Remove the width parameter in the future when all doc pages on xwiki.org have stopped.
 ## using the width parameter for the size one.
 #set ($width = "$!xcontext.macro.params.width")
@@ -295,11 +299,10 @@
   #set ($caption = "$!xcontext.macro.params.caption")
   ## The alt text is passed as a quoted image parameter below, so it's escaped for the syntax generated here:
   ## an unescaped double quote or closing square bracket would end the parameter and truncate the text.
-  #set ($syntax = $services.rendering.resolveSyntax('xwiki/2.1'))
   #set ($alt = $services.rendering.escape("$!xcontext.macro.params.alt", $syntax))
-  (% style="display: inline-block; border:1px solid silver; max-width:100%;#if ($width != '') width:$width;#end" %)[[image:$image||style="width:100%"#if ("$!alt" != '') alt="$alt"#end]](%%)
+  (% style="display: inline-block; border:1px solid silver; max-width:100%;#if ($width != '') width:$services.rendering.escape($width, $syntax);#end" %)[[image:$image||style="width:100%"#if ("$!alt" != '') alt="$alt"#end]](%%)
   #if ($caption != '')
-    //${caption}//
+    //$services.rendering.escape($caption, $syntax)//
   #end
 #end
 {{/velocity}}</code>

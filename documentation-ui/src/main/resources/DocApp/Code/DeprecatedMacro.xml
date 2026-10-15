@@ -436,9 +436,12 @@ A sentence with {{deprecated since="11.10.5" useInstead="the New Feature"}}an ol
     <property>
       <code>{{velocity}}
 #set ($discard = $xwiki.ssx.use($wikimacro.doc.documentReference))
-#set ($product = $wikimacro.parameters.product)
-#set ($since = $wikimacro.parameters.since)
-#set ($useInstead = $wikimacro.parameters.useInstead)
+## Escape the parameters since they're written in the wiki syntax generated below, both as text and as parameter
+## values.
+#set ($syntax = $services.rendering.resolveSyntax('xwiki/2.1'))
+#set ($product = $services.rendering.escape("$!wikimacro.parameters.product", $syntax))
+#set ($since = $services.rendering.escape("$!wikimacro.parameters.since", $syntax))
+#set ($useInstead = $services.rendering.escape("$!wikimacro.parameters.useInstead", $syntax))
 #if ($wikimacro.context.isInline())
 (% class='badge deprecated' data-xwikiorg-deprecated='true' data-xwikiorg-product="$product" data-xwikiorg-deprecated-since="$since" %)Deprecated $product $since. Use $useInstead instead.(%%) {{wikimacrocontent/}}
 #else

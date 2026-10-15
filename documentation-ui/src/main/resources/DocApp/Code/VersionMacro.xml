@@ -492,12 +492,18 @@ New feature...
 #else
   #set ($severalBlocksAttribute = '')
 #end
+## Escape the values written in the wiki syntax generated below, both as text and as parameter values.
+#set ($syntax = $services.rendering.resolveSyntax('xwiki/2.1'))
+#set ($title = $services.rendering.escape("$stringtool.capitalize($dataSuffix) $!product $stringtool.join($plainVersions, ', ')", $syntax))
+#set ($badgeText = $services.rendering.escape("$!product $stringtool.join($versions, ', ')", $syntax))
+#set ($product = $services.rendering.escape("$!product", $syntax))
+#set ($plainVersionsValue = $services.rendering.escape($stringtool.join($plainVersions, ', '), $syntax))
 ## Treat a single paragraph as inline content to display the badge on the same line.
 #if ($wikimacro.context.isInline() || $severalBlocksAttribute == '')
-(% class='badge' title="$stringtool.capitalize($dataSuffix) $product $stringtool.join($plainVersions, ', ')" data-xwikiorg-product="$product" data-xwikiorg-versions-${dataSuffix}="$stringtool.join($plainVersions, ', ')"${severalBlocksAttribute} %)$product $stringtool.join($versions, ', ')(% data-xwikiorg-product="$product" data-xwikiorg-versions-${dataSuffix}="$stringtool.join($plainVersions, ', ')"${severalBlocksAttribute} %) {{wikimacrocontent/}}
+(% class='badge' title="$title" data-xwikiorg-product="$product" data-xwikiorg-versions-${dataSuffix}="$plainVersionsValue"${severalBlocksAttribute} %)$badgeText(% data-xwikiorg-product="$product" data-xwikiorg-versions-${dataSuffix}="$plainVersionsValue"${severalBlocksAttribute} %) {{wikimacrocontent/}}
 #else
-(% data-xwikiorg-product="$product" data-xwikiorg-versions-${dataSuffix}="$stringtool.join($plainVersions, ', ')"${severalBlocksAttribute} %)(((
-(% class='badge' title="$stringtool.capitalize($dataSuffix) $product $stringtool.join($plainVersions, ', ')" %)$product $stringtool.join($versions, ', ')(%%)
+(% data-xwikiorg-product="$product" data-xwikiorg-versions-${dataSuffix}="$plainVersionsValue"${severalBlocksAttribute} %)(((
+(% class='badge' title="$title" %)$badgeText(%%)
 
 {{wikimacrocontent/}}
 )))
