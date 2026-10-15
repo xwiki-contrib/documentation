@@ -44,6 +44,8 @@ import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.user.CurrentUserReference;
+import org.xwiki.user.UserReferenceResolver;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -98,6 +100,9 @@ public class FalsePositives
 
     @Inject
     private Provider<XWikiContext> xcontextProvider;
+
+    @Inject
+    private UserReferenceResolver<CurrentUserReference> currentUserReferenceResolver;
 
     /**
      * Marks a violation of a documentation page as a false positive, on behalf of the current user.
@@ -266,8 +271,13 @@ public class FalsePositives
                     count++;
                 }
             }
+            // Only the original metadata author is set to the current user, so that the history shows the change as
+            // made by the user who marked or unmarked the violations. The effective metadata author, used for the
+            // rights of the xobjects of the page, the content author and the creator are kept as they are, since only
+            // the violation xobjects are updated.
             if (count > 0) {
-                document.setAuthorReference(xcontext.getUserReference());
+                document.getAuthors().setOriginalMetadataAuthor(
+                    this.currentUserReferenceResolver.resolve(CurrentUserReference.INSTANCE));
                 xcontext.getWiki().saveDocument(document, comment, true, xcontext);
             }
             return count;
