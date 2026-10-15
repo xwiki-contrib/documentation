@@ -346,7 +346,9 @@ Results in:
 ## Escape the sequences that would end the link reference early.
 #set ($reference = $url.replace('~', '~~').replace('&gt;&gt;', '~&gt;~&gt;').replace('||', '~|~|').replace(']]', '~]~]'))
 #if ("$!wikimacro.content" != '')
-[[$wikimacro.content&gt;&gt;$reference]]##
+## The label is the macro content, inserted with the wikimacrocontent macro so that it's parsed on its own, as the
+## content of the calling page, instead of being part of the wiki syntax generated here.
+[[{{wikimacrocontent/}}&gt;&gt;$reference]]##
 #else
 [[$reference]]##
 #end
@@ -356,7 +358,7 @@ Results in:
       <contentDescription>The label of the link, in wiki syntax. Defaults to the URL.</contentDescription>
     </property>
     <property>
-      <contentJavaType/>
+      <contentJavaType>Wiki</contentJavaType>
     </property>
     <property>
       <contentOrder/>
