@@ -96,11 +96,13 @@ public class DefaultDocumentationManager implements DocumentationManager
             //         exist anymore.
             boolean hasChanges = saveAndDeleteXObjects(document, violations, xcontext);
 
-            // Step 3: Save the document (only if there have been changes)
+            // Step 3: Save the document (only if there have been changes). Only the original metadata author is set to
+            //         superadmin, representing the system user, so that the history shows that the save was made by
+            //         the system and not by the last editor of the page. The effective metadata author, used for the
+            //         rights of the xobjects of the page, the content author and the creator are kept as they are,
+            //         since the analysis only updates the violation xobjects.
             if (hasChanges) {
-                // Save as superadmin, representing the system user, to indicate that the changes are not from the
-                // current author but by the system.
-                document.setAuthor(SuperAdminUserReference.INSTANCE);
+                document.getAuthors().setOriginalMetadataAuthor(SuperAdminUserReference.INSTANCE);
                 xcontext.getWiki().saveDocument(document, ANALYSIS_COMMENT, true, xcontext);
             }
             return hasChanges;
