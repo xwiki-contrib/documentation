@@ -115,8 +115,13 @@ public class ViolationsLiveDataEntryStore implements LiveDataEntryStore
     {
         LiveData liveData = new LiveData();
         try {
-            liveData.setCount(this.queryHelper.count(query));
-            for (Object[] violation : this.queryHelper.getViolations(query)) {
+            List<Object[]> violations = this.queryHelper.getViolations(query);
+            liveData.setCount(violations.size());
+            int start = query.getOffset() != null ? (int) Math.min(Math.max(query.getOffset(), 0), violations.size())
+                : 0;
+            int end = query.getLimit() != null ? Math.min(start + Math.max(query.getLimit(), 0), violations.size())
+                : violations.size();
+            for (Object[] violation : violations.subList(start, end)) {
                 liveData.getEntries().add(getEntry((String) violation[0], ((Number) violation[1]).intValue()));
             }
         } catch (QueryException e) {
@@ -128,16 +133,17 @@ public class ViolationsLiveDataEntryStore implements LiveDataEntryStore
     /**
      * @param pageName the name of the page holding the violation
      * @param number the number of the violation xobject
-     * @return the entry of the violation, holding only its identifier when the current user can't view its page
+     * @return the entry of the violation, holding only whether its page is viewable when the current user can't view
+     *     its page (and thus not its identifier, which holds the page name)
      */
     private Map<String, Object> getEntry(String pageName, int number) throws LiveDataException
     {
         Map<String, Object> entry = new LinkedHashMap<>();
-        entry.put(ID, pageName + ID_SEPARATOR + number);
         DocumentReference reference = this.resolver.resolve(pageName);
         boolean viewable = this.authorization.hasAccess(Right.VIEW, reference);
         entry.put(DOC_VIEWABLE, viewable);
         if (viewable) {
+            entry.put(ID, pageName + ID_SEPARATOR + number);
             XWikiContext xcontext = this.xcontextProvider.get();
             XWiki xwiki = xcontext.getWiki();
             XWikiDocument document;

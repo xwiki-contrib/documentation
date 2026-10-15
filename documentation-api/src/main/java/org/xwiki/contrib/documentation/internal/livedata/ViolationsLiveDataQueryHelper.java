@@ -23,6 +23,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -37,12 +38,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.internal.DocumentationPages;
 import org.xwiki.livedata.LiveDataQuery;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryFilter;
 import org.xwiki.query.QueryManager;
 import org.xwiki.query.QueryParameter;
+import org.xwiki.security.authorization.ContextualAuthorizationManager;
+import org.xwiki.security.authorization.Right;
 
 import static org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataConfigurationProvider.CHECK;
 import static org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataConfigurationProvider.CONTEXT;
@@ -54,7 +58,8 @@ import static org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDa
 import static org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataConfigurationProvider.SEVERITY;
 
 /**
- * Queries the documentation violations matching the filters of a Live Data query, one result per violation xobject.
+ * Queries the documentation violations matching the filters of a Live Data query, one result per violation xobject,
+ * keeping only the violations of the pages that the current user can view.
  *
  * @version $Id$
  * @since 1.17
@@ -120,36 +125,38 @@ public class ViolationsLiveDataQueryHelper
     @Named("local")
     private EntityReferenceSerializer<String> localSerializer;
 
-    /**
-     * @param query the Live Data query
-     * @return the number of violations matching the filters of the query
-     * @throws QueryException if the query fails
-     */
-    public long count(LiveDataQuery query) throws QueryException
-    {
-        Statement statement = new Statement(query);
-        List<Long> results = createQuery("select count(obj.id) " + statement.getFromAndWhere(), statement).execute();
-        return results.get(0);
-    }
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<String> resolver;
+
+    @Inject
+    private ContextualAuthorizationManager authorization;
 
     /**
      * @param query the Live Data query
-     * @return the violations matching the filters of the query, sorted and paginated as the query says, each one
-     *     holding the name of the page holding the violation and the number of the violation xobject
+     * @return the violations matching the filters of the query and located in pages that the current user can view,
+     *     sorted as the query says but not paginated (so that their number is the number of entries of the Live Data),
+     *     each one holding the name of the page holding the violation and the number of the violation xobject
      * @throws QueryException if the query fails
      */
     public List<Object[]> getViolations(LiveDataQuery query) throws QueryException
     {
         Statement statement = new Statement(query);
-        Query hqlQuery = createQuery(
-            "select doc.fullName, obj.number " + statement.getFromAndWhere() + statement.getOrderBy(), statement);
-        if (query.getOffset() != null) {
-            hqlQuery.setOffset(query.getOffset().intValue());
+        List<Object[]> results = createQuery(
+            "select doc.fullName, obj.number " + statement.getFromAndWhere() + statement.getOrderBy(), statement)
+            .execute();
+        // The rights are checked once per page.
+        Map<String, Boolean> viewablePages = new HashMap<>();
+        List<Object[]> violations = new ArrayList<>();
+        for (Object[] result : results) {
+            String pageName = (String) result[0];
+            if (viewablePages.computeIfAbsent(pageName,
+                key -> this.authorization.hasAccess(Right.VIEW, this.resolver.resolve(key))))
+            {
+                violations.add(result);
+            }
         }
-        if (query.getLimit() != null) {
-            hqlQuery.setLimit(query.getLimit());
-        }
-        return hqlQuery.execute();
+        return violations;
     }
 
     private Query createQuery(String statement, Statement parts) throws QueryException
