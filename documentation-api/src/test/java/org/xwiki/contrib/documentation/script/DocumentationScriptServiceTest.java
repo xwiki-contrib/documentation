@@ -181,6 +181,8 @@ class DocumentationScriptServiceTest
         verify(this.jobExecutor).execute(eq("documentation.checkAllPages"), requestCaptor.capture());
         assertEquals(JOB_ID, requestCaptor.getValue().getId());
         assertEquals(context, ((DefaultRequest) requestCaptor.getValue()).getContext());
+        verify(this.contextStore).save(List.of("wiki", "user", "author", "locale", "request.base", "request.url",
+            "request.wiki"));
     }
 
     @Test
@@ -255,6 +257,7 @@ class DocumentationScriptServiceTest
     @Test
     void getCheckAllPagesStatusWhenRunning()
     {
+        when(this.authorization.hasAccess(Right.ADMIN, WIKI_REFERENCE)).thenReturn(true);
         JobStatus status = mockJob(JobStatus.State.RUNNING);
 
         assertSame(status, this.scriptService.getCheckAllPagesStatus());
@@ -263,6 +266,7 @@ class DocumentationScriptServiceTest
     @Test
     void getCheckAllPagesStatusOfTheLastRun()
     {
+        when(this.authorization.hasAccess(Right.ADMIN, WIKI_REFERENCE)).thenReturn(true);
         JobStatus status = mock(JobStatus.class);
         when(this.jobStatusStore.getJobStatus(JOB_ID)).thenReturn(status);
 
@@ -272,6 +276,17 @@ class DocumentationScriptServiceTest
     @Test
     void getCheckAllPagesStatusWhenNeverRun()
     {
+        when(this.authorization.hasAccess(Right.ADMIN, WIKI_REFERENCE)).thenReturn(true);
+
+        assertNull(this.scriptService.getCheckAllPagesStatus());
+    }
+
+    @Test
+    void getCheckAllPagesStatusWhenNotAdmin()
+    {
+        mockJob(JobStatus.State.RUNNING);
+        when(this.jobStatusStore.getJobStatus(JOB_ID)).thenReturn(mock(JobStatus.class));
+
         assertNull(this.scriptService.getCheckAllPagesStatus());
     }
 

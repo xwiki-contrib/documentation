@@ -66,10 +66,11 @@ public class DocumentationScriptService implements ScriptService
 {
     /**
      * The parts of the context that the analysis of all pages runs with: the wiki and the user, but also the locale and
-     * the request URL, used by the checks that render or link to content.
+     * the request URL (which includes the context path), used by the checks that render or link to content. Only the
+     * request entries supported by the context store are listed, since it saves the whole request for the other ones.
      */
     private static final List<String> JOB_CONTEXT_ENTRIES = List.of("wiki", "user", "author", "locale",
-        "request.base", "request.url", "request.contextpath", "request.wiki");
+        "request.base", "request.url", "request.wiki");
 
     @Inject
     private DocumentationManager manager;
@@ -175,12 +176,17 @@ public class DocumentationScriptService implements ScriptService
 
     /**
      * @return the status of the analysis of all the documentation pages of the current wiki: of the one running if
-     *     there's one, otherwise of the last one, or {@code null} if there was none
+     *     there's one, otherwise of the last one, or {@code null} if there was none or if the current user doesn't have
+     *     the Admin right on the current wiki
      * @since 1.16
      */
     public JobStatus getCheckAllPagesStatus()
     {
-        List<String> jobId = CheckAllPagesJob.getJobId(getCurrentWikiReference().getName());
+        WikiReference wikiReference = getCurrentWikiReference();
+        if (!this.authorization.hasAccess(Right.ADMIN, wikiReference)) {
+            return null;
+        }
+        List<String> jobId = CheckAllPagesJob.getJobId(wikiReference.getName());
         Job job = this.jobExecutor.getJob(jobId);
         return job != null ? job.getStatus() : this.jobStatusStore.getJobStatus(jobId);
     }
