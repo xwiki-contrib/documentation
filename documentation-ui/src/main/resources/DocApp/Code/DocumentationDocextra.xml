@@ -339,6 +339,7 @@
   #if ($hasEdit)
   &lt;form id="documentationExtraDocForm" action="?validate" class="xformInline" method="post" name="documentationExtraDocForm"&gt;
     &lt;div&gt;
+      &lt;input type="hidden" name="form_token" value="$!escapetool.xml($services.csrf.token)"/&gt;
       &lt;span class="buttonwrapper"&gt;
         &lt;input class="button" type="submit" value="Validate"/&gt;
       &lt;/span&gt;

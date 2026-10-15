@@ -122,9 +122,23 @@ class DocumentationScriptServiceTest
     void analyse() throws Exception
     {
         XWikiDocument document = mock(XWikiDocument.class);
+        when(document.getDocumentReference()).thenReturn(PAGE_REFERENCE);
+        when(this.authorization.hasAccess(Right.EDIT, PAGE_REFERENCE)).thenReturn(true);
         when(this.manager.analyse(document)).thenReturn(true);
 
         assertTrue(this.scriptService.analyse(document));
+    }
+
+    @Test
+    void analyseWhenNoEditRight() throws Exception
+    {
+        XWikiDocument document = mock(XWikiDocument.class);
+        when(document.getDocumentReference()).thenReturn(PAGE_REFERENCE);
+
+        assertFalse(this.scriptService.analyse(document));
+        assertFalse(this.scriptService.analyse(null));
+
+        verifyNoInteractions(this.manager);
     }
 
     @Test

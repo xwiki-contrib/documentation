@@ -29,6 +29,7 @@ import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.contrib.documentation.internal.DefaultDocumentationManager;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -47,6 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -60,6 +64,9 @@ class DefaultDocumentationManagerTest
 {
     private static final DocumentReference VIOLATION_CLASS_REFERENCE = new DocumentReference("Wiki", List.of(
         "DocApp", "Code"), "DocumentationViolationClass");
+
+    private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
+        new LocalDocumentReference(List.of("DocApp", "Code"), "DocumentationClass");
 
     @InjectMockComponents
     private DefaultDocumentationManager manager;
@@ -86,8 +93,11 @@ class DefaultDocumentationManagerTest
         violationClassDocument.setXClass(violationClass);
         this.oldcore.getSpyXWiki().saveDocument(violationClassDocument, this.oldcore.getXWikiContext());
 
-        // Register the doc to analyse.
+        // Register the doc to analyse, which is a documentation page.
         this.document = new XWikiDocument(new DocumentReference("Wiki", "Space", "Page"));
+        BaseObject documentationObject = new BaseObject();
+        documentationObject.setXClassReference(DOCUMENTATION_CLASS_REFERENCE);
+        this.document.addXObject(documentationObject);
         this.oldcore.getSpyXWiki().saveDocument(this.document, this.oldcore.getXWikiContext());
     }
 
@@ -139,6 +149,33 @@ class DefaultDocumentationManagerTest
         assertEquals(userReference, savedDocument.getAuthorReference());
         assertEquals(userReference, savedDocument.getContentAuthorReference());
         assertEquals(userReference, savedDocument.getCreatorReference());
+    }
+
+    @Test
+    void analyzeWhenNotDocumentationPage() throws Exception
+    {
+        DocumentationCheck check = this.componentManager.registerMockComponent(DocumentationCheck.class, "test");
+        when(check.check(any())).thenReturn(Collections.singletonList(
+            new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
+
+        // A page without documentation xobject.
+        XWikiDocument otherDocument = new XWikiDocument(new DocumentReference("Wiki", "Space", "Other"));
+        this.oldcore.getSpyXWiki().saveDocument(otherDocument, this.oldcore.getXWikiContext());
+
+        assertFalse(this.manager.analyse(otherDocument));
+        assertTrue(otherDocument.getXObjects(VIOLATION_CLASS_REFERENCE).isEmpty());
+
+        // A documentation template, located in the application space.
+        XWikiDocument templateDocument =
+            new XWikiDocument(new DocumentReference("Wiki", List.of("DocApp", "Code"), "Template"));
+        BaseObject documentationObject = new BaseObject();
+        documentationObject.setXClassReference(DOCUMENTATION_CLASS_REFERENCE);
+        templateDocument.addXObject(documentationObject);
+
+        assertFalse(this.manager.analyse(templateDocument));
+        assertTrue(templateDocument.getXObjects(VIOLATION_CLASS_REFERENCE).isEmpty());
+
+        verify(check, never()).check(any());
     }
 
     /**
