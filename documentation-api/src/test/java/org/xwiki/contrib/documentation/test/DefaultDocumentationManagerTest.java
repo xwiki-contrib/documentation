@@ -33,6 +33,7 @@ import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.mockito.MockitoComponentManager;
+import org.xwiki.user.SuperAdminUserReference;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -115,6 +116,29 @@ class DefaultDocumentationManagerTest
 
         // Verify the xobject number
         assertEquals(0, objects.get(0).getNumber());
+    }
+
+    @Test
+    void analyzeKeepsTheAuthorsWhenSavingViolations() throws Exception
+    {
+        DocumentReference userReference = new DocumentReference("Wiki", "XWiki", "User");
+        this.document.setAuthorReference(userReference);
+        this.document.setContentAuthorReference(userReference);
+        this.document.setCreatorReference(userReference);
+
+        DocumentationCheck check = this.componentManager.registerMockComponent(DocumentationCheck.class, "test");
+        when(check.check(this.document)).thenReturn(Collections.singletonList(
+            new DocumentationViolation("message", "context", DocumentationViolationSeverity.ERROR)));
+
+        assertTrue(this.manager.analyse(this.document));
+
+        XWikiDocument savedDocument = this.oldcore.getSpyXWiki().getDocument(this.document.getDocumentReference(),
+            this.oldcore.getXWikiContext());
+        assertEquals(1, savedDocument.getXObjects(VIOLATION_CLASS_REFERENCE).size());
+        assertEquals(SuperAdminUserReference.INSTANCE, savedDocument.getAuthors().getOriginalMetadataAuthor());
+        assertEquals(userReference, savedDocument.getAuthorReference());
+        assertEquals(userReference, savedDocument.getContentAuthorReference());
+        assertEquals(userReference, savedDocument.getCreatorReference());
     }
 
     /**
