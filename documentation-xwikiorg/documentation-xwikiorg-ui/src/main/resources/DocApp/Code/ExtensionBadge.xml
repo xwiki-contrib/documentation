@@ -170,16 +170,21 @@
   #foreach ($id in $ids)
     #if ($id.startsWith('npm:'))
       #set ($normalizedId = $stringtool.substringAfter($id, 'npm:').replace(':', '%3A'))
-      (% class='documentation-badge' %)[[NPM&gt;&gt;url:https://www.npmjs.com/package/$normalizedId]](%%)
-
-    #elseif ($id.startsWith('xwiki:'))
-      #set ($normalizedId = $stringtool.substringAfter($id, 'xwiki:').replace(':', '%3A'))
-      (% class='documentation-badge' %)[[Extension&gt;&gt;extensions:Main.WebHome||queryString="id=$normalizedId"]](%%)
+      ## Escape the sequences that would end the link reference early.
+      #set ($npmReference = "https://www.npmjs.com/package/$normalizedId")
+      #set ($npmReference = $npmReference.replace('~', '~~').replace('&gt;&gt;', '~&gt;~&gt;').replace('||', '~|~|').replace(']]', '~]~]'))
+      (% class='documentation-badge' %)[[NPM&gt;&gt;url:$npmReference]](%%)
 
     #else
-      ## Consider it's an xwiki extension id
-      #set ($normalizedId = $id.replace(':', '%3A'))
-      (% class='documentation-badge' %)[[Extension&gt;&gt;extensions:Main.WebHome||queryString="id=$normalizedId"]](%%)
+      #if ($id.startsWith('xwiki:'))
+        #set ($extensionId = $stringtool.substringAfter($id, 'xwiki:'))
+      #else
+        ## Consider it's an xwiki extension id
+        #set ($extensionId = $id)
+      #end
+      ## URL-encode the id since it's a query string parameter value (this also encodes the characters that would
+      ## end the link parameter early).
+      (% class='documentation-badge' %)[[Extension&gt;&gt;extensions:Main.WebHome||queryString="id=$escapetool.url($extensionId)"]](%%)
 
     #end
   #end
