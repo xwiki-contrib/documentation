@@ -37,7 +37,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Verify that video attachments on documentation pages use the {@code .webm} format. Any video file with a non-webm
- * extension (e.g. {@code .mp4}, {@code .mov}) triggers an ERROR violation.
+ * extension (e.g. {@code .mp4}, {@code .mov}) triggers an ERROR violation. The {@code .ts} extension of MPEG transport
+ * streams isn't considered a video extension, since in documentation it's much more commonly the extension of a
+ * TypeScript file.
  *
  * @version $Id$
  * @since 1.13
@@ -50,7 +52,7 @@ public class VideoAttachmentCheck implements DocumentationCheck
     private static final String WEBM_EXTENSION = "webm";
 
     private static final Set<String> VIDEO_EXTENSIONS = Set.of(
-        "mp4", "mov", "avi", "mkv", "flv", "wmv", WEBM_EXTENSION, "ogv", "m4v", "3gp", "ts", "mts", "m2ts"
+        "mp4", "mov", "avi", "mkv", "flv", "wmv", WEBM_EXTENSION, "ogv", "m4v", "3gp", "mts", "m2ts"
     );
 
     @Override
