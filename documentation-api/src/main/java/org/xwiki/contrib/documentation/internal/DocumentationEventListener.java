@@ -21,6 +21,7 @@ package org.xwiki.contrib.documentation.internal;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -33,6 +34,8 @@ import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -54,6 +57,9 @@ public class DocumentationEventListener extends AbstractEventListener
 
     @Inject
     private EntityReferenceSerializer<String> serializer;
+
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
 
     /**
      * Default constructor.
@@ -78,11 +84,28 @@ public class DocumentationEventListener extends AbstractEventListener
             && !DefaultDocumentationManager.ANALYSIS_COMMENT.equals(document.getComment()))
         {
             try {
-                this.manager.analyse(document);
-            } catch (IndexException e) {
+                analyseStoredDocument(document);
+            } catch (IndexException | XWikiException e) {
                 this.logger.error("Failed to perform documentation checks on the document [{}] for revision [{}].",
                     document.getDocumentReference(), document.getVersion(), e);
             }
+        }
+    }
+
+    /**
+     * Analyses a copy of the saved document loaded from the store, rather than the instance passed with the event,
+     * since the analysis saves the document it analyses. The event instance can't be saved again: when a document is
+     * renamed, it's a clone of the renamed document whose history was already stored at its new location, and saving
+     * it fails on inserting that history again. The copy is a clone, so that the cached document isn't modified.
+     */
+    private void analyseStoredDocument(XWikiDocument document) throws XWikiException, IndexException
+    {
+        XWikiContext xcontext = this.xcontextProvider.get();
+        XWikiDocument storedDocument =
+            xcontext.getWiki().getDocument(document.getDocumentReferenceWithLocale(), xcontext);
+        // The document can be deleted by another listener of the save.
+        if (!storedDocument.isNew()) {
+            this.manager.analyse(storedDocument.clone());
         }
     }
 }

@@ -21,6 +21,9 @@ package org.xwiki.contrib.documentation.internal;
 
 import java.util.List;
 
+import javax.inject.Provider;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.bridge.event.DocumentCreatedEvent;
 import org.xwiki.bridge.event.DocumentUpdatedEvent;
@@ -31,10 +34,13 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -58,13 +64,41 @@ class DocumentationEventListenerTest
     @MockComponent
     private DocumentationManager manager;
 
-    private XWikiDocument mockDocument(boolean hasDocumentationClass, String comment, String space)
+    @MockComponent
+    private Provider<XWikiContext> xcontextProvider;
+
+    private XWikiContext xcontext;
+
+    private XWiki xwiki;
+
+    /**
+     * The copy of the saved document, loaded from the store, which is analysed.
+     */
+    private XWikiDocument storedDocumentCopy;
+
+    @BeforeEach
+    void setUp()
+    {
+        this.xcontext = mock(XWikiContext.class);
+        this.xwiki = mock(XWiki.class);
+        when(this.xcontextProvider.get()).thenReturn(this.xcontext);
+        when(this.xcontext.getWiki()).thenReturn(this.xwiki);
+        this.storedDocumentCopy = mock(XWikiDocument.class, "storedDocumentCopy");
+    }
+
+    private XWikiDocument mockDocument(boolean hasDocumentationClass, String comment, String space) throws Exception
     {
         XWikiDocument document = mock(XWikiDocument.class);
         when(document.getXObject(DOCUMENTATION_CLASS_REFERENCE))
             .thenReturn(hasDocumentationClass ? mock(BaseObject.class) : null);
         when(document.getComment()).thenReturn(comment);
-        when(document.getDocumentReference()).thenReturn(new DocumentReference("wiki", space, "Page"));
+        DocumentReference reference = new DocumentReference("wiki", space, "Page");
+        when(document.getDocumentReference()).thenReturn(reference);
+        when(document.getDocumentReferenceWithLocale()).thenReturn(reference);
+
+        XWikiDocument storedDocument = mock(XWikiDocument.class, "storedDocument");
+        when(this.xwiki.getDocument(reference, this.xcontext)).thenReturn(storedDocument);
+        when(storedDocument.clone()).thenReturn(this.storedDocumentCopy);
         return document;
     }
 
@@ -75,7 +109,7 @@ class DocumentationEventListenerTest
 
         this.listener.onEvent(new DocumentUpdatedEvent(), document, null);
 
-        verify(this.manager).analyse(document);
+        verify(this.manager).analyse(this.storedDocumentCopy);
     }
 
     @Test
@@ -115,6 +149,33 @@ class DocumentationEventListenerTest
 
         this.listener.onEvent(new DocumentCreatedEvent(), document, null);
 
-        verify(this.manager).analyse(document);
+        verify(this.manager).analyse(this.storedDocumentCopy);
+    }
+
+    @Test
+    void analysisDoesNotSaveTheDocumentOfTheEvent() throws Exception
+    {
+        // When a document is renamed, the document of the event is a clone of the renamed document whose history is
+        // already stored at its new location: saving it again fails.
+        XWikiDocument document = mockDocument(true, "edit", "Space");
+
+        this.listener.onEvent(new DocumentCreatedEvent(), document, null);
+
+        verify(this.manager, never()).analyse(same(document));
+        verify(this.manager).analyse(this.storedDocumentCopy);
+    }
+
+    @Test
+    void analysisSkippedWhenDocumentNotStoredAnymore() throws Exception
+    {
+        XWikiDocument document = mockDocument(true, "edit", "Space");
+        XWikiDocument deletedDocument = mock(XWikiDocument.class, "deletedDocument");
+        when(deletedDocument.isNew()).thenReturn(true);
+        when(this.xwiki.getDocument(document.getDocumentReferenceWithLocale(), this.xcontext))
+            .thenReturn(deletedDocument);
+
+        this.listener.onEvent(new DocumentUpdatedEvent(), document, null);
+
+        verify(this.manager, never()).analyse(any());
     }
 }
