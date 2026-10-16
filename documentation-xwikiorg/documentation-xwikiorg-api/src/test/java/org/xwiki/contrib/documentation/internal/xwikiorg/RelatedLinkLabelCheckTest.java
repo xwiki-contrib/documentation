@@ -161,7 +161,9 @@ class RelatedLinkLabelCheckTest
             "All Macros (for User)", "developer");
 
         assertEquals(0, check("* [[All Macros (for User)>>doc:documentation.xs.user.macros.WebHome]]").size());
-        assertLabelViolation("All Macros (for User) (for User)", "All Macros (for User)",
+        // The plural form of the qualifier, which the Doc Guide asks for, is accepted too, and is the one suggested.
+        assertEquals(0, check("* [[All Macros (for Users)>>doc:documentation.xs.user.macros.WebHome]]").size());
+        assertLabelViolation("All Macros (for User) (for User)", "All Macros (for Users)",
             check("* [[All Macros (for User) (for User)>>doc:documentation.xs.user.macros.WebHome]]"));
         // The qualifier of the title doesn't match the target of the linked page, so it's not a target qualifier.
         assertLabelViolation("All Macros (for User)", "All Macros (for User) (for Developers)",
