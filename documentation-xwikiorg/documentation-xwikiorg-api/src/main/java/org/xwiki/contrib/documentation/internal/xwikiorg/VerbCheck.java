@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -60,11 +61,21 @@ public class VerbCheck implements DocumentationCheck
     /**
      * Words ending in "ing" that name an XWiki domain concept (a noun), not a task phrased with a verb, when they
      * start the title or page name of a Reference or Explanation page, such as "Rendering Macros" (the macros of
-     * XWiki Rendering), "Logging Configuration" or "Warning Macro" (the documentation of the Warning macro). They are
-     * still reported for How-To and Tutorial pages, which must start with an imperative verb.
+     * XWiki Rendering), "Logging Configuration", "Scripting API", "Landing Page", "Heading Numbering", "Upgrade
+     * Troubleshooting" or "Warning Macro" (the documentation of the Warning macro). They are still reported for How-To
+     * and Tutorial pages, which must start with an imperative verb.
      */
     private static final Set<String> NOUN_ING_WORDS = Set.of("rendering", "logging", "caching", "indexing",
-        "versioning", "clustering", "theming", "licensing", "monitoring", "scheduling", "networking", "warning");
+        "versioning", "clustering", "theming", "licensing", "monitoring", "scheduling", "networking", "warning",
+        "scripting", "landing", "heading", "troubleshooting");
+
+    private static final String ING = "ing";
+
+    /**
+     * The stem of a gerund (the word without its "ing" suffix) always holds a vowel ("add" in "adding", "be" in
+     * "being"), while words such as "ping", "string", "bring" or "thing" merely end in "ing".
+     */
+    private static final Pattern VOWEL = Pattern.compile("[aeiouy]");
 
     private static final String PAGE_TITLE_CONTEXT = "Page title: [%s]";
 
@@ -160,6 +171,6 @@ public class VerbCheck implements DocumentationCheck
 
     private boolean isVerbForm(String word)
     {
-        return word.endsWith("ing");
+        return word.endsWith(ING) && VOWEL.matcher(word.substring(0, word.length() - ING.length())).find();
     }
 }

@@ -223,6 +223,29 @@ class VerbCheckTest
         assertEquals(0,
             this.check.check(createDocument("Rendering Macros", "rendering-macros", "reference")).size());
         assertEquals(0, this.check.check(createDocument("Warning Macro", "warning-macro", "reference")).size());
+        assertEquals(0,
+            this.check.check(createDocument("AntiSpam Scripting API", "scripting-api", "reference")).size());
+        assertEquals(0, this.check.check(createDocument("Landing Page", "landing-page", "explanation")).size());
+        assertEquals(0,
+            this.check.check(createDocument("Numbered Headings", "heading-numbering", "reference")).size());
+        assertEquals(0, this.check.check(
+            createNonTerminalDocument("Upgrade Troubleshooting", "troubleshooting", "explanation")).size());
+    }
+
+    @Test
+    void checkWhenReferenceStartsWithWordEndingInIngWithoutGerundStem()
+    {
+        // "Ping" and "String" end in "ing" but aren't gerunds: there's no vowel before the "ing" suffix.
+        assertEquals(0, this.check.check(createDocument("Ping Data", "ping-data", "reference")).size());
+        assertEquals(0, this.check.check(createDocument("String Utilities", "string-utilities", "explanation")).size());
+    }
+
+    @Test
+    void checkWhenHowToStartsWithVerbEndingInIngWithoutGerundStem()
+    {
+        // "Ping" and "Bring" are imperative verbs, not gerunds.
+        assertEquals(0, this.check.check(createDocument("Ping the Server", "ping-server", "howto")).size());
+        assertEquals(0, this.check.check(createDocument("Bring Your Own Theme", "bring-theme", "howto")).size());
     }
 
     @Test
