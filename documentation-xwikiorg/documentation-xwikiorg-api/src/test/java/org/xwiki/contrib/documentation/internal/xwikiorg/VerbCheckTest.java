@@ -230,6 +230,8 @@ class VerbCheckTest
             this.check.check(createDocument("Numbered Headings", "heading-numbering", "reference")).size());
         assertEquals(0, this.check.check(
             createNonTerminalDocument("Upgrade Troubleshooting", "troubleshooting", "explanation")).size());
+        assertEquals(0, this.check.check(
+            createDocument("Page Linking and References", "linking-references", "explanation")).size());
     }
 
     @Test
