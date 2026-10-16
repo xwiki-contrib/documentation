@@ -124,6 +124,13 @@ class VideoAttachmentCheckTest
     }
 
     @Test
+    void checkWhenTypeScriptAttachment()
+    {
+        // ".ts" is also the extension of MPEG transport streams, but in documentation it's a TypeScript file.
+        assertEquals(0, this.check.check(documentWithAttachments("vite.config.ts")).size());
+    }
+
+    @Test
     void checkWhenAttachmentHasNoExtension()
     {
         assertEquals(0, this.check.check(documentWithAttachments("videofile")).size());
