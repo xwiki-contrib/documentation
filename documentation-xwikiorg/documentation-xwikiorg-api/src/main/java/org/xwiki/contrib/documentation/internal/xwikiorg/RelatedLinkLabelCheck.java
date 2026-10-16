@@ -55,7 +55,8 @@ import com.xpn.xwiki.objects.BaseObject;
  * Verify that the labels of the links of the Related field that hold a target qualifier follow the
  * {@code <exact page title> (for <target>)} format, where the title is the exact title of the linked page and the
  * target is the audience of the linked page (Users, Administrators or Developers). When the title of the linked
- * page already ends with its target qualifier, in its plural or singular form, the label is that title.
+ * page already ends with its target qualifier, the label is that title, with the qualifier in its plural form. A
+ * label that is the exact title, with the qualifier in its singular form, is accepted too.
  *
  * @version $Id$
  * @since 1.15
@@ -107,7 +108,9 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
             String expectedTitle = getTitle(linkedDocument, labelTitle);
             String expectedTarget = getTarget(linkedDocument, labelTarget);
             String expectedLabel = getExpectedLabel(expectedTitle, expectedTarget);
-            if (!expectedLabel.equals(label)) {
+            if (!expectedLabel.equals(label) && !isTitleWithSingularTargetQualifier(label, expectedTitle,
+                expectedTarget))
+            {
                 violations.add(new DocumentationViolation(
                     "Related link labels must follow the format '<exact page title> (for <target>)', where the "
                         + "title and the target (Users, Administrators or Developers) match the linked page.",
@@ -122,13 +125,26 @@ public class RelatedLinkLabelCheck extends AbstractXDOMDocumentationCheck
         String targetQualifier = TARGET_PREFIX + target + ')';
         // A title can already end with the target qualifier, to disambiguate it from same-topic pages for other
         // targets (e.g. "All the Pages on the Wiki (for Administrators)"), in which case the title is the full label.
-        // Some titles use the singular form of the target in their qualifier (e.g. "All Bundled Rendering Macros
-        // (for User)"), which still makes them the full label.
-        String singularTargetQualifier = TARGET_PREFIX + Strings.CS.removeEnd(target, "s") + ')';
-        if (title.endsWith(targetQualifier) || title.endsWith(singularTargetQualifier)) {
+        if (title.endsWith(targetQualifier)) {
             return title;
         }
+        // Some titles use the singular form of the target in their qualifier (e.g. "All Bundled Rendering Macros
+        // (for User)"), in which case the label is the title with the plural form that the Doc Guide asks for.
+        String singularTargetQualifier = getSingularTargetQualifier(target);
+        if (title.endsWith(singularTargetQualifier)) {
+            return Strings.CS.removeEnd(title, singularTargetQualifier) + targetQualifier;
+        }
         return String.format("%s %s", title, targetQualifier);
+    }
+
+    private boolean isTitleWithSingularTargetQualifier(String label, String title, String target)
+    {
+        return label.equals(title) && title.endsWith(getSingularTargetQualifier(target));
+    }
+
+    private String getSingularTargetQualifier(String target)
+    {
+        return TARGET_PREFIX + Strings.CS.removeEnd(target, "s") + ')';
     }
 
     private String getLabelTarget(String targetQualifier)
