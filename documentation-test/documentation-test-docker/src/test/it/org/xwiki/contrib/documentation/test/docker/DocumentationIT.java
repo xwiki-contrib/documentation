@@ -36,6 +36,8 @@ import org.xwiki.livedata.test.po.TableLayoutElement;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.ui.TestUtils;
+import org.xwiki.test.ui.po.CopyOrRenameOrDeleteStatusPage;
+import org.xwiki.test.ui.po.RenamePage;
 import org.xwiki.test.ui.po.ViewPage;
 import org.xwiki.test.ui.po.editor.EditPage;
 import org.xwiki.test.ui.po.editor.WikiEditPage;
@@ -536,6 +538,30 @@ class DocumentationIT
         violations.assertRow(SEVERITY_COLUMN, "Error");
         violations.assertRow("Violation Message",
             "Page title must not contain documentation-type words (explanation, howto, reference, tutorial).");
+    }
+
+    @Test
+    @Order(16)
+    void analysesARenamedPageWithoutError(TestUtils setup)
+    {
+        DocumentReference reference = page("rename-sample");
+        DocumentReference renamedReference = page("RenamedSample");
+        setup.deletePage(reference);
+        setup.deletePage(renamedReference);
+        setup.createPage(reference, "Some content.", "Rename sample", "xwiki/2.1");
+        setup.addObject(reference, DOC_CLASS, "type", "reference");
+
+        // The rename saves the page at its new location, which triggers the analysis of the page.
+        RenamePage renamePage = setup.gotoPage(reference).rename();
+        renamePage.getDocumentPicker().setName(renamedReference.getName());
+        CopyOrRenameOrDeleteStatusPage statusPage = renamePage.clickRenameButton().waitUntilFinished();
+        assertEquals("Done.", statusPage.getInfoMessage());
+
+        // The violations of the renamed page are those of its new name, which isn't in kebab-case.
+        setup.gotoPage(renamedReference);
+        String tabContent = new DocumentationViewPage().openDocumentationTab().getDocumentationTabContent();
+        assertTrue(tabContent.contains("Page name must follow the kebab-case naming convention"),
+            "The renamed page should be analysed under its new name, but got:\n" + tabContent);
     }
 
     /**
