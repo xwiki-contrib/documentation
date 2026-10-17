@@ -43,6 +43,15 @@
       <artifactId>documentation-xwikiorg-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- The XWiki.org UI builds on the generic Documentation Application UI: for example its templates create
+         DocApp.Code.DocumentationClass objects, which documentation-ui provides. -->
+    <dependency>
+      <groupId>org.xwiki.contrib.documentation</groupId>
+      <artifactId>documentation-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.rendering</groupId>
       <artifactId>xwiki-rendering-macro-message</artifactId>

@@ -38,18 +38,10 @@
     <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
   </properties>
   <dependencies>
-    <!-- The Documentation Application UI, installed as a runtime extension in the test wiki. It pulls in the
-         documentation-api JAR (manager, event listener, script service) and registers the classes, sheets, templates,
-         providers, macros and UI extension points. -->
-    <dependency>
-      <groupId>org.xwiki.contrib.documentation</groupId>
-      <artifactId>documentation-ui</artifactId>
-      <version>${project.version}</version>
-      <type>xar</type>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- The XWiki.org-specific UI, installed as a runtime extension. It pulls in the documentation-xwikiorg-api JAR
-         which registers the concrete documentation checks (syntax, image macro, alt, gallery, ...). -->
+    <!-- The XWiki.org-specific UI, installed as a runtime extension in the test wiki. It pulls in the
+         documentation-xwikiorg-api JAR, which registers the concrete documentation checks (syntax, image macro, alt,
+         gallery, ...), and the generic documentation-ui XAR, which registers the classes, sheets, templates, providers,
+         macros and UI extension points. Depending only on it verifies that installing it brings everything needed. -->
     <dependency>
       <groupId>org.xwiki.contrib.documentation</groupId>
       <artifactId>documentation-xwikiorg-ui</artifactId>
