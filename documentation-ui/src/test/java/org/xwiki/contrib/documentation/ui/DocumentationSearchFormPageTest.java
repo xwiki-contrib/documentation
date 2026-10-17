@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.livedata.LiveData;
 import org.xwiki.livedata.script.LiveDataScriptService;
+import org.xwiki.localization.script.LocalizationScriptService;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.script.ModelScriptService;
 import org.xwiki.rendering.RenderingScriptServiceComponentList;
@@ -48,11 +49,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
  * Page test of the documentation search forms displayed by {@code DocApp.Code.LandingPageSheet} and
- * {@code DocApp.Code.DocumentationSheet}, which restrict the search to the space of the current page.
+ * {@code DocApp.Code.DocumentationSheet}, which restrict the search to the space of the current page, and of the
+ * translated texts displayed with them.
  *
  * @version $Id$
  */
@@ -74,14 +77,23 @@ class DocumentationSearchFormPageTest extends PageTest
 
     private static final String SPECIAL_SPACE = "S\"<b>x</b>{{/html}}~y";
 
+    /**
+     * Appended to every translation, to verify that the translations are displayed as text.
+     */
+    private static final String SPECIAL_TRANSLATION = "\"<b>t</b>{{/html}}**u**";
+
     @BeforeEach
     void setUp() throws Exception
     {
+        LocalizationScriptService localization = this.componentManager.getInstance(ScriptService.class, "localization");
+        when(localization.render(anyString()))
+            .thenAnswer(invocation -> invocation.getArgument(0) + SPECIAL_TRANSLATION);
+
         loadPage(new DocumentReference(WIKI, CODE_SPACE, "DocumentationMacros"));
     }
 
     @Test
-    void specialCharactersInTheSpaceNameAreEscapedInTheLandingPageSearchForm() throws Exception
+    void specialCharactersAreEscapedInTheLandingPageSearchForm() throws Exception
     {
         DocumentReference landingPageClass = new DocumentReference(WIKI, CODE_SPACE, "LandingPageClass");
         loadPage(landingPageClass);
@@ -90,11 +102,13 @@ class DocumentationSearchFormPageTest extends PageTest
         page.newXObject(landingPageClass, this.context).setIntValue("listChildren", 1);
         this.xwiki.saveDocument(page, this.context);
 
-        assertSearchForm(render(page));
+        Document document = render(page);
+        assertSearchForm(document, "placeholder");
+        assertText(document, "docapp.search.text");
     }
 
     @Test
-    void specialCharactersInTheSpaceNameAreEscapedInTheDocumentationPageSearchForm() throws Exception
+    void specialCharactersAreEscapedInTheDocumentationPageSearchForm() throws Exception
     {
         DocumentReference documentationClass = new DocumentReference(WIKI, CODE_SPACE, "DocumentationClass");
         loadPage(documentationClass);
@@ -110,16 +124,29 @@ class DocumentationSearchFormPageTest extends PageTest
         page.newXObject(documentationClass, this.context).setStringValue("type", "reference");
         this.xwiki.saveDocument(page, this.context);
 
-        assertSearchForm(render(page));
+        Document document = render(page);
+        assertSearchForm(document, "value");
+        assertText(document, "docapp.more.textWithoutHighlights");
     }
 
-    private void assertSearchForm(Document document)
+    private void assertSearchForm(Document document, String hintAttribute)
     {
         Element form = document.selectFirst("form");
         assertNotNull(form, document.html());
         assertEquals(SPECIAL_SPACE, form.selectFirst("input[name=f_space_prefix]").attr("value"));
         assertTrue(form.select("b").isEmpty(), form.html());
-        assertNotNull(form.selectFirst("input[name=text]"), form.html());
+        Element text = form.selectFirst("input[name=text]");
+        assertNotNull(text, form.html());
+        assertEquals("docapp.search.questionHint" + SPECIAL_TRANSLATION, text.attr(hintAttribute));
+        assertEquals("docapp.search.submit" + SPECIAL_TRANSLATION,
+            form.selectFirst("input[type=submit]").attr("value"));
+    }
+
+    private void assertText(Document document, String translationKey)
+    {
+        assertTrue(document.text().contains(translationKey + SPECIAL_TRANSLATION), document.html());
+        assertTrue(document.select("b:containsOwn(t)").isEmpty(), document.html());
+        assertTrue(document.select("strong:containsOwn(u)").isEmpty(), document.html());
     }
 
     /**

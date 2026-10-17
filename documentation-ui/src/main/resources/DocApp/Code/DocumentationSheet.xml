@@ -194,18 +194,18 @@ $doc.use('DocApp.Code.DocumentationClass')
     = More =
     #set ($highlights = $doc.getValue('highlights'))
     #if ("$!highlights" != '')
-      $services.localization.render('docapp.more.textWithHighlights')
+      $services.rendering.escape($services.localization.render('docapp.more.textWithHighlights'), 'xwiki/2.1')
     #else
-      $services.localization.render('docapp.more.textWithoutHighlights')
+      $services.rendering.escape($services.localization.render('docapp.more.textWithoutHighlights'), 'xwiki/2.1')
     #end
 
     {{html}}
       &lt;form action="$xwiki.getURL('DocApp.Code.DocumentationSearch')" class="xformInline"&gt;
         &lt;div&gt;
           &lt;input type="hidden" name="f_space_prefix" value="$escapetool.xml($doc.space)" /&gt;
-          &lt;input type="text" name="text" value="$services.localization.render('docapp.search.questionHint')" size="32" class="withTip" /&gt;
+          &lt;input type="text" name="text" value="$escapetool.xml($services.localization.render('docapp.search.questionHint'))" size="32" class="withTip" /&gt;
           &lt;span class="buttonwrapper"&gt;
-            &lt;input class="button" type="submit" value="$services.localization.render('docapp.search.submit')" /&gt;
+            &lt;input class="button" type="submit" value="$escapetool.xml($services.localization.render('docapp.search.submit'))" /&gt;
           &lt;/span&gt;
         &lt;/div&gt;
       &lt;/form&gt;
