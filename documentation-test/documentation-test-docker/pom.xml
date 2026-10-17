@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.contrib.documentation</groupId>
     <artifactId>documentation-test</artifactId>
-    <version>1.18-SNAPSHOT</version>
+    <version>1.18</version>
   </parent>
   <artifactId>documentation-test-docker</artifactId>
   <name>Documentation Application - Tests - Functional Tests</name>
