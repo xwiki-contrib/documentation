@@ -92,15 +92,15 @@ $doc.display('summary')
   = What are you looking for? =
   #set ($listChildren = $doc.getValue('listChildren'))
   #if ($listChildren == '1')
-    $services.localization.render('docapp.search.text')
+    $services.rendering.escape($services.localization.render('docapp.search.text'), 'xwiki/2.1')
 
     {{html}}
       &lt;form action="$xwiki.getURL('DocApp.Code.DocumentationSearch')" class="xformInline"&gt;
         &lt;div&gt;
           &lt;input type="hidden" name="f_space_prefix" value="$escapetool.xml($doc.space)" /&gt;
-          &lt;input type="text" name="text" placeholder="$services.localization.render('docapp.search.questionHint')" size="32" /&gt;
+          &lt;input type="text" name="text" placeholder="$escapetool.xml($services.localization.render('docapp.search.questionHint'))" size="32" /&gt;
           &lt;span class="buttonwrapper"&gt;
-            &lt;input class="button" type="submit" value="$services.localization.render('docapp.search.submit')" /&gt;
+            &lt;input class="button" type="submit" value="$escapetool.xml($services.localization.render('docapp.search.submit'))" /&gt;
           &lt;/span&gt;
         &lt;/div&gt;
       &lt;/form&gt;
