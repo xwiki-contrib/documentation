@@ -155,6 +155,13 @@ $doc.use('DocApp.Code.DocumentationClass')
 
   #end
 #end
+## In edit mode, let the user edit the content fragments held by the page, reused by the pages displaying them with the
+## fragment macro.
+#if ($xcontext.action == 'edit')
+
+  {{include reference="DocApp.Code.ContentFragmentsEdit"/}}
+
+#end
 #if ($xcontext.action == 'edit')
   = Highlights =
   Use a list syntax to represent the different highlighted documentation pages, with the first list item level being the title and the second level, the description. For example, in XWiki Syntax 2.0+:

@@ -32,6 +32,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.concurrent.ContextStoreManager;
 import org.xwiki.contrib.documentation.DocumentationManager;
 import org.xwiki.contrib.documentation.DocumentationViolationGroup;
+import org.xwiki.contrib.documentation.internal.ContentFragments;
 import org.xwiki.contrib.documentation.internal.FalsePositives;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Job;
@@ -108,6 +109,9 @@ class DocumentationScriptServiceTest
 
     @MockComponent
     private FalsePositives falsePositives;
+
+    @MockComponent
+    private ContentFragments contentFragments;
 
 
     @BeforeEach
@@ -361,6 +365,15 @@ class DocumentationScriptServiceTest
             () -> this.scriptService.markFalsePositives("technicalId", " ", PAGE_REFERENCE, null));
 
         verifyNoInteractions(this.falsePositives);
+    }
+
+    @Test
+    void getContentFragmentUsages() throws Exception
+    {
+        List<DocumentReference> usages = List.of(PAGE_REFERENCE);
+        when(this.contentFragments.getUsages(PAGE_REFERENCE, "name")).thenReturn(usages);
+
+        assertSame(usages, this.scriptService.getContentFragmentUsages(PAGE_REFERENCE, "name"));
     }
 
     private CancelableJobStatus mockCancelableJob(JobStatus.State state)

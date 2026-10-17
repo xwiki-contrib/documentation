@@ -80,13 +80,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link DocumentationContentMacro}, {@link DocumentationContentDisplayer} and
- * {@link DocumentationFAQDisplayer}.
+ * Unit tests for {@link DocumentationContentMacro}, {@link DocumentationContentDisplayer},
+ * {@link DocumentationFAQDisplayer} and {@link DocumentationPropertyDisplayer}.
  *
  * @version $Id$
  */
 @ComponentTest
-@ComponentList({ DocumentationContentDisplayer.class, DocumentationFAQDisplayer.class })
+@ComponentList({ DocumentationContentDisplayer.class, DocumentationFAQDisplayer.class,
+    DocumentationPropertyDisplayer.class })
 class DocumentationContentMacroTest
 {
     private static final DocumentReference DOCUMENT_REFERENCE =
