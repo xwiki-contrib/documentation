@@ -332,7 +332,7 @@
       #if ($requiredForImportMaxIndex &gt;= 0)
         #set ($firstRequiredShown = false)
         #foreach ($index in [0..$requiredForImportMaxIndex])
-          #readRequiredForImportVariables##
+          #readRequiredForImportVariables($index)##
           #if (!$migratorPackages.contains($requiredForImportId))
             #if (!$firstRequiredShown)
               #set($firstRequiredShown = true)
@@ -368,7 +368,7 @@
               The target macro requires ##
             #end##
             #maybeCommaOrAnd##
-            #readRequiredForUsageVariables##
+            #readRequiredForUsageVariables($index)##
             #if ("$!requiredForUsageId" == '')
               #set ($requiredForUsageId = "$!requiredForUsagePage$!requiredForUsage")
             #end
@@ -415,7 +415,7 @@
               See ##
             #end##
             #maybeCommaOrAnd##
-            #readEquivXWikiFeatureVariables##
+            #readEquivXWikiFeatureVariables($index)##
             #if ("$!equivXWikiFeatureId" == '')
               #set ($equivXWikiFeatureId = "$!equivXWikiFeaturePage$!equivXWikiFeature")
             #end
