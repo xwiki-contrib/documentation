@@ -652,7 +652,7 @@
       <defaultValue/>
       <disabled>0</disabled>
       <displayType>input</displayType>
-      <freeText>allowed</freeText>
+      <freeText/>
       <hint>The import target macro documentation, if applicable.</hint>
       <idField/>
       <largeStorage>0</largeStorage>
