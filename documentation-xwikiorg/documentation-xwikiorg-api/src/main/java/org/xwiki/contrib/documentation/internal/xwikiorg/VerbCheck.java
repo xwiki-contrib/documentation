@@ -67,7 +67,7 @@ public class VerbCheck implements DocumentationCheck
      */
     private static final Set<String> NOUN_ING_WORDS = Set.of("rendering", "logging", "caching", "indexing",
         "versioning", "clustering", "theming", "licensing", "monitoring", "scheduling", "networking", "warning",
-        "scripting", "landing", "heading", "linking", "troubleshooting");
+        "scripting", "landing", "heading", "linking", "troubleshooting, "setting");
 
     private static final String ING = "ing";
 
