@@ -20,15 +20,18 @@
 package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
@@ -44,7 +47,12 @@ import com.xpn.xwiki.objects.BaseObject;
  *       or "The user guide").</li>
  *   <li>Reference and Explanation pages must not start with a verb form (e.g. "User Management", not
  *       "Managing Users"). Note: only gerund forms (ending in "ing") are detected; base-form imperatives
- *       such as "Add" cannot be reliably caught without NLP POS tagging.</li>
+ *       such as "Add" cannot be reliably caught without NLP POS tagging. A gerund can't be told apart from a noun
+ *       ending in "ing" without understanding the meaning of the title, so a title or page name isn't reported
+ *       when it starts with a word listed in the {@code nounIngWords} property of the documentation configuration
+ *       (editable in the wiki Administration), or when it's made of a single word, which names a topic (such as
+ *       "Formatting"), not a task. When that property is empty or the configuration is missing, no word is
+ *       considered a noun.</li>
  * </ul>
  *
  * @version $Id$
@@ -55,19 +63,22 @@ import com.xpn.xwiki.objects.BaseObject;
 @Named("verb")
 public class VerbCheck implements DocumentationCheck
 {
+    /**
+     * The property of the documentation configuration listing the words ending in "ing" that name a concept (a noun),
+     * not a task phrased with a verb, when they start the title or page name of a Reference or Explanation page, such
+     * as "Rendering Macros" (the macros of XWiki Rendering) or "Logging Configuration". The XWiki.org UI ships it with
+     * a default list that admins can edit.
+     */
+    static final String NOUN_ING_WORDS_PROPERTY = "nounIngWords";
+
     private static final LocalDocumentReference DOCUMENTATION_CLASS_REFERENCE =
         new LocalDocumentReference(List.of("DocApp", "Code"), "DocumentationClass");
 
     /**
-     * Words ending in "ing" that name an XWiki domain concept (a noun), not a task phrased with a verb, when they
-     * start the title or page name of a Reference or Explanation page, such as "Rendering Macros" (the macros of
-     * XWiki Rendering), "Logging Configuration", "Scripting API", "Landing Page", "Heading Numbering", "Page
-     * Linking and References", "Upgrade Troubleshooting" or "Warning Macro" (the documentation of the Warning macro).
-     * They are still reported for How-To and Tutorial pages, which must start with an imperative verb.
+     * Separates the words configured in the {@link #NOUN_ING_WORDS_PROPERTY} property: commas and whitespace, new
+     * lines included.
      */
-    private static final Set<String> NOUN_ING_WORDS = Set.of("rendering", "logging", "caching", "indexing",
-        "versioning", "clustering", "theming", "licensing", "monitoring", "scheduling", "networking", "warning",
-        "scripting", "landing", "heading", "linking", "troubleshooting");
+    private static final Pattern WORD_SEPARATOR = Pattern.compile("[\\s,]+");
 
     private static final String ING = "ing";
 
@@ -97,6 +108,10 @@ public class VerbCheck implements DocumentationCheck
         "The page name of a Reference or Explanation page must not start with a verb "
             + "(e.g. 'user-management', not 'managing-users').";
 
+    @Inject
+    @Named(DocumentationConfigurationSource.HINT)
+    private ConfigurationSource configurationSource;
+
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
     {
@@ -112,10 +127,25 @@ public class VerbCheck implements DocumentationCheck
             return List.of();
         }
 
+        Set<String> nounIngWords = mustStartWithVerb ? Set.of() : getNounIngWords();
         List<DocumentationViolation> violations = new ArrayList<>();
-        checkTitle(document.getTitle(), mustStartWithVerb, violations);
-        checkPageName(getPageName(document), mustStartWithVerb, violations);
+        checkTitle(document.getTitle(), mustStartWithVerb, nounIngWords, violations);
+        checkPageName(getPageName(document), mustStartWithVerb, nounIngWords, violations);
         return violations;
+    }
+
+    private Set<String> getNounIngWords()
+    {
+        Set<String> words = new HashSet<>();
+        String configuredWords = this.configurationSource.getProperty(NOUN_ING_WORDS_PROPERTY, String.class);
+        if (configuredWords != null) {
+            for (String word : WORD_SEPARATOR.split(configuredWords)) {
+                if (!word.isEmpty()) {
+                    words.add(word.toLowerCase(Locale.ROOT));
+                }
+            }
+        }
+        return words;
     }
 
     private String getPageName(XWikiDocument document)
@@ -128,22 +158,25 @@ public class VerbCheck implements DocumentationCheck
         return pageName;
     }
 
-    private void checkTitle(String title, boolean mustStartWithVerb, List<DocumentationViolation> violations)
+    private void checkTitle(String title, boolean mustStartWithVerb, Set<String> nounIngWords,
+        List<DocumentationViolation> violations)
     {
         if (title == null || title.isBlank()) {
             return;
         }
-        String firstWord = title.trim().split("\\s+")[0].toLowerCase(Locale.ROOT);
+        String[] words = title.trim().split("\\s+");
+        String firstWord = words[0].toLowerCase(Locale.ROOT);
         if (mustStartWithVerb && isNotImperativeVerb(firstWord)) {
             violations.add(new DocumentationViolation(HOWTO_TUTORIAL_TITLE_MSG,
                 String.format(PAGE_TITLE_CONTEXT, title), DocumentationViolationSeverity.WARNING));
-        } else if (!mustStartWithVerb && isVerbFormAndNotNoun(firstWord)) {
+        } else if (!mustStartWithVerb && words.length > 1 && isVerbFormAndNotNoun(firstWord, nounIngWords)) {
             violations.add(new DocumentationViolation(REF_EXPLANATION_TITLE_MSG,
                 String.format(PAGE_TITLE_CONTEXT, title), DocumentationViolationSeverity.WARNING));
         }
     }
 
-    private void checkPageName(String pageName, boolean mustStartWithVerb, List<DocumentationViolation> violations)
+    private void checkPageName(String pageName, boolean mustStartWithVerb, Set<String> nounIngWords,
+        List<DocumentationViolation> violations)
     {
         String[] segments = pageName.split("-");
         if (segments.length == 0 || segments[0].isEmpty()) {
@@ -153,7 +186,7 @@ public class VerbCheck implements DocumentationCheck
         if (mustStartWithVerb && isNotImperativeVerb(firstSegment)) {
             violations.add(new DocumentationViolation(HOWTO_TUTORIAL_NAME_MSG,
                 String.format(PAGE_NAME_CONTEXT, pageName), DocumentationViolationSeverity.WARNING));
-        } else if (!mustStartWithVerb && isVerbFormAndNotNoun(firstSegment)) {
+        } else if (!mustStartWithVerb && segments.length > 1 && isVerbFormAndNotNoun(firstSegment, nounIngWords)) {
             violations.add(new DocumentationViolation(REF_EXPLANATION_NAME_MSG,
                 String.format(PAGE_NAME_CONTEXT, pageName), DocumentationViolationSeverity.WARNING));
         }
@@ -164,9 +197,9 @@ public class VerbCheck implements DocumentationCheck
         return isVerbForm(word) || KebabNameValidator.STOP_WORDS.contains(word);
     }
 
-    private boolean isVerbFormAndNotNoun(String word)
+    private boolean isVerbFormAndNotNoun(String word, Set<String> nounIngWords)
     {
-        return isVerbForm(word) && !NOUN_ING_WORDS.contains(word);
+        return isVerbForm(word) && !nounIngWords.contains(word);
     }
 
     private boolean isVerbForm(String word)

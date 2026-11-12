@@ -21,13 +21,17 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.List;
 
+import javax.inject.Named;
+
 import org.junit.jupiter.api.Test;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -35,6 +39,7 @@ import com.xpn.xwiki.objects.BaseObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -48,6 +53,10 @@ class VerbCheckTest
 {
     @InjectMockComponents
     private VerbCheck check;
+
+    @MockComponent
+    @Named(DocumentationConfigurationSource.HINT)
+    private ConfigurationSource configurationSource;
 
     private XWikiDocument createDocument(String title, String pageName, String type)
     {
@@ -220,6 +229,9 @@ class VerbCheckTest
     @Test
     void checkWhenReferenceStartsWithNounEndingInIng()
     {
+        when(this.configurationSource.getProperty(VerbCheck.NOUN_ING_WORDS_PROPERTY, String.class))
+            .thenReturn("rendering\nwarning\nscripting\nlanding\nheading\ntroubleshooting\nlinking");
+
         assertEquals(0,
             this.check.check(createDocument("Rendering Macros", "rendering-macros", "reference")).size());
         assertEquals(0, this.check.check(createDocument("Warning Macro", "warning-macro", "reference")).size());
@@ -229,7 +241,7 @@ class VerbCheckTest
         assertEquals(0,
             this.check.check(createDocument("Numbered Headings", "heading-numbering", "reference")).size());
         assertEquals(0, this.check.check(
-            createNonTerminalDocument("Upgrade Troubleshooting", "troubleshooting", "explanation")).size());
+            createNonTerminalDocument("Upgrade Troubleshooting", "troubleshooting-guide", "explanation")).size());
         assertEquals(0, this.check.check(
             createDocument("Page Linking and References", "linking-references", "explanation")).size());
     }
@@ -303,5 +315,69 @@ class VerbCheckTest
     {
         // "landing" is not a recognized Diataxis type — no check applies
         assertEquals(0, this.check.check(createDocument("Adding a User", "adding-user", "landing")).size());
+    }
+
+    // --- Nouns ending in "ing" ---
+
+    @Test
+    void checkWhenExplanationWithSingleGerundWord()
+    {
+        // A lone word names a topic, not a task.
+        assertEquals(0, this.check.check(createDocument("Formatting", "formatting", "explanation")).size());
+        assertEquals(0, this.check.check(createDocument("Exporting", "exporting", "reference")).size());
+    }
+
+    @Test
+    void checkWhenHowToWithSingleGerundWord()
+    {
+        assertEquals(2, this.check.check(createDocument("Exporting", "exporting", "howto")).size());
+    }
+
+    @Test
+    void checkWhenReferenceStartsWithConfiguredNounIngWord()
+    {
+        when(this.configurationSource.getProperty(VerbCheck.NOUN_ING_WORDS_PROPERTY, String.class))
+            .thenReturn(" Painting,\nbuilding  ,, ");
+
+        assertEquals(0, this.check.check(createDocument("Painting Tools", "painting-tools", "reference")).size());
+        assertEquals(0,
+            this.check.check(createDocument("Building Blocks", "building-blocks", "explanation")).size());
+        // The other gerunds are still reported.
+        assertEquals(2, this.check.check(createDocument("Managing Users", "managing-users", "reference")).size());
+    }
+
+    @Test
+    void checkWhenNoNounIngWordConfigured()
+    {
+        // There's no hardcoded noun: an empty or missing configuration (the configuration source returns null for
+        // both) reports every gerund.
+        when(this.configurationSource.getProperty(VerbCheck.NOUN_ING_WORDS_PROPERTY, String.class)).thenReturn(null);
+
+        assertEquals(2, this.check.check(createDocument("Rendering Macros", "rendering-macros", "reference")).size());
+    }
+
+    @Test
+    void checkWhenSingleWordOnlyInTitleOrPageName()
+    {
+        // The single-word exception applies to the title and the page name separately.
+        List<DocumentationViolation> violations =
+            this.check.check(createDocument("Exporting Pages", "exporting", "reference"));
+        assertEquals(1, violations.size());
+        assertEquals("Page title: [Exporting Pages]", violations.get(0).getViolationContext());
+
+        violations = this.check.check(createDocument("Exporting", "exporting-pages", "explanation"));
+        assertEquals(1, violations.size());
+        assertEquals("Page name: [exporting-pages]", violations.get(0).getViolationContext());
+    }
+
+    @Test
+    void checkWhenHowToStartsWithConfiguredNounIngWord()
+    {
+        when(this.configurationSource.getProperty(VerbCheck.NOUN_ING_WORDS_PROPERTY, String.class))
+            .thenReturn("painting");
+
+        assertEquals(2, this.check.check(createDocument("Painting Tools", "painting-tools", "howto")).size());
+        // How-To pages must start with an imperative verb whatever the configured nouns, which aren't even read.
+        verifyNoInteractions(this.configurationSource);
     }
 }
