@@ -291,7 +291,7 @@
       <linkPrefix/>
     </property>
     <property>
-      <propertiesToShow>oldestSupportedVersion</propertiesToShow>
+      <propertiesToShow>oldestSupportedVersion|nounIngWords</propertiesToShow>
     </property>
     <property>
       <scope>WIKI</scope>
@@ -317,7 +317,7 @@
       <oldestSupportedVersion>
         <customDisplay/>
         <disabled>0</disabled>
-        <hint>The oldest XWiki version still supported, i.e. the start of the current LTS cycle (e.g. 16.10.0). Version macros whose versions are all older are reported as violations. Leave empty to disable this check.</hint>
+        <hint>First version of the current LTS cycle, e.g. 16.10.0. Version macros only mentioning older versions are reported. Empty disables this check.</hint>
         <name>oldestSupportedVersion</name>
         <number>1</number>
         <picker>0</picker>
@@ -328,9 +328,47 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </oldestSupportedVersion>
+      <nounIngWords>
+        <contenttype>PureText</contenttype>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <hint>Nouns that Reference and Explanation titles and page names can start with, e.g. "Rendering" in "Rendering Macros". One per line. Leave empty for no exception.</hint>
+        <name>nounIngWords</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Nouns ending in "ing"</prettyName>
+        <restricted>0</restricted>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </nounIngWords>
     </class>
     <property>
       <oldestSupportedVersion/>
+    </property>
+    <property>
+      <nounIngWords>caching
+clustering
+formatting
+heading
+indexing
+landing
+licensing
+linking
+logging
+monitoring
+networking
+rendering
+scheduling
+scripting
+theming
+troubleshooting
+versioning
+warning</nounIngWords>
     </property>
   </object>
 </xwikidoc>
