@@ -178,8 +178,8 @@
 
     == Definition ==
 
-    #set ($contributorid = $doc.getValue('contributorid'))
-    #set ($version = $doc.getValue('version'))
+    #set ($contributorid = $services.rendering.escape($doc.getValue('contributorid'), 'xwiki/2.1'))
+    #set ($version = $services.rendering.escape($doc.getValue('version'), 'xwiki/2.1'))
     This Extension Point is contributed by [[this extension&gt;&gt;extensions:Main.WebHome||queryString="id=${contributorid}:${version}"]] and was added in version $version of that extension.
 
     ; **Category**

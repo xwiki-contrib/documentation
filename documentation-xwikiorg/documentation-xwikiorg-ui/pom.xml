@@ -72,6 +72,21 @@
       <version>${platform.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Provide the rendering script service ($services.rendering) to the page tests. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-xwiki</artifactId>
+      <version>${platform.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-configuration-default</artifactId>
+      <version>${platform.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-wikimacro-store</artifactId>
