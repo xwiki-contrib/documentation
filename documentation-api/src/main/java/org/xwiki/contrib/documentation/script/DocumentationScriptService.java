@@ -35,6 +35,7 @@ import org.xwiki.contrib.documentation.DocumentationManager;
 import org.xwiki.contrib.documentation.DocumentationViolationGroup;
 import org.xwiki.contrib.documentation.internal.CheckAllPagesJob;
 import org.xwiki.contrib.documentation.internal.ContentFragments;
+import org.xwiki.contrib.documentation.internal.DocumentationContentExtensions;
 import org.xwiki.contrib.documentation.internal.FalsePositives;
 import org.xwiki.index.IndexException;
 import org.xwiki.job.DefaultRequest;
@@ -50,6 +51,7 @@ import org.xwiki.script.service.ScriptService;
 import org.xwiki.security.authorization.AccessDeniedException;
 import org.xwiki.security.authorization.ContextualAuthorizationManager;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.uiextension.UIExtension;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -63,6 +65,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Component
 @Singleton
 @Named("documentation")
+// The entry point of the scripts of the documentation application, delegating to the components implementing them.
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class DocumentationScriptService implements ScriptService
 {
     /**
@@ -96,6 +100,9 @@ public class DocumentationScriptService implements ScriptService
 
     @Inject
     private ContentFragments contentFragments;
+
+    @Inject
+    private DocumentationContentExtensions contentExtensions;
 
 
 
@@ -318,6 +325,20 @@ public class DocumentationScriptService implements ScriptService
         throws DocumentationException
     {
         return this.contentFragments.getUsages(page, name);
+    }
+
+    /**
+     * Returns the content extensions of the documentation sheet, which display the structured data of some
+     * documentation pages (for example the parameters of a rendering macro) in place of their content. The same
+     * extensions as {@code $services.uix.getExtensions('org.xwiki.contrib.documentation.sheet.content')} returns, but
+     * keeping only those written by a wiki administrator, sorted by their {@code order} parameter.
+     *
+     * @return the content extensions to execute, empty if there's none
+     * @since 1.19
+     */
+    public List<UIExtension> getContentExtensions()
+    {
+        return this.contentExtensions.getExtensions();
     }
 
     private WikiReference getCurrentWikiReference()

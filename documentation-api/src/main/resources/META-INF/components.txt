@@ -17,3 +17,5 @@ org.xwiki.contrib.documentation.internal.DocumentationPropertyDisplayer
 org.xwiki.contrib.documentation.internal.ContentFragments
 org.xwiki.contrib.documentation.internal.ContentFragmentMacro
 org.xwiki.contrib.documentation.internal.ContentFragmentMacroRefactoring
+org.xwiki.contrib.documentation.internal.DocumentationContentExtensions
+org.xwiki.contrib.documentation.internal.DocumentationPropertyMacro

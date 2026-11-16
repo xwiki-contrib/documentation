@@ -108,11 +108,14 @@
 #elseif ($doc.getValue('type') == 'reference')
   = Reference =
 #end
-## If there are UIXs, use them (so that they can display structured data), otherwise display the content as is.
-#set ($uixExecuted = false)
-#set ($uixs = $services.uix.getExtensions('org.xwiki.contrib.documentation.sheet.content', {'sortByParameter' : 'order'}))
-#foreach($uix in $uixs)
-  #if ($services.security.authorization.hasAccess('admin', $uix.authorReference, $services.wiki.currentWikiDescriptor.reference))
+## If there are content extensions (UIXs) displaying something, use them (so that they can display structured data),
+## otherwise display the content as is.
+## In view mode, the content (or the output of the content extensions) and the FAQ are displayed by the
+## documentationContent macro, which keeps their headings visible to the TOC above ($doc.display() renders them as
+## HTML, hiding their headings), while still executing them with the rights of their own author.
+#if ($xcontext.action == 'edit')
+  #set ($uixExecuted = false)
+  #foreach ($uix in $services.documentation.getContentExtensions())
     #set ($content = $services.rendering.render($uix.execute(), 'html/5.0').trim())
     #if ("$!content" != '')
       {{html clean="false"}}
@@ -122,22 +125,18 @@
     #end
   #end
 #end
-## A content extension may have called $doc.use() to display its own object's fields (e.g. the UIXP extension
-## selecting the UIXPClass object). That changes the object targeted by the $doc.display() calls below, so
-## reselect the DocumentationClass object to make sure the content/FAQ/Highlights/Related fields are displayed
-## from it.
-$doc.use('DocApp.Code.DocumentationClass')
-## In view mode, the content and the FAQ are displayed by the documentationContent macro, which keeps their headings
-## visible to the TOC above ($doc.display() renders them as HTML, hiding their headings), while still executing them
-## with the rights of their own author.
-#if (!$uixExecuted)
-  #if ($xcontext.action == 'edit')
+## A content extension may have called $doc.use() to display its own object's fields. That changes the object targeted
+## by the $doc.display() calls below, so reselect the DocumentationClass object to make sure the content/FAQ/Highlights/
+## Related fields are displayed from it.
+#set ($discard = $doc.use('DocApp.Code.DocumentationClass'))
+#if ($xcontext.action == 'edit')
+  #if (!$uixExecuted)
     $doc.display('content')
-  #else
-
-    {{documentationContent field="content"/}}
-
   #end
+#else
+
+  {{documentationContent field="content"/}}
+
 #end
 ## Display the FAQ section if it's not empty
 #if ($hasFAQ || $xcontext.action == 'edit')

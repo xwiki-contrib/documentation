@@ -33,6 +33,7 @@ import org.xwiki.context.concurrent.ContextStoreManager;
 import org.xwiki.contrib.documentation.DocumentationManager;
 import org.xwiki.contrib.documentation.DocumentationViolationGroup;
 import org.xwiki.contrib.documentation.internal.ContentFragments;
+import org.xwiki.contrib.documentation.internal.DocumentationContentExtensions;
 import org.xwiki.contrib.documentation.internal.FalsePositives;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Job;
@@ -50,6 +51,7 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.uiextension.UIExtension;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -112,6 +114,9 @@ class DocumentationScriptServiceTest
 
     @MockComponent
     private ContentFragments contentFragments;
+
+    @MockComponent
+    private DocumentationContentExtensions contentExtensions;
 
 
     @BeforeEach
@@ -374,6 +379,15 @@ class DocumentationScriptServiceTest
         when(this.contentFragments.getUsages(PAGE_REFERENCE, "name")).thenReturn(usages);
 
         assertSame(usages, this.scriptService.getContentFragmentUsages(PAGE_REFERENCE, "name"));
+    }
+
+    @Test
+    void getContentExtensions()
+    {
+        List<UIExtension> extensions = List.of(mock(UIExtension.class));
+        when(this.contentExtensions.getExtensions()).thenReturn(extensions);
+
+        assertSame(extensions, this.scriptService.getContentExtensions());
     }
 
     private CancelableJobStatus mockCancelableJob(JobStatus.State state)

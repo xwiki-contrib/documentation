@@ -30,8 +30,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.rendering.block.Block;
-import org.xwiki.rendering.block.HeaderBlock;
-import org.xwiki.rendering.block.ImageBlock;
 import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.block.MacroMarkerBlock;
 import org.xwiki.rendering.block.MetaDataBlock;
@@ -41,7 +39,6 @@ import org.xwiki.rendering.parser.ContentParser;
 import org.xwiki.rendering.transformation.MacroTransformationContext;
 import org.xwiki.rendering.transformation.TransformationContext;
 import org.xwiki.rendering.transformation.TransformationManager;
-import org.xwiki.rendering.util.IdGenerator;
 import org.xwiki.rendering.util.ParserUtils;
 import org.xwiki.security.authorization.AuthorExecutor;
 
@@ -110,7 +107,7 @@ public class DocumentationPropertyDisplayer
                 String.format("Failed to parse the %s of document [%s]", label, documentReference), e);
         }
         if (context.getXDOM() != null) {
-            makeIdsUnique(xdom, context.getXDOM().getIdGenerator());
+            UniqueIds.makeIdsUnique(xdom, context.getXDOM().getIdGenerator());
         }
         if (context.isInline()) {
             // A property made of a single paragraph can be displayed inside a paragraph of the calling page.
@@ -151,30 +148,5 @@ public class DocumentationPropertyDisplayer
     private static boolean isRestricted(BaseClass xclass, String property)
     {
         return xclass != null && xclass.get(property) instanceof TextAreaClass textArea && textArea.isRestricted();
-    }
-
-    /**
-     * Generates the ids of the headings and images of the property with the id generator of the page, so that they
-     * don't collide with the ids of the headings and images of the rest of the page.
-     */
-    private static void makeIdsUnique(XDOM xdom, IdGenerator idGenerator)
-    {
-        xdom.getBlocks(block -> {
-            if (block instanceof HeaderBlock headerBlock) {
-                headerBlock.setId(makeIdUnique(idGenerator, headerBlock.getId()));
-            } else if (block instanceof ImageBlock imageBlock) {
-                imageBlock.setId(makeIdUnique(idGenerator, imageBlock.getId()));
-            }
-            return false;
-        }, Block.Axes.DESCENDANT);
-    }
-
-    private static String makeIdUnique(IdGenerator idGenerator, String id)
-    {
-        if (StringUtils.isBlank(id)) {
-            return id;
-        }
-        // The generated ids are a prefix letter (e.g. "H" for headings) followed by the text-based part.
-        return idGenerator.generateUniqueId(id.substring(0, 1), id.substring(1));
     }
 }

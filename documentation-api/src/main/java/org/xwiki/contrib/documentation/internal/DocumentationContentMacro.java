@@ -48,6 +48,10 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * the document content author, and the FAQ with the rights of the document (metadata) author, never with the rights of
  * the author of the page calling the macro. The macro only displays fields of the current document, which the current
  * user is already viewing.
+ * <p>
+ * The content is displayed by the content extensions of the documentation sheet when there are some displaying
+ * something for the current document (see {@link DocumentationContentExtensions}), and only otherwise by the content
+ * of the document itself.
  *
  * @version $Id$
  * @since 1.16
@@ -77,6 +81,9 @@ public class DocumentationContentMacro extends AbstractMacro<DocumentationConten
 
     @Inject
     private DocumentationFAQDisplayer faqDisplayer;
+
+    @Inject
+    private DocumentationContentExtensions contentExtensions;
 
     @Inject
     private EntityReferenceSerializer<String> entityReferenceSerializer;
@@ -121,6 +128,10 @@ public class DocumentationContentMacro extends AbstractMacro<DocumentationConten
             if (parameters.getField() == Field.FAQ) {
                 return this.faqDisplayer.display(document, context);
             } else {
+                List<Block> extensionsOutput = this.contentExtensions.display(context);
+                if (!extensionsOutput.isEmpty()) {
+                    return extensionsOutput;
+                }
                 return List.of(this.contentDisplayer.display(getContentDocument(document, xcontext), context));
             }
         } finally {

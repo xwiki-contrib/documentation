@@ -165,7 +165,7 @@
     <property>
       <content>{{velocity}}
 #set ($macroObject = $doc.getObject('DocApp.Code.RenderingMacroClass'))
-#if ($macroObject)
+#if ($macroObject &amp;&amp; $xcontext.action == 'edit')
   == Description ==
 
   $doc.display('description', $macroObject)
@@ -181,6 +181,26 @@
   == Examples ==
 
   $doc.display('examples', $macroObject)
+#elseif ($macroObject)
+  ## The documentationProperty macro keeps the headings of the fields visible to the table of contents of the
+  ## documentation sheet ($doc.display() renders them as HTML, hiding their headings), while still executing them with
+  ## the rights of the page author.
+  == Description ==
+
+  {{documentationProperty class="DocApp.Code.RenderingMacroClass" property="description"/}}
+
+  == Usage ==
+
+  {{documentationProperty class="DocApp.Code.RenderingMacroClass" property="usage"/}}
+
+  == Parameters ==
+
+  {{documentationProperty class="DocApp.Code.RenderingMacroClass" property="parameters"/}}
+
+  == Examples ==
+
+  {{documentationProperty class="DocApp.Code.RenderingMacroClass" property="examples"/}}
+
 #end
 {{/velocity}}
 </content>

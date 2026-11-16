@@ -164,89 +164,94 @@
     </property>
     <property>
       <content>{{velocity}}
-#set($uix = $doc.getObject('DocApp.Code.UIXPClass'))
-#if($uix)
-  $doc.use('DocApp.Code.UIXPClass')
+## The fields are displayed from the UIXPClass object explicitly, without $doc.use(), so that the fields displayed after
+## this extension by the documentation sheet are still displayed from the DocumentationClass object.
+#set ($uixpObject = $doc.getObject('DocApp.Code.UIXPClass'))
+#if ($uixpObject)
   #if ($xcontext.action == 'view')
     == Description ==
 
-    $doc.display('description')
+    $doc.display('description', $uixpObject)
 
+    ## The documentationProperty macro keeps the headings of the text fields visible to the table of contents of the
+    ## documentation sheet ($doc.display() renders them as HTML, hiding their headings), while still executing them
+    ## with the rights of the page author.
     == Usage ==
 
-    $doc.display('usage')
+    {{documentationProperty class="DocApp.Code.UIXPClass" property="usage"/}}
 
     == Definition ==
 
-    #set ($contributorid = $services.rendering.escape($doc.getValue('contributorid'), 'xwiki/2.1'))
-    #set ($version = $services.rendering.escape($doc.getValue('version'), 'xwiki/2.1'))
+    #set ($contributorid = $services.rendering.escape($doc.getValue('contributorid', $uixpObject), 'xwiki/2.1'))
+    #set ($version = $services.rendering.escape($doc.getValue('version', $uixpObject), 'xwiki/2.1'))
     This Extension Point is contributed by [[this extension&gt;&gt;extensions:Main.WebHome||queryString="id=${contributorid}:${version}"]] and was added in version $version of that extension.
 
     ; **Category**
-    : $doc.display('category')
+    : $doc.display('category', $uixpObject)
     ; **Extension Id**
-    : $doc.display('id')
+    : $doc.display('id', $uixpObject)
     ; **Content to be provided**
-    #set ($content = $doc.getValue('content'))
+    #set ($content = $doc.getValue('content', $uixpObject))
     #if ("$!content" != '')
-      : $doc.display('content')
+      : $doc.display('content', $uixpObject)
     #else
       : No content is expected to be provided by the user of this Extension Point.
     #end
     ; **Parameters to be provided**
-    #set ($parameters = $doc.getValue('parameters'))
+    #set ($parameters = $doc.getValue('parameters', $uixpObject))
     #if ("$!parameters" != '')
-      : $doc.display('parameters')
+      : $doc.display('parameters', $uixpObject)
     #else
       : No parameters is expected to be provided by the user of this Extension Point.
     #end
-    #set ($example = $doc.getValue('example'))
+    #set ($example = $doc.getValue('example', $uixpObject))
     #if ("$!example" != '')
 
       == Example ==
 
-      $doc.display('example')
+      {{documentationProperty class="DocApp.Code.UIXPClass" property="example"/}}
+
     #end
   #else
     == Extension Point Id ==
 
-    $doc.display('id')
+    $doc.display('id', $uixpObject)
 
     == Content Description ==
 
-    $doc.display('content')
+    $doc.display('content', $uixpObject)
 
     == Parameters Description ==
 
-    $doc.display('parameters')
+    $doc.display('parameters', $uixpObject)
 
     == General Description of the Extension Point ==
 
-    $doc.display('description')
+    $doc.display('description', $uixpObject)
 
     == Extension contributing this Extension Point ==
 
-    $doc.display('contributor')
+    $doc.display('contributor', $uixpObject)
 
     == Id of the extension contributing this Extension Point ==
 
-    $doc.display('contributorid')
+    $doc.display('contributorid', $uixpObject)
 
     == How this Extension Point is used ==
 
-    $doc.display('usage')
+    $doc.display('usage', $uixpObject)
 
     == Example of using this Extension Point ==
 
-    $doc.display('example')
+    $doc.display('example', $uixpObject)
 
     == Introduced in version ==
 
-    $doc.display('version')
+    $doc.display('version', $uixpObject)
 
     == Category ==
 
-    $doc.display('category')
+    $doc.display('category', $uixpObject)
   #end
 #end
 {{/velocity}}</content>

@@ -280,10 +280,14 @@ class DocumentationIT
             "type", "reference",
             "faq", "MyUixpFaqText",
             "related", "MyUixpRelatedText");
-        setup.addObject(page("uixp-page"), UIXP_CLASS, "description", "MyUixpDescriptionText");
+        setup.addObject(page("uixp-page"), UIXP_CLASS,
+            "description", "MyUixpDescriptionText",
+            "usage", "=== MyUixpUsageHeading ===\n\nMyUixpUsageText",
+            "example", "=== MyUixpExampleHeading ===\n\nMyUixpExampleText");
 
         setup.gotoPage(page("uixp-page"));
-        String content = new DocumentationViewPage().getContent();
+        DocumentationViewPage viewPage = new DocumentationViewPage();
+        String content = viewPage.getContent();
 
         // The UIXP object's structured content is rendered (replacing the free-form "content" field, by design).
         assertTrue(content.contains("MyUixpDescriptionText"), "Missing the UIXP description content in:\n" + content);
@@ -292,6 +296,14 @@ class DocumentationIT
         assertTrue(content.contains("MyUixpFaqText"), "Missing the FAQ content next to the UIXP object in:\n" + content);
         assertTrue(content.contains("MyUixpRelatedText"),
             "Missing the Related content next to the UIXP object in:\n" + content);
+
+        // The table of contents lists the headings displayed by the content extension, including the ones written in
+        // the UIXPClass object's fields (DA-133).
+        assertTrue(content.contains("MyUixpUsageText"), "Missing the UIXP usage content in:\n" + content);
+        assertTrue(content.contains("MyUixpExampleText"), "Missing the UIXP example content in:\n" + content);
+        List<String> tocEntries = viewPage.getTableOfContentsEntries();
+        assertTrue(tocEntries.containsAll(List.of("Reference", "Description", "Usage", "MyUixpUsageHeading", "Example",
+            "MyUixpExampleHeading", "FAQ")), "Missing headings in the table of contents: " + tocEntries);
     }
 
     @Test

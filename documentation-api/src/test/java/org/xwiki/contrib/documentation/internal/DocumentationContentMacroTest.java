@@ -121,6 +121,9 @@ class DocumentationContentMacroTest
     @MockComponent
     private EntityReferenceSerializer<String> entityReferenceSerializer;
 
+    @MockComponent
+    private DocumentationContentExtensions contentExtensions;
+
     private XWikiContext xcontext;
 
     private XWikiDocument document;
@@ -202,6 +205,16 @@ class DocumentationContentMacroTest
         assertEquals(Syntax.XHTML_1_0, displayParameters.getTargetSyntax());
         assertSame(this.pageXDOM.getIdGenerator(), displayParameters.getIdGenerator());
         verify(this.authorExecutor, never()).call(any(), any(), any());
+    }
+
+    @Test
+    void displayContentExtensionsInsteadOfTheContentWhenTheyDisplaySomething() throws Exception
+    {
+        List<Block> extensionsOutput = List.of(new HeaderBlock(List.of(new WordBlock("Usage")), HeaderLevel.LEVEL2));
+        when(this.contentExtensions.display(this.macroContext)).thenReturn(extensionsOutput);
+
+        assertSame(extensionsOutput, this.macro.execute(parameters(Field.CONTENT), null, this.macroContext));
+        verify(this.documentDisplayer, never()).display(any(), any());
     }
 
     @Test
