@@ -21,6 +21,7 @@ package org.xwiki.contrib.documentation.internal.xwikiorg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.inject.Named;
@@ -38,8 +39,11 @@ import org.xwiki.rendering.block.match.ClassBlockMatcher;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Verify that PlantUML diagrams use the {@code bluegray} theme, i.e. that the content of each PlantUML macro contains
- * a {@code !theme bluegray} line.
+ * Verify that PlantUML diagrams don't set their own theme or colors, since the diagrams of xwiki.org get their styling
+ * from the wiki's default diagram style (the "Default Diagram Style" setting of the PlantUML Macro), which only applies
+ * to the diagrams that don't set a theme. A diagram is reported when it contains a {@code !theme} line, a color
+ * {@code skinparam} (a skinparam whose name contains {@code color}, also inside a {@code skinparam ... { }} block)
+ * or a {@code <style>} block. Layout-only directives (e.g. {@code skinparam nodesep 60}) are allowed.
  *
  * @version $Id$
  * @since 1.15
@@ -53,11 +57,22 @@ public class PlantUMLThemeCheck extends AbstractXDOMDocumentationCheck
 
     private static final String PLANTUML_MACRO_ID = "plantuml";
 
+    private static final Pattern THEME_PATTERN = Pattern.compile("^!theme\\b.*");
+
+    private static final Pattern STYLE_PATTERN = Pattern.compile("^<style>.*", Pattern.CASE_INSENSITIVE);
+
+    private static final String SKINPARAM = "skinparam";
+
+    private static final String COLOR = "color";
+
     /**
-     * Matches a {@code !theme bluegray} line, optionally followed by a {@code from <location>} clause.
+     * Matches the opening line of a skinparam block, i.e. a {@code skinparam} line, with or without an element name,
+     * ending with an opening curly bracket.
      */
-    private static final Pattern BLUEGRAY_THEME_PATTERN = Pattern.compile("^\\s*!theme\\s+bluegray(\\s.*)?$",
-        Pattern.MULTILINE);
+    private static final Pattern SKINPARAM_BLOCK_START_PATTERN =
+        Pattern.compile("^skinparam(\\s+\\S+)?\\s*\\{$", Pattern.CASE_INSENSITIVE);
+
+    private static final String BLOCK_END = "}";
 
     @Override
     public List<DocumentationViolation> check(XWikiDocument document)
@@ -72,23 +87,66 @@ public class PlantUMLThemeCheck extends AbstractXDOMDocumentationCheck
     {
         List<MacroBlock> macroBlocks = xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT);
         for (MacroBlock macroBlock : macroBlocks) {
-            String content = StringUtils.defaultString(macroBlock.getContent());
-            if (PLANTUML_MACRO_ID.equals(macroBlock.getId()) && !BLUEGRAY_THEME_PATTERN.matcher(content).find()) {
-                violations.add(new DocumentationViolation(
-                    "PlantUML diagrams must use the bluegray theme (add a '!theme bluegray' line).",
-                    String.format("Diagram first line : %s", getFirstLine(content)),
-                    DocumentationViolationSeverity.ERROR));
+            if (PLANTUML_MACRO_ID.equals(macroBlock.getId())) {
+                findStylingLine(StringUtils.defaultString(macroBlock.getContent())).ifPresent(line ->
+                    violations.add(new DocumentationViolation(
+                        "PlantUML diagrams must not set a theme or colors: the wiki's default diagram style applies.",
+                        String.format("Diagram line : %s", line),
+                        DocumentationViolationSeverity.ERROR)));
             }
         }
     }
 
-    private String getFirstLine(String content)
+    private Optional<String> findStylingLine(String content)
     {
-        for (String line : content.split("\\R")) {
-            if (StringUtils.isNotBlank(line)) {
-                return line.trim();
+        boolean inSkinparamBlock = false;
+        for (String rawLine : content.split("\\R")) {
+            String line = rawLine.trim();
+            if (inSkinparamBlock) {
+                if (BLOCK_END.equals(line)) {
+                    inSkinparamBlock = false;
+                } else if (isColorParameter(line)) {
+                    return Optional.of(line);
+                }
+            } else if (THEME_PATTERN.matcher(line).matches() || STYLE_PATTERN.matcher(line).matches()
+                || isColorSkinparam(line))
+            {
+                return Optional.of(line);
+            } else if (SKINPARAM_BLOCK_START_PATTERN.matcher(line).matches()) {
+                inSkinparamBlock = true;
             }
         }
-        return "";
+        return Optional.empty();
+    }
+
+    /**
+     * Check if a line is a single-line skinparam whose name contains "color", e.g. {@code skinparam ArrowColor #333}
+     * or {@code skinparam component<<Main>>BackgroundColor #fff}.
+     *
+     * @param line the trimmed diagram line
+     * @return {@code true} if the line sets a color skinparam
+     */
+    private boolean isColorSkinparam(String line)
+    {
+        String[] words = StringUtils.split(line);
+        return words.length > 1 && SKINPARAM.equalsIgnoreCase(words[0]) && isColorName(words[1]);
+    }
+
+    /**
+     * Check if a line of a skinparam block sets a parameter whose name contains "color", e.g.
+     * {@code BorderColor #333}.
+     *
+     * @param line the trimmed diagram line
+     * @return {@code true} if the line sets a color parameter
+     */
+    private boolean isColorParameter(String line)
+    {
+        String[] words = StringUtils.split(line);
+        return words.length > 0 && isColorName(words[0]);
+    }
+
+    private boolean isColorName(String name)
+    {
+        return StringUtils.containsIgnoreCase(name, COLOR);
     }
 }

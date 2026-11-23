@@ -72,7 +72,7 @@ import static org.mockito.Mockito.when;
 class PlantUMLThemeCheckTest
 {
     private static final String MESSAGE =
-        "PlantUML diagrams must use the bluegray theme (add a '!theme bluegray' line).";
+        "PlantUML diagrams must not set a theme or colors: the wiki's default diagram style applies.";
 
     @InjectMockitoOldcore
     private MockitoOldcore oldcore;
@@ -116,27 +116,33 @@ class PlantUMLThemeCheckTest
         assertEquals(DocumentationViolationSeverity.ERROR, violation.getViolationSeverity());
     }
 
-    static Stream<Arguments> checkWhenThemeIsNotBluegraySource()
+    static Stream<Arguments> checkWhenDiagramSetsThemeOrColorsSource()
     {
         return Stream.of(
-            // The theme is missing.
-            Arguments.of("\n  @startuml\nAlice -> Bob\n@enduml", "@startuml"),
-            // Another theme is used.
-            Arguments.of("!theme cerulean\nAlice -> Bob", "!theme cerulean"),
-            // The theme name only starts with "bluegray".
-            Arguments.of("!theme bluegrayish\nAlice -> Bob", "!theme bluegrayish"),
-            // The theme is inside a comment.
-            Arguments.of("' !theme bluegray\nAlice -> Bob", "' !theme bluegray"));
+            // A theme is set.
+            Arguments.of("\n  @startuml\n  !theme bluegray\nAlice -> Bob\n@enduml", "!theme bluegray"),
+            Arguments.of("!theme cerulean from https://example.org/themes\r\nAlice -> Bob",
+                "!theme cerulean from https://example.org/themes"),
+            // A color skinparam is set, whatever its case and stereotype.
+            Arguments.of("skinparam nodesep 60\nskinparam ArrowColor #333\nAlice -> Bob", "skinparam ArrowColor #333"),
+            Arguments.of("skinparam backgroundcolor transparent", "skinparam backgroundcolor transparent"),
+            Arguments.of("skinparam component<<Main>>BackgroundColor #fff",
+                "skinparam component<<Main>>BackgroundColor #fff"),
+            // A color is set inside a skinparam block.
+            Arguments.of("skinparam component {\n  FontSize 13\n  BorderColor #333\n}\n[A]", "BorderColor #333"),
+            Arguments.of("skinparam {\n  BackgroundColor #fff\n}", "BackgroundColor #fff"),
+            // A style block is used.
+            Arguments.of("<style>\nroot {\n  LineColor #333\n}\n</style>\nAlice -> Bob", "<style>"));
     }
 
     @ParameterizedTest
-    @MethodSource("checkWhenThemeIsNotBluegraySource")
-    void checkWhenThemeIsNotBluegray(String content, String firstLine) throws Exception
+    @MethodSource("checkWhenDiagramSetsThemeOrColorsSource")
+    void checkWhenDiagramSetsThemeOrColors(String content, String offendingLine) throws Exception
     {
         List<DocumentationViolation> violations = checkContent(content);
 
         assertEquals(1, violations.size());
-        assertViolation(violations.get(0), "Diagram first line : " + firstLine);
+        assertViolation(violations.get(0), "Diagram line : " + offendingLine);
     }
 
     @Test
@@ -146,16 +152,23 @@ class PlantUMLThemeCheckTest
         List<DocumentationViolation> violations =
             getChecker().check(createDocument(new XDOM(List.of(plantUMLBlock))));
 
-        assertEquals(1, violations.size());
-        assertViolation(violations.get(0), "Diagram first line : ");
+        assertEquals(0, violations.size());
     }
 
     @Test
-    void checkWhenBluegrayThemeIsUsed() throws Exception
+    void checkWhenDiagramOnlySetsLayout() throws Exception
     {
-        assertEquals(0, checkContent("!theme bluegray\nAlice -> Bob").size());
-        assertEquals(0, checkContent("@startuml\r\n  !theme   bluegray\r\nAlice -> Bob\r\n@enduml").size());
-        assertEquals(0, checkContent("!theme bluegray from https://example.org/themes\nAlice -> Bob").size());
+        assertEquals(0, checkContent("@startuml\nAlice -> Bob\n@enduml").size());
+        assertEquals(0, checkContent("' !theme bluegray\n' skinparam ArrowColor #333\nAlice -> Bob").size());
+        assertEquals(0, checkContent("""
+            skinparam componentStyle rectangle
+            skinparam nodesep 60
+            left to right direction
+            skinparam shadowing false
+            [A] -> [B]""").size());
+        assertEquals(0, checkContent("skinparam component {\n  FontSize 13\n}\nBorderColor #333").size());
+        // A participant or class named like a color parameter isn't a skinparam.
+        assertEquals(0, checkContent("class LineColor\nAlice -> Bob : setColor()").size());
     }
 
     @Test
@@ -172,25 +185,26 @@ class PlantUMLThemeCheckTest
 
         MacroContentParser contentParser =
             this.oldcore.getMocker().registerMockComponent(MacroContentParser.class);
-        MacroBlock plantUMLBlock = new MacroBlock("plantuml", Map.of(), "Alice -> Bob", false);
+        MacroBlock plantUMLBlock = new MacroBlock("plantuml", Map.of(), "!theme bluegray\nAlice -> Bob", false);
         when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean()))
             .thenReturn(new XDOM(List.of(plantUMLBlock)));
 
-        MacroBlock macroBlock = new MacroBlock("info", Map.of(), "{{plantuml}}Alice -> Bob{{/plantuml}}", false);
+        MacroBlock macroBlock =
+            new MacroBlock("info", Map.of(), "{{plantuml}}!theme bluegray\nAlice -> Bob{{/plantuml}}", false);
         XWikiDocument document = createDocument(new XDOM(List.of(macroBlock)));
 
         List<DocumentationViolation> violations = getChecker().check(document);
 
         assertEquals(1, violations.size());
-        assertViolation(violations.get(0), "Diagram first line : Alice -> Bob");
+        assertViolation(violations.get(0), "Diagram line : !theme bluegray");
     }
 
     @Test
-    void checkWhenThemeIsMissingInFaqProperty() throws Exception
+    void checkWhenThemeIsSetInFaqProperty() throws Exception
     {
         MacroContentParser contentParser =
             this.oldcore.getMocker().registerMockComponent(MacroContentParser.class);
-        MacroBlock faqPlantUMLBlock = new MacroBlock("plantuml", Map.of(), "Bob -> Alice", false);
+        MacroBlock faqPlantUMLBlock = new MacroBlock("plantuml", Map.of(), "!theme bluegray\nBob -> Alice", false);
         when(contentParser.parse(any(), any(), anyBoolean(), anyBoolean()))
             .thenReturn(new XDOM(List.of(faqPlantUMLBlock)));
 
@@ -198,12 +212,12 @@ class PlantUMLThemeCheckTest
         BaseObject faqObj = new BaseObject();
         faqObj.setXClassReference(new DocumentReference("wiki", Arrays.asList("DocApp", "Code"),
             "DocumentationClass"));
-        faqObj.setLargeStringValue("faq", "{{plantuml}}Bob -> Alice{{/plantuml}}");
+        faqObj.setLargeStringValue("faq", "{{plantuml}}!theme bluegray\nBob -> Alice{{/plantuml}}");
         document.addXObject(faqObj);
 
         List<DocumentationViolation> violations = getChecker().check(document);
 
         assertEquals(1, violations.size());
-        assertViolation(violations.get(0), "Diagram first line : Bob -> Alice");
+        assertViolation(violations.get(0), "Diagram line : !theme bluegray");
     }
 }
