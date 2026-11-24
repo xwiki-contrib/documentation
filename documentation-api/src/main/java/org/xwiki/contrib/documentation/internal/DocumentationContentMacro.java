@@ -29,7 +29,6 @@ import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.documentation.internal.DocumentationContentMacroParameters.Field;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.macro.AbstractMacro;
@@ -40,14 +39,14 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Displays the content or the FAQ of the current documentation page as part of the page XDOM (and not as already
- * rendered HTML, as {@code $doc.display()} does), so that the headings they contain are visible to the other macros of
- * the page, such as the {@code toc} macro of {@code DocApp.Code.DocumentationSheet}.
+ * Displays the content, the FAQ or the Highlights of the current documentation page as part of the page XDOM (and not
+ * as already rendered HTML, as {@code $doc.display()} does), so that the headings they contain are visible to the other
+ * macros of the page, such as the {@code toc} macro of {@code DocApp.Code.DocumentationSheet}.
  * <p>
  * Each field is executed with the same rights as {@code $doc.display()} executes it: the content with the rights of
- * the document content author, and the FAQ with the rights of the document (metadata) author, never with the rights of
- * the author of the page calling the macro. The macro only displays fields of the current document, which the current
- * user is already viewing.
+ * the document content author, and the FAQ and the Highlights with the rights of the document (metadata) author, never
+ * with the rights of the author of the page calling the macro. The macro only displays fields of the current document,
+ * which the current user is already viewing.
  * <p>
  * The content is displayed by the content extensions of the documentation sheet when there are some displaying
  * something for the current document (see {@link DocumentationContentExtensions}), and only otherwise by the content
@@ -83,6 +82,9 @@ public class DocumentationContentMacro extends AbstractMacro<DocumentationConten
     private DocumentationFAQDisplayer faqDisplayer;
 
     @Inject
+    private DocumentationHighlightsDisplayer highlightsDisplayer;
+
+    @Inject
     private DocumentationContentExtensions contentExtensions;
 
     @Inject
@@ -94,8 +96,8 @@ public class DocumentationContentMacro extends AbstractMacro<DocumentationConten
     public DocumentationContentMacro()
     {
         super("Documentation Content",
-            "Displays the content or the FAQ of the current documentation page, keeping their headings visible to the "
-                + "table of contents.",
+            "Displays the content, the FAQ or the Highlights of the current documentation page, keeping their headings "
+                + "visible to the table of contents.",
             DocumentationContentMacroParameters.class);
         // This macro is only meant to be used by the documentation sheet, so it's not proposed to page authors.
         setDefaultCategories(Set.of(DEFAULT_CATEGORY_INTERNAL));
@@ -125,15 +127,11 @@ public class DocumentationContentMacro extends AbstractMacro<DocumentationConten
             return List.of();
         }
         try {
-            if (parameters.getField() == Field.FAQ) {
-                return this.faqDisplayer.display(document, context);
-            } else {
-                List<Block> extensionsOutput = this.contentExtensions.display(context);
-                if (!extensionsOutput.isEmpty()) {
-                    return extensionsOutput;
-                }
-                return List.of(this.contentDisplayer.display(getContentDocument(document, xcontext), context));
-            }
+            return switch (parameters.getField()) {
+                case FAQ -> this.faqDisplayer.display(document, context);
+                case HIGHLIGHTS -> this.highlightsDisplayer.display(document, context);
+                default -> displayContent(document, xcontext, context);
+            };
         } finally {
             fields.remove(fieldKey);
             if (fields.isEmpty()) {
@@ -141,6 +139,16 @@ public class DocumentationContentMacro extends AbstractMacro<DocumentationConten
                 this.fieldsBeingDisplayed.remove();
             }
         }
+    }
+
+    private List<Block> displayContent(XWikiDocument document, XWikiContext xcontext,
+        MacroTransformationContext context) throws MacroExecutionException
+    {
+        List<Block> extensionsOutput = this.contentExtensions.display(context);
+        if (!extensionsOutput.isEmpty()) {
+            return extensionsOutput;
+        }
+        return List.of(this.contentDisplayer.display(getContentDocument(document, xcontext), context));
     }
 
     private XWikiDocument getContentDocument(XWikiDocument document, XWikiContext xcontext)

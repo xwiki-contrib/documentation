@@ -67,14 +67,14 @@ $doc.display('summary')
 
 #if ($xcontext.action == 'edit')
   = Highlights =
-  Use a list syntax to represent the different highlighted documentation pages, with the first list item level being the title and the second level, the description. For example, in XWiki Syntax 2.0+:
+  List the links to the highlighted documentation pages, one per list item. Each highlight is described by the summary of its page. For example, in XWiki Syntax 2.0+:
 
   {{code language="none"}}
-  * Title 1
-  ** Description 1
-  * Title 2
-  ** Description 2
+  * [[Page 1&gt;&gt;Page1]]
+  * [[Page 2&gt;&gt;Page2]]
   {{/code}}
+
+  A nested list item under a highlight is displayed as its description only while the highlighted page has no summary.
 
   $doc.display('highlights')
 
@@ -84,7 +84,7 @@ $doc.display('summary')
     #set ($discard = $xwiki.ssx.use('DocApp.Code.DocumentationSheet'))
     = Highlights =
     (% class="cardlist" %)(((
-      $doc.display('highlights')
+      {{documentationContent field="highlights"/}}
     )))
   #end
 #end
@@ -130,7 +130,7 @@ $doc.display('summary')
   #set ($sourceParameters = "&amp;translationPrefix=docapp.&amp;${sourceParameters}")
   {{liveData
     id = "landingpage"
-    properties = "doc.title,doc.location,type,target"
+    properties = "doc.title,summary,doc.location,type,target"
     source = "liveTable"
     sourceParameters = "$services.rendering.escape($sourceParameters, 'xwiki/2.1')"
     filters = "$services.rendering.escape($!filters, 'xwiki/2.1')"

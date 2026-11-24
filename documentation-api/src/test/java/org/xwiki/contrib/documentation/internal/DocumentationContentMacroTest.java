@@ -124,6 +124,9 @@ class DocumentationContentMacroTest
     @MockComponent
     private DocumentationContentExtensions contentExtensions;
 
+    @MockComponent
+    private DocumentationHighlightsDisplayer highlightsDisplayer;
+
     private XWikiContext xcontext;
 
     private XWikiDocument document;
@@ -363,6 +366,15 @@ class DocumentationContentMacroTest
         this.macro.execute(parameters(Field.CONTENT), null, this.macroContext);
 
         verify(this.documentDisplayer, times(2)).display(any(), any());
+    }
+
+    @Test
+    void displayHighlights() throws Exception
+    {
+        List<Block> highlights = List.of(new WordBlock("highlights"));
+        when(this.highlightsDisplayer.display(this.document, this.macroContext)).thenReturn(highlights);
+
+        assertSame(highlights, this.macro.execute(parameters(Field.HIGHLIGHTS), null, this.macroContext));
     }
 
     @Test

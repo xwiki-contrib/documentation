@@ -7,6 +7,8 @@ org.xwiki.contrib.documentation.internal.FalsePositives
 org.xwiki.contrib.documentation.internal.DocumentationContentMacro
 org.xwiki.contrib.documentation.internal.DocumentationContentDisplayer
 org.xwiki.contrib.documentation.internal.DocumentationFAQDisplayer
+org.xwiki.contrib.documentation.internal.DocumentationHighlightsDisplayer
+org.xwiki.contrib.documentation.internal.DocumentationSummaries
 org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataSource
 org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataConfigurationProvider
 org.xwiki.contrib.documentation.internal.livedata.ViolationsLiveDataConfigurationResolver

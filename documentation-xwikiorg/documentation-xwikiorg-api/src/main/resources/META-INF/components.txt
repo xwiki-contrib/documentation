@@ -29,3 +29,4 @@ org.xwiki.contrib.documentation.internal.xwikiorg.LocationCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.TopLevelPageCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.ImageMacroCaptionVersionCheck
 org.xwiki.contrib.documentation.internal.xwikiorg.TopLevelRelatedLinksCheck
+org.xwiki.contrib.documentation.internal.xwikiorg.SummaryCheck

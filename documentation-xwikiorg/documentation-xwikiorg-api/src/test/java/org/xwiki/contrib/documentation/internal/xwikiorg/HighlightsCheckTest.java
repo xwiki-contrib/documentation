@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.contrib.documentation.DocumentationCheck;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
+import org.xwiki.contrib.documentation.internal.DocumentationSummaries;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -39,6 +40,7 @@ import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.macro.MacroContentParser;
 import org.xwiki.rendering.macro.MacroExecutionException;
 import org.xwiki.rendering.syntax.Syntax;
+import org.xwiki.rendering.wiki.WikiModel;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.LogCaptureExtension;
@@ -69,8 +71,16 @@ class HighlightsCheckTest
 {
     private static final String LINK_MESSAGE = "A highlight must hold a link to the highlighted page.";
 
-    private static final String DESCRIPTION_MESSAGE = "A highlight must have exactly one nested list item, "
+    private static final String DESCRIPTIONS_MESSAGE = "A highlight must have at most one nested list item, "
         + "holding a one-line description of the highlighted page.";
+
+    private static final String NO_SUMMARY_MESSAGE = "The highlighted page has no summary to describe the highlight: "
+        + "add a summary to that page, or until then, a nested list item holding a one-line description of it.";
+
+    private static final String USELESS_DESCRIPTION_MESSAGE = "The nested list item of a highlight isn't displayed "
+        + "since the highlighted page has a summary, which describes the highlight: remove it.";
+
+    private static final DocumentReference INSTALL_REFERENCE = new DocumentReference("wiki", "Space", "Install");
 
     private static final String THRESHOLD_MESSAGE = "Highlights are recommended for pages with more than 15 child "
         + "pages, to guide readers to the most important ones.";
@@ -86,10 +96,16 @@ class HighlightsCheckTest
 
     private QueryManager queryManager;
 
+    private DocumentationSummaries summaries;
+
     @BeforeEach
     void setUp() throws Exception
     {
         this.queryManager = this.oldcore.getMocker().registerMockComponent(QueryManager.class);
+        this.summaries = this.oldcore.getMocker().registerMockComponent(DocumentationSummaries.class);
+        when(this.summaries.getSummaryWithoutRightCheck(any())).thenReturn("");
+        // Wiki references (doc:, page:, etc.) are only parsed as such when a WikiModel is available.
+        this.oldcore.getMocker().registerMockComponent(WikiModel.class);
     }
 
     private XWikiDocument createDocument(String highlightsContent)
@@ -206,13 +222,48 @@ class HighlightsCheckTest
     }
 
     @Test
-    void checkWhenHighlightHasNoDescription() throws Exception
+    void checkWhenHighlightHasNeitherDescriptionNorSummary() throws Exception
     {
         List<DocumentationViolation> violations =
             getChecker().check(createDocument("* [[Install>>doc:Space.Install]]"));
 
         assertEquals(1, violations.size());
-        assertWarning(violations.get(0), DESCRIPTION_MESSAGE, "Install");
+        assertWarning(violations.get(0), NO_SUMMARY_MESSAGE, "Install");
+    }
+
+    @Test
+    void checkWhenHighlightedPageHasSummary() throws Exception
+    {
+        when(this.summaries.getSummaryWithoutRightCheck(INSTALL_REFERENCE)).thenReturn("Install XWiki on Tomcat with a database.");
+
+        assertEquals(0, getChecker().check(createDocument("* [[Install>>doc:Space.Install]]")).size());
+    }
+
+    @Test
+    void checkWhenHighlightHasDescriptionAndSummary() throws Exception
+    {
+        when(this.summaries.getSummaryWithoutRightCheck(INSTALL_REFERENCE)).thenReturn("Install XWiki on Tomcat with a database.");
+
+        List<DocumentationViolation> violations =
+            getChecker().check(createDocument("* [[Install>>doc:Space.Install]]\n** Description"));
+
+        assertEquals(1, violations.size());
+        assertWarning(violations.get(0), USELESS_DESCRIPTION_MESSAGE, "Install");
+    }
+
+    @Test
+    void checkWhenHighlightLinksToAnAnchorOfTheCurrentPage() throws Exception
+    {
+        assertEquals(0, getChecker().check(createDocument("* [[Usage>>||anchor=\"HUsage\"]]")).size());
+    }
+
+    @Test
+    void checkWhenHighlightLinksToURL() throws Exception
+    {
+        // A page outside the wiki has no summary: its highlight is described where it's highlighted, or not at all.
+        assertEquals(0, getChecker().check(createDocument("* [[XWiki>>https://www.xwiki.org]]")).size());
+        assertEquals(0,
+            getChecker().check(createDocument("* [[XWiki>>https://www.xwiki.org]]\n** Description")).size());
     }
 
     @Test
@@ -222,7 +273,7 @@ class HighlightsCheckTest
             createDocument("* [[Install>>doc:Space.Install]]\n** First line\n** Second line"));
 
         assertEquals(1, violations.size());
-        assertWarning(violations.get(0), DESCRIPTION_MESSAGE, "Install");
+        assertWarning(violations.get(0), DESCRIPTIONS_MESSAGE, "Install");
     }
 
     @Test
@@ -231,9 +282,9 @@ class HighlightsCheckTest
         List<DocumentationViolation> violations = getChecker().check(createDocument(
             "* [[Install>>doc:Space.Install]]\n** Description\n* Configure"));
 
-        assertEquals(2, violations.size());
+        // Without a link, there's no highlighted page whose summary could describe the highlight.
+        assertEquals(1, violations.size());
         assertWarning(violations.get(0), LINK_MESSAGE, "Configure");
-        assertWarning(violations.get(1), DESCRIPTION_MESSAGE, "Configure");
     }
 
     @Test

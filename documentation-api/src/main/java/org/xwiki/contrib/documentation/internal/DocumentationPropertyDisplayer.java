@@ -20,6 +20,7 @@
 package org.xwiki.contrib.documentation.internal;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
@@ -93,6 +94,26 @@ public class DocumentationPropertyDisplayer
     public List<Block> display(XWikiDocument document, BaseObject object, String property, String label,
         MacroTransformationContext context) throws MacroExecutionException
     {
+        return display(document, object, property, label, context, xdom -> { });
+    }
+
+    /**
+     * Displays a property of an xobject, executed with the same rights and restrictions as
+     * {@code $doc.display(property, object)} executes it, after letting the caller change the parsed property.
+     *
+     * @param document the document holding the xobject
+     * @param object the xobject holding the property
+     * @param property the name of the text area property to display
+     * @param label what the property holds (for example "Highlights"), used in the error messages
+     * @param context the context of the macro displaying the property
+     * @param preparer changes the parsed property before it's executed, for example to add content to it
+     * @return the executed property, empty if the property is empty
+     * @throws MacroExecutionException if the property cannot be displayed
+     * @since 1.21
+     */
+    public List<Block> display(XWikiDocument document, BaseObject object, String property, String label,
+        MacroTransformationContext context, Consumer<XDOM> preparer) throws MacroExecutionException
+    {
         String value = object.getLargeStringValue(property);
         if (StringUtils.isBlank(value)) {
             return List.of();
@@ -106,6 +127,7 @@ public class DocumentationPropertyDisplayer
             throw new MacroExecutionException(
                 String.format("Failed to parse the %s of document [%s]", label, documentReference), e);
         }
+        preparer.accept(xdom);
         if (context.getXDOM() != null) {
             UniqueIds.makeIdsUnique(xdom, context.getXDOM().getIdGenerator());
         }

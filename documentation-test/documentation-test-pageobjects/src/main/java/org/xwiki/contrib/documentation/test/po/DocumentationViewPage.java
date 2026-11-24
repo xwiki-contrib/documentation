@@ -25,6 +25,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.xwiki.livedata.test.po.LiveDataElement;
+import org.xwiki.livedata.test.po.TableLayoutElement;
 import org.xwiki.test.ui.po.ViewPage;
 
 /**
@@ -77,6 +79,10 @@ public class DocumentationViewPage extends ViewPage
     private static final By CONTENT_IMAGE = By.cssSelector("#xwikicontent img");
 
     private static final By CONTENT_LINK = By.cssSelector("#xwikicontent a[href]");
+
+    private static final By SUMMARY = By.cssSelector("#xwikicontent .docapp-summary");
+
+    private static final By HIGHLIGHT = By.cssSelector("#xwikicontent .cardlist > ul > li");
 
     private static final By TABLE_OF_CONTENTS_ENTRY = By.cssSelector("#xwikicontent .floatinginfobox .wikitoc a");
 
@@ -249,6 +255,38 @@ public class DocumentationViewPage extends ViewPage
     public List<String> getTableOfContentsEntries()
     {
         return getDriver().findElementsWithoutWaiting(TABLE_OF_CONTENTS_ENTRY).stream()
+            .map(WebElement::getText)
+            .toList();
+    }
+
+    /**
+     * @return the summary displayed as the first paragraph of the page, or an empty string when there's none
+     */
+    public String getSummary()
+    {
+        List<WebElement> summary = getDriver().findElementsWithoutWaiting(SUMMARY);
+        return summary.isEmpty() ? "" : summary.get(0).getText();
+    }
+
+    /**
+     * @return the text of each highlight card displayed in the "More" section (the title of the highlighted page and
+     *     its description, on two lines), in display order
+     */
+    public List<String> getHighlights()
+    {
+        return getDriver().findElementsWithoutWaiting(HIGHLIGHT).stream()
+            .map(WebElement::getText)
+            .toList();
+    }
+
+    /**
+     * @return the summaries listed in the "More" table of the child pages, in the order of its rows, once loaded
+     */
+    public List<String> getMoreSummaries()
+    {
+        TableLayoutElement table = new LiveDataElement("more").getTableLayout();
+        table.waitUntilReady(false);
+        return table.getAllCells("Summary").stream()
             .map(WebElement::getText)
             .toList();
     }

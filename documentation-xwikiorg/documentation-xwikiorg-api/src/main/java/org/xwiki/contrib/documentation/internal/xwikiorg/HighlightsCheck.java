@@ -31,7 +31,11 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.documentation.DocumentationViolation;
 import org.xwiki.contrib.documentation.DocumentationViolationSeverity;
+import org.xwiki.contrib.documentation.internal.DocumentationSummaries;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -42,6 +46,7 @@ import org.xwiki.rendering.block.ListBLock;
 import org.xwiki.rendering.block.ListItemBlock;
 import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
+import org.xwiki.rendering.listener.reference.ResourceReference;
 import org.xwiki.rendering.renderer.BlockRenderer;
 import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
@@ -52,7 +57,11 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * Verify the Highlights field of documentation pages: it should be filled once the page has more than 15 child
  * documentation pages, it must not have more than 6 highlights, and each highlight must be a first-level list item
- * holding a link to the highlighted page, with exactly one nested list item holding its one-line description.
+ * holding a link to the highlighted page. A highlight is described by the summary of the highlighted page, so it
+ * should have no nested list item when that page has a summary (the nested item wouldn't be displayed), and one nested
+ * list item holding its one-line description otherwise, until the highlighted page gets a summary. The summaries are
+ * read whatever the rights of the user saving the page, and these violations are only updated when the page is
+ * checked again (for example when it's saved), not when a highlighted page gets or loses its summary.
  *
  * @version $Id$
  * @since 1.15
@@ -98,6 +107,12 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
     private QueryManager queryManager;
 
     @Inject
+    private DocumentationSummaries summaries;
+
+    @Inject
+    private EntityReferenceResolver<ResourceReference> resourceReferenceResolver;
+
+    @Inject
     @Named("local")
     private EntityReferenceSerializer<String> localSerializer;
 
@@ -121,7 +136,7 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
                     MAX_HIGHLIGHTS), "", DocumentationViolationSeverity.ERROR));
             }
             for (ListItemBlock highlight : highlights) {
-                checkHighlight(highlight, violations);
+                checkHighlight(highlight, document.getDocumentReference(), violations);
             }
         }
 
@@ -170,7 +185,8 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
         return items;
     }
 
-    private void checkHighlight(ListItemBlock highlight, List<DocumentationViolation> violations)
+    private void checkHighlight(ListItemBlock highlight, DocumentReference documentReference,
+        List<DocumentationViolation> violations)
     {
         List<Block> ownContent = new ArrayList<>();
         int nestedItemCount = 0;
@@ -184,27 +200,56 @@ public class HighlightsCheck extends AbstractXDOMDocumentationCheck
         }
 
         String context = String.format(CONTEXT_FORMAT, getText(ownContent));
-        if (!hasLink(ownContent)) {
+        LinkBlock link = getLink(ownContent);
+        if (link == null) {
             violations.add(new DocumentationViolation(
                 "A highlight must hold a link to the highlighted page.", context,
                 DocumentationViolationSeverity.WARNING));
         }
-        if (nestedItemCount != 1) {
+        if (nestedItemCount > 1) {
             violations.add(new DocumentationViolation(
-                "A highlight must have exactly one nested list item, holding a one-line description of the "
+                "A highlight must have at most one nested list item, holding a one-line description of the "
                     + "highlighted page.", context, DocumentationViolationSeverity.WARNING));
+        } else if (link != null && RelatedChildPageCheck.PAGE_RESOURCE_TYPES.contains(link.getReference().getType())
+            && !link.getReference().getReference().isEmpty())
+        {
+            checkDescription(nestedItemCount == 1, hasSummary(link, documentReference), context, violations);
         }
     }
 
-    private boolean hasLink(List<Block> blocks)
+    private void checkDescription(boolean hasDescription, boolean hasSummary, String context,
+        List<DocumentationViolation> violations)
+    {
+        if (hasSummary && hasDescription) {
+            violations.add(new DocumentationViolation(
+                "The nested list item of a highlight isn't displayed since the highlighted page has a summary, "
+                    + "which describes the highlight: remove it.", context, DocumentationViolationSeverity.WARNING));
+        } else if (!hasSummary && !hasDescription) {
+            violations.add(new DocumentationViolation(
+                "The highlighted page has no summary to describe the highlight: add a summary to that page, or "
+                    + "until then, a nested list item holding a one-line description of it.", context,
+                DocumentationViolationSeverity.WARNING));
+        }
+    }
+
+    private LinkBlock getLink(List<Block> blocks)
     {
         ClassBlockMatcher linkMatcher = new ClassBlockMatcher(LinkBlock.class);
         for (Block block : blocks) {
-            if (block.getFirstBlock(linkMatcher, Block.Axes.DESCENDANT_OR_SELF) != null) {
-                return true;
+            Block link = block.getFirstBlock(linkMatcher, Block.Axes.DESCENDANT_OR_SELF);
+            if (link != null) {
+                return (LinkBlock) link;
             }
         }
-        return false;
+        return null;
+    }
+
+    private boolean hasSummary(LinkBlock link, DocumentReference documentReference)
+    {
+        EntityReference linkedReference =
+            this.resourceReferenceResolver.resolve(link.getReference(), EntityType.DOCUMENT, documentReference);
+        return linkedReference != null
+            && !this.summaries.getSummaryWithoutRightCheck(new DocumentReference(linkedReference)).isEmpty();
     }
 
     private String getText(List<Block> blocks)

@@ -44,6 +44,7 @@ docapp.doc.title=Page Title
 docapp.doc.location=Location
 docapp.target=Target
 docapp.type=Type
+docapp.summary=Summary
 docapp.emptyvalue=(Empty)
 docapp.applicationsPanelEntryLabel=Documentation
 docapp.search.questionHint=Search documentation

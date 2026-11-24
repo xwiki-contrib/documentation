@@ -43,7 +43,16 @@ public class DocumentationContentMacroParameters
         /**
          * The {@code faq} property of the {@code DocApp.Code.DocumentationClass} object of the current document.
          */
-        FAQ
+        FAQ,
+
+        /**
+         * The {@code highlights} property of the {@code DocApp.Code.DocumentationClass} or
+         * {@code DocApp.Code.LandingPageClass} object of the current document, each highlight described by the summary
+         * of the highlighted page.
+         *
+         * @since 1.21
+         */
+        HIGHLIGHTS
     }
 
     private Field field;
@@ -60,7 +69,7 @@ public class DocumentationContentMacroParameters
      * @param field the documentation field to display
      */
     @PropertyMandatory
-    @PropertyDescription("The documentation field of the current page to display (content or faq).")
+    @PropertyDescription("The documentation field of the current page to display (content, faq or highlights).")
     public void setField(Field field)
     {
         this.field = field;

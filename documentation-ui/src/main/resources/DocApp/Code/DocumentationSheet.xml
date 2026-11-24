@@ -97,6 +97,22 @@
 #if ($xcontext.action == 'edit')
   = Type and Target =
   $doc.display('type') $doc.display('target')
+
+  ## The summary is edited right above the content, so that the content continues from where the summary stops.
+  #set ($documentationObject = $doc.getObject('DocApp.Code.DocumentationClass'))
+  #if ($documentationObject)
+    = Summary =
+    $doc.display('summary', $documentationObject)
+  #end
+#else
+  ## The summary is displayed as the first paragraph of the page. It's plain text, so it's displayed as is.
+  #set ($summary = "$!doc.getObject('DocApp.Code.DocumentationClass').getValue('summary')")
+  #if ($summary.trim() != '')
+
+    (% class="docapp-summary" %)
+    $services.rendering.escape($summary.trim(), 'xwiki/2.1')
+
+  #end
 #end
 ## Display the content
 #if ($doc.getValue('type') == 'howto')
@@ -163,14 +179,14 @@
 #end
 #if ($xcontext.action == 'edit')
   = Highlights =
-  Use a list syntax to represent the different highlighted documentation pages, with the first list item level being the title and the second level, the description. For example, in XWiki Syntax 2.0+:
+  List the links to the highlighted child pages, one per list item. Each highlight is described by the summary of its page. For example, in XWiki Syntax 2.0+:
 
   {{code language="none"}}
-  * Title 1
-  ** Description 1
-  * Title 2
-  ** Description 2
+  * [[Page 1&gt;&gt;Page1]]
+  * [[Page 2&gt;&gt;Page2]]
   {{/code}}
+
+  A nested list item under a highlight is displayed as its description only while the highlighted page has no summary.
 
   $doc.display('highlights')
 #end
@@ -191,7 +207,7 @@
   ##     'sourceParameters' : "$services.rendering.escape($escapetool.url($sourceParameters), 'xwiki/2.1')"
   #set ($properties = {
     'id' : 'more',
-    'properties' : 'doc.title,type',
+    'properties' : 'doc.title,summary,type',
     'source' : 'liveTable',
     'sourceParameters' : "$escapetool.url($sourceParameters)"
   })
@@ -220,7 +236,7 @@
     #if ("$!highlights" != '')
       #set ($discard = $xwiki.ssx.use('DocApp.Code.DocumentationSheet'))
       (% class="cardlist" %)(((
-        $doc.display('highlights')
+        {{documentationContent field="highlights"/}}
       )))
     #end
 

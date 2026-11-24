@@ -19,6 +19,7 @@
  */
 package org.xwiki.contrib.documentation.test.docker;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -112,19 +113,24 @@ class DocumentationIT
         setup.deletePage(page(VIOLATION_PAGE));
         setup.createPage(page(VIOLATION_PAGE), "{{image reference=\"foo.png\" size=\"small\"/}}", "Image sample",
             "xwiki/2.1");
-        setup.addObject(page(VIOLATION_PAGE), DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, page(VIOLATION_PAGE), "type", "reference");
 
         // Structure + navigation page: a How-To with headings in its content and FAQ, a Related section and two
         // documentation children, so that the sheet structure, its table of contents and the "More" navigation section
         // can be asserted on a single page.
         setup.deletePage(GUIDE_REFERENCE, true);
+        // Its Highlights describe the child having a summary with that summary, and the other one with the
+        // description written in the Highlights.
         setup.createPage(GUIDE_SPACE, "WebHome", "== MyContentHeading ==\n\nMyContentText", "Guide", "xwiki/2.1");
-        setup.addObject(GUIDE_REFERENCE, DOC_CLASS,
+        addDocumentationObject(setup, GUIDE_REFERENCE,
             "type", "howto",
+            "summary", "MyGuideSummary",
+            "highlights", "* [[Child A>>doc:.child-a.WebHome]]\n** MyIgnoredDescription\n"
+                + "* [[Child B>>doc:.child-b.WebHome]]\n** MyChildBDescription",
             "faq", "== MyFaqQuestion ==\n\nMyFaqAnswerText",
             "related", "MyRelatedText");
-        createChild(setup, "child-a", "Child A", "howto");
-        createChild(setup, "child-b", "Child B", "reference");
+        createChild(setup, "child-a", "Child A", "howto", "MyChildASummary");
+        createChild(setup, "child-b", "Child B", "reference", "");
 
         // A page WITHOUT a DocumentationClass object: the listener must not analyse it (even though its content would
         // otherwise violate the syntax check).
@@ -169,11 +175,19 @@ class DocumentationIT
             "Missing headings in the table of contents: " + tocEntries);
 
         // The "More" navigation section (heading + search form) is rendered once the page has documentation children.
-        // The children themselves are listed by an asynchronous Live Data table, not asserted here to keep the test
-        // independent of Live Data timing.
+        // The children themselves are listed by an asynchronous Live Data table, asserted below once it's loaded.
         assertTrue(content.contains("More"), "Missing the 'More' navigation section heading in:\n" + content);
         assertTrue(viewPage.hasDocumentationSearchForm(),
             "Missing the documentation search form in the 'More' section");
+
+        // The summary is the first paragraph of the page.
+        assertEquals("MyGuideSummary", viewPage.getSummary());
+        assertTrue(content.indexOf("MyGuideSummary") < content.indexOf("MyContentText"),
+            "The summary should be displayed before the content in:\n" + content);
+        // A highlight is described by the summary of the highlighted page, when it has one.
+        assertEquals(List.of("Child A\nMyChildASummary", "Child B\nMyChildBDescription"), viewPage.getHighlights());
+        // The "More" table lists the summary of each child page (its rows aren't sorted, so their order isn't fixed).
+        assertEquals(List.of("", "MyChildASummary"), viewPage.getMoreSummaries().stream().sorted().toList());
     }
 
     @Test
@@ -276,7 +290,7 @@ class DocumentationIT
         // suppress the DocumentationClass FAQ/Related content rendered by the sheet.
         setup.deletePage(page("uixp-page"));
         setup.createPage(page("uixp-page"), "", "UIXP sample", "xwiki/2.1");
-        setup.addObject(page("uixp-page"), DOC_CLASS,
+        addDocumentationObject(setup, page("uixp-page"),
             "type", "reference",
             "faq", "MyUixpFaqText",
             "related", "MyUixpRelatedText");
@@ -336,7 +350,7 @@ class DocumentationIT
         setup.deletePage(page(VERSION_PAGE));
         setup.createPage(page(VERSION_PAGE), "{{version since=\"12.0\"}}\nAn old feature.\n{{/version}}",
             "Version sample", "xwiki/2.1");
-        setup.addObject(page(VERSION_PAGE), DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, page(VERSION_PAGE), "type", "reference");
         setup.gotoPage(page(VERSION_PAGE));
         assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
             "No violation expected while the oldest supported version isn't configured");
@@ -368,16 +382,16 @@ class DocumentationIT
         for (int i = 1; i <= 8; i++) {
             List<String> childSpace = space("hub-sample", "nested-" + i);
             setup.createPage(childSpace, "WebHome", "", "Nested " + i, "xwiki/2.1");
-            setup.addObject(new DocumentReference("xwiki", childSpace, "WebHome"), DOC_CLASS, "type", "reference");
+            addDocumentationObject(setup, new DocumentReference("xwiki", childSpace, "WebHome"), "type", "reference");
         }
         for (int i = 1; i <= 7; i++) {
             DocumentReference childReference = new DocumentReference("xwiki", hubSpace, "terminal-" + i);
             setup.createPage(childReference, "", "Terminal " + i, "xwiki/2.1");
-            setup.addObject(childReference, DOC_CLASS, "type", "reference");
+            addDocumentationObject(setup, childReference, "type", "reference");
         }
         setup.createPage(new DocumentReference("xwiki", hubSpace, "plain-child"), "", "Plain child", "xwiki/2.1");
         setup.createPage(hubSpace, "WebHome", "", "Hub sample", "xwiki/2.1");
-        setup.addObject(hubReference, DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, hubReference, "type", "reference");
 
         setup.gotoPage(hubReference);
         assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
@@ -386,7 +400,7 @@ class DocumentationIT
         // A 16th child documentation page puts the hub over the threshold, reported on the next save of the hub.
         DocumentReference lastChildReference = new DocumentReference("xwiki", hubSpace, "terminal-8");
         setup.createPage(lastChildReference, "", "Terminal 8", "xwiki/2.1");
-        setup.addObject(lastChildReference, DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, lastChildReference, "type", "reference");
         WikiEditPage.gotoPage(hubReference).clickSaveAndView();
 
         setup.gotoPage(hubReference);
@@ -411,7 +425,7 @@ class DocumentationIT
         setup.deletePage(stalePage);
         setup.createPage(stalePage, "{{version since=\"13.0\"}}\nAn old feature.\n{{/version}}", "Stale sample",
             "xwiki/2.1");
-        setup.addObject(stalePage, DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, stalePage, "type", "reference");
         setOldestSupportedVersion("16.10.0");
         setup.gotoPage(stalePage);
         assertFalse(new DocumentationViewPage().hasWarningValidationBox(),
@@ -465,7 +479,7 @@ class DocumentationIT
         setup.deletePage(falsePositivePage, true);
         setup.createPage(falsePositivePage, "{{image reference=\"foo.png\"/}}", "Image false positive",
             "xwiki/2.1");
-        setup.addObject(falsePositivePage, DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, falsePositivePage, "type", "reference");
 
         // Marking the violation as a false positive stops reporting it.
         setup.gotoPage(falsePositivePage);
@@ -539,7 +553,7 @@ class DocumentationIT
         DocumentReference reference = page("image-title");
         setup.deletePage(reference);
         setup.createPage(reference, "{{image reference=\"foo.png\"/}}", "Image reference", "xwiki/2.1");
-        setup.addObject(reference, DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, reference, "type", "reference");
 
         // Each row displays its own violation, so that the column filters apply to what is displayed.
         TableLayoutElement violations = DocumentationHomePage.gotoPage().getViolations();
@@ -564,7 +578,7 @@ class DocumentationIT
         setup.deletePage(reference);
         setup.deletePage(renamedReference);
         setup.createPage(reference, "Some content.", "Rename sample", "xwiki/2.1");
-        setup.addObject(reference, DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, reference, "type", "reference");
 
         // The rename saves the page at its new location, which triggers the analysis of the page.
         RenamePage renamePage = setup.gotoPage(reference).rename();
@@ -588,7 +602,7 @@ class DocumentationIT
         DocumentReference ownerPage = page("fragment-owner");
         setup.deletePage(ownerPage);
         setup.createPage(ownerPage, "{{fragment name=\"shared-info\"/}}", "Fragment owner", "xwiki/2.1");
-        setup.addObject(ownerPage, DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, ownerPage, "type", "reference");
         DocumentationViewPage viewPage = DocumentationEditPage.gotoPage(ownerPage)
             .addContentFragment("shared-info", "== MySharedHeading ==\n\nMySharedFragmentText")
             .clickSaveAndView();
@@ -633,7 +647,7 @@ class DocumentationIT
         DocumentReference reference = new DocumentReference("xwiki", space, "WebHome");
         setup.deletePage(reference, true);
         setup.createPage(reference, "{{image reference=\"foo.png\"/}}", title, "xwiki/2.1");
-        setup.addObject(reference, DOC_CLASS, "type", "reference");
+        addDocumentationObject(setup, reference, "type", "reference");
         return reference;
     }
 
@@ -656,11 +670,25 @@ class DocumentationIT
         return Stream.concat(SPACE.stream(), Stream.of(names)).toList();
     }
 
-    private static void createChild(TestUtils setup, String name, String title, String type)
+    private static void createChild(TestUtils setup, String name, String title, String type, String summary)
     {
         List<String> childSpace = space("guide", name);
         setup.createPage(childSpace, "WebHome", "Child content", title, "xwiki/2.1");
-        setup.addObject(new DocumentReference("xwiki", childSpace, "WebHome"), DOC_CLASS, "type", type);
+        addDocumentationObject(setup, new DocumentReference("xwiki", childSpace, "WebHome"), "type", type, "summary",
+            summary);
+    }
+
+    /**
+     * Adds a {@code DocApp.Code.DocumentationClass} object to the given page, with a valid summary unless the given
+     * properties set one, so that a missing summary isn't reported on the pages whose violations are asserted.
+     */
+    private static void addDocumentationObject(TestUtils setup, DocumentReference reference, Object... properties)
+    {
+        List<Object> allProperties = new ArrayList<>(List.of(properties));
+        if (!allProperties.contains("summary")) {
+            allProperties.addAll(List.of("summary", "Fixture of the functional tests of the application."));
+        }
+        setup.addObject(reference, DOC_CLASS, allProperties.toArray());
     }
 
     /**
