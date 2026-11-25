@@ -142,12 +142,15 @@ $doc.display('summary')
   #set ($sourceParameters = "className=DocApp.Code.DocumentationClass&amp;${sourceParameters}")
   #set ($sourceParameters = "&amp;resultPage=DocApp.Code.DocumentationLiveTableResults&amp;${sourceParameters}")
   #set ($sourceParameters = "&amp;translationPrefix=docapp.&amp;${sourceParameters}")
+  ## List the most recently modified pages first. The content update date isn't used since it ignores the changes made
+  ## to xobjects, and some pages hold their whole content in xobjects (e.g. the rendering macro and UIXP pages).
   {{liveData
     id = "landingpage"
     properties = "doc.title,summary,doc.location,type,target"
     source = "liveTable"
     sourceParameters = "$services.rendering.escape($sourceParameters, 'xwiki/2.1')"
     filters = "$services.rendering.escape($!filters, 'xwiki/2.1')"
+    sort = "doc.date:desc"
   }}
   {
     "meta": {

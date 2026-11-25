@@ -205,11 +205,14 @@
   })
   ## Not working for some reason:
   ##     'sourceParameters' : "$services.rendering.escape($escapetool.url($sourceParameters), 'xwiki/2.1')"
+  ## List the most recently modified pages first. The content update date isn't used since it ignores the changes made
+  ## to xobjects, and some pages hold their whole content in xobjects (e.g. the rendering macro and UIXP pages).
   #set ($properties = {
     'id' : 'more',
     'properties' : 'doc.title,summary,type',
     'source' : 'liveTable',
-    'sourceParameters' : "$escapetool.url($sourceParameters)"
+    'sourceParameters' : "$escapetool.url($sourceParameters)",
+    'sort' : 'doc.date:desc'
   })
   #set ($count = $services.liveData.query($properties).count)
   ## Display the location of each page under its title, relative to the current page (computed only for the displayed
