@@ -112,11 +112,25 @@ $doc.display('summary')
   #if ($listChildren == '1')
     #set( $parent = $services.model.serialize($doc.documentReference.parent))
     #set ($sourceParameters = "location=${parent}.")
+    #set ($titleLocationRoot = $doc.documentReference.parent)
   #else
     #getProduct($product)
     #set ($sourceParameters = "location=${product}.")
+    ## The product space (e.g. "documentation.xs"), when the landing page is below one.
+    #set ($titleLocationRoot = $NULL)
+    #set ($spaceReferences = $doc.documentReference.spaceReferences)
+    #if ($spaceReferences.size() &gt; 1)
+      #set ($titleLocationRoot = $spaceReferences.get(1))
+    #end
   #end
-  #set ($propertyDescriptors = '{"id": "doc.location", "visible": false}')
+  ## Display the location of each page under its title, relative to the landing page scope. The results page then
+  ## returns the title as HTML.
+  #set ($sourceParameters = "titleLocation=true&amp;${sourceParameters}")
+  #if ("$!titleLocationRoot" != '')
+    #set ($titleLocationRootParameter = $escapetool.url($services.model.serialize($titleLocationRoot, 'local')))
+    #set ($sourceParameters = "titleLocationRoot=${titleLocationRootParameter}&amp;${sourceParameters}")
+  #end
+  #set ($propertyDescriptors = '{"id": "doc.title", "displayer": "html"},{"id": "doc.location", "visible": false}')
   #if ("$!type" != '')
     #set ($filters = "${filters}&amp;type=$type")
     #set ($propertyDescriptors = "${propertyDescriptors},{""id"": ""type"", ""visible"": false}")

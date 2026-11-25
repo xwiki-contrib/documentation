@@ -161,6 +161,17 @@ span.documentation-badge:hover {
   background-color: var(--brand-info);
 }
 
+/* The location of a page, displayed under its title in the documentation Live Data. */
+.docapp-ld-location {
+  display: block;
+  font-size: .85em;
+  color: var(--text-muted);
+}
+
+.docapp-ld-location a {
+  color: inherit;
+}
+
 /* The violations of the Documentation tab. */
 #documentationcontent .documentation-violations-title + dd + .documentation-violations-title {
   margin-top: 1em;

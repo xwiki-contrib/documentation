@@ -102,6 +102,9 @@ class DocumentationIT
 
     private static final DocumentReference GUIDE_REFERENCE = new DocumentReference("xwiki", GUIDE_SPACE, "WebHome");
 
+    private static final DocumentReference LANDING_REFERENCE =
+        new DocumentReference("xwiki", space("landing"), "WebHome");
+
     @BeforeAll
     static void setUp(TestUtils setup)
     {
@@ -129,8 +132,15 @@ class DocumentationIT
                 + "* [[Child B>>doc:.child-b.WebHome]]\n** MyChildBDescription",
             "faq", "== MyFaqQuestion ==\n\nMyFaqAnswerText",
             "related", "MyRelatedText");
-        createChild(setup, "child-a", "Child A", "howto", "MyChildASummary");
-        createChild(setup, "child-b", "Child B", "reference", "");
+        createChild(setup, space("guide", "child-a"), "Child A", "howto", "MyChildASummary");
+        createChild(setup, space("guide", "child-b"), "Child B", "reference", "");
+        // A grandchild, listed in the "More" table of the guide with the title of its parent as location.
+        createChild(setup, space("guide", "child-a", "grandchild"), "Grandchild", "reference", "MyGrandchildSummary");
+        // A landing page of the product, listing all its documentation pages (the guide's grandchild included) with
+        // their location relative to the product space.
+        setup.deletePage(LANDING_REFERENCE);
+        setup.createPage(LANDING_REFERENCE, "", "Landing", "xwiki/2.1");
+        setup.addObject(LANDING_REFERENCE, "DocApp.Code.LandingPageClass");
 
         // A page WITHOUT a DocumentationClass object: the listener must not analyse it (even though its content would
         // otherwise violate the syntax check).
@@ -186,8 +196,20 @@ class DocumentationIT
             "The summary should be displayed before the content in:\n" + content);
         // A highlight is described by the summary of the highlighted page, when it has one.
         assertEquals(List.of("Child A\nMyChildASummary", "Child B\nMyChildBDescription"), viewPage.getHighlights());
-        // The "More" table lists the summary of each child page (its rows aren't sorted, so their order isn't fixed).
-        assertEquals(List.of("", "MyChildASummary"), viewPage.getMoreSummaries().stream().sorted().toList());
+        // The "More" table lists the summary of each descendant page (its rows aren't sorted, so their order isn't
+        // fixed).
+        assertEquals(List.of("", "MyChildASummary", "MyGrandchildSummary"),
+            viewPage.getMoreSummaries().stream().sorted().toList());
+        // Each page title is followed by the location of the page relative to the guide: empty for its children, the
+        // title of its parent for the grandchild.
+        assertEquals(List.of("Child A", "Child B", "Grandchild\nChild A"),
+            viewPage.getMoreTitles().stream().sorted().toList());
+
+        // The landing page of the product displays the location of the pages relative to the product space
+        // ("documentation.xs"). The ancestors without a page (in this test wiki) are displayed with their page name.
+        setup.gotoPage(LANDING_REFERENCE);
+        assertEquals(List.of("Grandchild\nuser \u203a documentation-it \u203a Guide \u203a Child A"),
+            new DocumentationViewPage().getLandingPageTitles("Grandchild"));
     }
 
     @Test
@@ -670,9 +692,9 @@ class DocumentationIT
         return Stream.concat(SPACE.stream(), Stream.of(names)).toList();
     }
 
-    private static void createChild(TestUtils setup, String name, String title, String type, String summary)
+    private static void createChild(TestUtils setup, List<String> childSpace, String title, String type,
+        String summary)
     {
-        List<String> childSpace = space("guide", name);
         setup.createPage(childSpace, "WebHome", "Child content", title, "xwiki/2.1");
         addDocumentationObject(setup, new DocumentReference("xwiki", childSpace, "WebHome"), "type", type, "summary",
             summary);

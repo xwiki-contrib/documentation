@@ -212,6 +212,16 @@
     'sourceParameters' : "$escapetool.url($sourceParameters)"
   })
   #set ($count = $services.liveData.query($properties).count)
+  ## Display the location of each page under its title, relative to the current page (computed only for the displayed
+  ## rows, not for the count above). The results page then returns the title as HTML.
+  #set ($discard = $sourceParameters.put('titleLocation', 'true'))
+  #set ($discard = $sourceParameters.put('titleLocationRoot', $location))
+  #set ($discard = $properties.put('sourceParameters', $escapetool.url($sourceParameters)))
+  #set ($advancedProperties = {
+    'meta' : {
+      'propertyDescriptors' : [{'id' : 'doc.title', 'displayer' : 'html'}]
+    }
+  })
   #if ($count &gt; 0)
     = More =
     #set ($highlights = $doc.getValue('highlights'))
@@ -241,7 +251,7 @@
     #end
 
     {{html}}
-      $services.liveData.render($properties)
+      $services.liveData.render($properties, $advancedProperties)
     {{/html}}
   #end
 #end

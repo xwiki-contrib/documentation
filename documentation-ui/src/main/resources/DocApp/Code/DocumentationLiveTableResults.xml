@@ -39,6 +39,69 @@
   <content>{{include reference="XWiki.LiveTableResultsMacros" /}}
 
 {{velocity wiki="false"}}
+#**
+ * Displays the location of each listed page under its title, so that readers can tell apart pages having the same
+ * title. The location is relative to the given root (the scope of the Live Data): it holds the titles of the pages
+ * between the root and the listed page, each linking to its page. It's empty for the pages right below the root.
+ * The title of the row is thus replaced by HTML (the link to the page followed by its location), to be displayed with
+ * the "html" Live Data displayer. Sorting and filtering are still done on the page title.
+ *
+ * @param $rows the rows of the live table results, as built by #gridresultwithfilter_buildJSON
+ * @param $rootReference the reference of the space from which locations start; when null, or when it's not an
+ *        ancestor of a listed page (the "location" filter of the Live Data matches substrings of page references),
+ *        the full location of that page is displayed
+ *#
+#macro (docapp_addTitleLocations $rows $rootReference)
+  #set ($docapp_defaultDocumentName = $services.model.getEntityReference('DOCUMENT', 'default').name)
+  ## The listed pages often share their ancestors (e.g. the siblings of a page), so compute each ancestor once.
+  #set ($docapp_ancestorHTMLs = {})
+  #foreach ($docapp_row in $rows)
+    #if ($docapp_row.doc_viewable)
+      #set ($docapp_rowReference = $services.model.resolveDocument($docapp_row.doc_fullName))
+      #set ($docapp_spaceReferences = $docapp_rowReference.spaceReferences)
+      ## The page of the last space is the listed page itself when it's a nested page, so it's not part of its location.
+      #set ($docapp_endIndex = $docapp_spaceReferences.size())
+      #if ($docapp_rowReference.name == $docapp_defaultDocumentName)
+        #set ($docapp_endIndex = $docapp_endIndex - 1)
+      #end
+      ## indexOf returns -1 when there's no root or when it's not an ancestor, which displays the full location.
+      #set ($docapp_startIndex = $docapp_spaceReferences.indexOf($rootReference) + 1)
+      #set ($docapp_locationHTML = '')
+      #if ($docapp_startIndex &lt; $docapp_endIndex)
+        #foreach ($docapp_spaceReference in $docapp_spaceReferences.subList($docapp_startIndex, $docapp_endIndex))
+          #set ($docapp_ancestorHTML = $docapp_ancestorHTMLs.get($docapp_spaceReference))
+          #if ("$!docapp_ancestorHTML" == '')
+            #set ($docapp_ancestorReference = $services.model.createDocumentReference($docapp_defaultDocumentName,
+              $docapp_spaceReference))
+            #set ($docapp_ancestorDocument = $NULL)
+            #if ($services.security.authorization.hasAccess('view', $docapp_ancestorReference))
+              #set ($docapp_ancestorDocument = $xwiki.getDocument($docapp_ancestorReference))
+            #end
+            #if ("$!docapp_ancestorDocument" != '' &amp;&amp; !$docapp_ancestorDocument.isNew())
+              #set ($docapp_ancestorTitle = $docapp_ancestorDocument.translatedDocument.plainTitle)
+              #set ($docapp_ancestorURL = $xwiki.getURL($docapp_ancestorReference))
+              #set ($docapp_ancestorHTML = "&lt;a href='$escapetool.xml($docapp_ancestorURL)'&gt;$escapetool.xml($docapp_ancestorTitle)&lt;/a&gt;")
+            #else
+              ## Don't display the title of a page that the current user can't view, nor link to a missing page.
+              #set ($docapp_ancestorHTML = $escapetool.xml($docapp_spaceReference.name))
+            #end
+            #set ($discard = $docapp_ancestorHTMLs.put($docapp_spaceReference, $docapp_ancestorHTML))
+          #end
+          #if ($foreach.index &gt; 0)
+            #set ($docapp_locationHTML = "${docapp_locationHTML}&lt;span class='docapp-ld-location-separator'&gt; &amp;#8250; &lt;/span&gt;")
+          #end
+          #set ($docapp_locationHTML = "${docapp_locationHTML}${docapp_ancestorHTML}")
+        #end
+      #end
+      #set ($docapp_titleHTML = "&lt;a href='$escapetool.xml($docapp_row.doc_url)'&gt;$escapetool.xml($docapp_row.doc_title)&lt;/a&gt;")
+      #if ($docapp_locationHTML != '')
+        #set ($docapp_titleHTML = "${docapp_titleHTML}&lt;span class='docapp-ld-location'&gt;${docapp_locationHTML}&lt;/span&gt;")
+      #end
+      #set ($discard = $docapp_row.put('doc_title', $docapp_titleHTML))
+    #end
+  #end
+#end
+
 ## Exclude the DocApp Code and Data spaces so that entries from there are not listed in LiveDatas.
 #set ($extra = 'AND doc.space &lt;&gt; :docapp_code_space AND doc.space &lt;&gt; :docapp_data_space')
 #set ($params = {'docapp_code_space' : 'DocApp.Code', 'docapp_data_space' : 'DocApp.Data'})
@@ -51,7 +114,22 @@
 ## same HQL binding name every time it's called! See https://jira.xwiki.org/browse/XWIKI-17463).
 ## Also note that we don't call addLocationFilter since we use a Map for $params.
 #filterLocation($extra, $params, $!request.location, 'locationFilterValue1')
-#gridresultwithfilter("$!request.classname" $request.collist.split(',') '' "${extra}" $params)
+## Same as #gridresultwithfilter, but adjusting the rows before serializing them.
+#if ($xcontext.action == 'get' &amp;&amp; "$!request.outputSyntax" == 'plain')
+  #set ($map = {})
+  #gridresultwithfilter_buildJSON("$!request.classname" $request.collist.split(',') '' "${extra}" $params $map)
+  ## The pages display their location under their title when the Live Data asks for it (it must then use the "html"
+  ## displayer for the title). The location is relative to the given root space, which is the scope of the Live Data
+  ## (the "location" filter can't be used for it since it's a substring of the page references, not a space).
+  #if ("$!request.titleLocation" == 'true')
+    #set ($docapp_rootReference = $NULL)
+    #if ("$!request.titleLocationRoot" != '')
+      #set ($docapp_rootReference = $services.model.resolveSpace($request.titleLocationRoot))
+    #end
+    #docapp_addTitleLocations($map.rows $docapp_rootReference)
+  #end
+  #jsonResponse($map)
+#end
 {{/velocity}}
 </content>
 </xwikidoc>

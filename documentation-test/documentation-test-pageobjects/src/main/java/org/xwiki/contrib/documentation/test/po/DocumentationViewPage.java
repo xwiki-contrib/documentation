@@ -87,6 +87,11 @@ public class DocumentationViewPage extends ViewPage
     private static final By TABLE_OF_CONTENTS_ENTRY = By.cssSelector("#xwikicontent .floatinginfobox .wikitoc a");
 
     /**
+     * The label of the page title column in the table of a landing page.
+     */
+    private static final String PAGE_TITLE_COLUMN = "Page Title";
+
+    /**
      * @return true if the on-page "at least one error" validation box is displayed
      */
     public boolean hasErrorValidationBox()
@@ -280,13 +285,44 @@ public class DocumentationViewPage extends ViewPage
     }
 
     /**
-     * @return the summaries listed in the "More" table of the child pages, in the order of its rows, once loaded
+     * @return the summaries listed in the "More" table of the descendant pages, in the order of its rows, once loaded
      */
     public List<String> getMoreSummaries()
     {
+        return getMoreColumn("Summary");
+    }
+
+    /**
+     * @return the titles listed in the "More" table of the descendant pages, each followed by the location of its page
+     *     on a new line when it's not a child of the current page, in the order of its rows, once loaded
+     */
+    public List<String> getMoreTitles()
+    {
+        return getMoreColumn("Title");
+    }
+
+    /**
+     * Filters the table of a landing page on the given page title.
+     *
+     * @param title the text the listed page titles must contain
+     * @return the titles listed in the table of the landing page once filtered, each followed by the location of its
+     *     page on a new line when it's not right below the landing page scope, in the order of its rows
+     */
+    public List<String> getLandingPageTitles(String title)
+    {
+        TableLayoutElement table = new LiveDataElement("landingpage").getTableLayout();
+        table.waitUntilReady(false);
+        table.filterColumn(PAGE_TITLE_COLUMN, title);
+        return table.getAllCells(PAGE_TITLE_COLUMN).stream()
+            .map(WebElement::getText)
+            .toList();
+    }
+
+    private List<String> getMoreColumn(String columnLabel)
+    {
         TableLayoutElement table = new LiveDataElement("more").getTableLayout();
         table.waitUntilReady(false);
-        return table.getAllCells("Summary").stream()
+        return table.getAllCells(columnLabel).stream()
             .map(WebElement::getText)
             .toList();
     }
